@@ -27,9 +27,14 @@ primeira verificacao automatizada antes da modelagem.
 - 176 IDs repetidos, sem registros inteiramente duplicados;
 - nenhum modelo de ML treinado nesta fase.
 
-## Verificacao
+## Verificacao executada
 
-Ainda sera executada depois da instalacao do ambiente:
+- Python 3.13.7;
+- `py -3.13 -m pytest -q`: 4 testes aprovados;
+- `py -3.13 -m ruff check .`: todos os checks aprovados;
+- branch sem alteracoes pendentes depois dos commits da fase;
+- Docker disponivel no ambiente, mas ainda nao utilizado porque a API pertence
+  a Fase 4.
 
 ```powershell
 py -3.13 -m pytest

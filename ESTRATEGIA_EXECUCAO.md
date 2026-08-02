@@ -537,7 +537,7 @@ sera feita antes da instalacao ou escolha definitiva.
 
 ### Ambiente e dependencias
 
-- Python 3.12 sera a versao de referencia, sujeita a verificacao no ambiente.
+- Python 3.13 sera a versao de referencia no ambiente atual.
 - A base inicial usara pandas, numpy, scikit-learn, joblib, FastAPI, Pydantic,
   pytest e Ruff.
 - XGBoost sera opcional e so entrara se o ganho de desempenho justificar a
