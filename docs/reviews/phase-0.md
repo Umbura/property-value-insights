@@ -30,15 +30,18 @@ primeira verificacao automatizada antes da modelagem.
 ## Verificacao executada
 
 - Python 3.13.7;
-- `py -3.13 -m pytest -q`: 4 testes aprovados;
-- `py -3.13 -m ruff check .`: todos os checks aprovados;
+- `.venv\Scripts\python.exe -m pytest -q`: 11 testes aprovados;
+- `.venv\Scripts\python.exe -m ruff check .`: todos os checks aprovados;
+- `.venv\Scripts\python.exe -m pip check`: nenhuma dependencia quebrada;
+- contrato reforçado com validacao de numericidade, nulos, faixas categoricas,
+  percentuais, CEPs e coordenadas;
 - branch sem alteracoes pendentes depois dos commits da fase;
 - Docker disponivel no ambiente, mas ainda nao utilizado porque a API pertence
   a Fase 4.
 
 ```powershell
-py -3.13 -m pytest
-py -3.13 -m ruff check .
+.\.venv\Scripts\python.exe -m pytest
+.\.venv\Scripts\python.exe -m ruff check .
 ```
 
 ## Pontos para revisao de Iago

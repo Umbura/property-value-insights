@@ -15,8 +15,10 @@ Este repositorio segue o processo descrito em
 ## Verificacoes locais
 
 ```powershell
-py -3.13 -m pytest
-py -3.13 -m ruff check .
+py -3.13 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -e ".[dev]"
+.\.venv\Scripts\python.exe -m pytest
+.\.venv\Scripts\python.exe -m ruff check .
 ```
 
 Nao enviar credenciais, arquivos `.env`, logs locais ou dados fora do escopo do

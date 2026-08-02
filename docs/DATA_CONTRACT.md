@@ -15,8 +15,15 @@ Status: proposta da Fase 0, pendente de revisao supervisionada.
 - O historico deve conter `price`, `id`, `date` e `zipcode`.
 - Os exemplos futuros nao devem conter `price`, `id` ou `date`.
 - O lookup demografico deve conter exatamente uma linha por `zipcode`.
-- As colunas numericas devem ser parseaveis e nao negativas quando a regra de
-  negocio exigir isso.
+- Todas as colunas numericas devem ser parseaveis e nao nulas.
+- Valores de preço devem ser positivos; contagens e medidas nao podem ser
+  negativas.
+- Coordenadas devem respeitar latitude entre -90 e 90 e longitude entre -180 e
+  180.
+- `waterfront` deve ser inteiro entre 0 e 1; `view`, entre 0 e 4; `condition`,
+  entre 1 e 5; e `grade`, entre 1 e 13.
+- As colunas percentuais demograficas devem estar entre 0 e 100.
+- Todo CEP deve conter exatamente cinco digitos.
 - Identificadores, datas, preco e CEP nao podem ser nulos no historico.
 - Todo CEP observado no historico e nos exemplos futuros deve existir no lookup
   demografico.
@@ -33,6 +40,8 @@ Status: proposta da Fase 0, pendente de revisao supervisionada.
 - Nao foram encontrados registros inteiramente duplicados.
 - O menor preco observado e 75.000 e o maior e 7.700.000.
 - As datas observadas vao de 2014-05-02 a 2015-05-27.
+- O contrato tambem verifica numericidade, nulos, faixas categoricas,
+  percentuais e limites geograficos antes da modelagem.
 
 ## Decisoes
 
