@@ -12,6 +12,13 @@ Este repositorio segue o processo descrito em
 5. Abrir um pull request com objetivo, alteracoes, testes e limitacoes.
 6. Aguardar a revisao supervisionada antes do merge.
 
+## Idioma
+
+Documentacao, issues, pull requests e comunicacao voltada a avaliadores devem
+ser escritas em portugues do Brasil. Identificadores de codigo, nomes de
+pacotes, campos de API, branches e mensagens de commit devem permanecer em
+ingles, seguindo as convencoes do ecossistema de software.
+
 ## Verificacoes locais
 
 ```powershell
