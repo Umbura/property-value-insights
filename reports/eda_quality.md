@@ -1,7 +1,5 @@
 # Relatorio de EDA e qualidade dos dados
 
-Status: artefato da Fase 1, sujeito a revisao supervisionada.
-
 ## Qualidade estrutural
 
 | dataset      |   rows |   columns |   missing_cells |   exact_duplicate_rows |   unique_zipcodes |
@@ -23,7 +21,7 @@ Status: artefato da Fase 1, sujeito a revisao supervisionada.
 - Linhas inteiramente duplicadas: 0.
 
 O merge foi configurado como muitos-para-um. Nenhuma linha historica e
-removida automaticamente nesta fase.
+removida automaticamente.
 
 ## Outliers pelo criterio IQR
 

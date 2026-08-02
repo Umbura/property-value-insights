@@ -4,7 +4,7 @@ Sistema reprodutível de estimativa de preços residenciais com Machine Learning
 práticas de MLOps. O projeto foi desenvolvido para o desafio técnico de previsão
 de preços de imóveis e trata os dados como uma solução de cliente real.
 
-Status atual: Fase 1 em revisão supervisionada.
+Status atual: análise exploratória e qualidade dos dados concluídas; modelagem em preparação.
 
 ## Objetivo
 

@@ -154,8 +154,6 @@ def write_quality_report(
     lines = [
         "# Relatorio de EDA e qualidade dos dados",
         "",
-        "Status: artefato da Fase 1, sujeito a revisao supervisionada.",
-        "",
         "## Qualidade estrutural",
         "",
         quality.to_markdown(index=False),
@@ -173,7 +171,7 @@ def write_quality_report(
         f"- Linhas inteiramente duplicadas: {exact_duplicate_rows}.",
         "",
         "O merge foi configurado como muitos-para-um. Nenhuma linha historica e",
-        "removida automaticamente nesta fase.",
+        "removida automaticamente.",
         "",
         "## Outliers pelo criterio IQR",
         "",
