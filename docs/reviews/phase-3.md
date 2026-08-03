@@ -1,6 +1,6 @@
 # Revisão da Fase 3
 
-Status: aguardando revisão supervisionada.
+Status: aprovada após correção dos achados da revisão supervisionada.
 
 ## Objetivo
 
@@ -69,3 +69,10 @@ diagnóstico, menor superfície de dados e menor risco de proxies sociais.
 - conferir a justificativa para as 18 exclusões;
 - conferir o schema de `reports/future_predictions.csv`;
 - aprovar o candidato para incorporação e futura marcação como `v0.4.0`.
+
+## Aprovação
+
+A revisão supervisionada aprovou a continuidade para a Fase 4 depois da
+validação estrita entre manifesto e bundle e da inclusão do teste integral de
+treinamento sem dependência dos dados demográficos. A incorporação e a tag
+permanecem condicionadas à organização final das pull requests empilhadas.
