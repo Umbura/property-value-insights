@@ -13,9 +13,11 @@ from property_value_insights.modeling import (
     median_baseline_prediction,
     regression_metrics,
     segment_metrics,
+    select_calibrated_candidate,
     select_temporal_candidates,
     summarize_temporal_validation,
     temporal_train_test_split,
+    vertical_equity_metrics,
 )
 
 DATA_DIR = Path(__file__).parents[1] / "data" / "raw"
@@ -50,6 +52,18 @@ def test_regression_metrics_are_zero_for_perfect_predictions() -> None:
     assert metrics["rmse"] == 0.0
     assert metrics["rmsle"] == 0.0
     assert metrics["r2"] == 1.0
+
+
+def test_vertical_equity_metrics_are_calibrated_for_perfect_predictions() -> None:
+    values = pd.Series([100.0, 200.0, 300.0])
+
+    metrics = vertical_equity_metrics(values, values)
+
+    assert metrics["mape"] == 0.0
+    assert metrics["mean_error"] == 0.0
+    assert metrics["underprediction_rate"] == 0.0
+    assert metrics["median_prediction_ratio"] == 1.0
+    assert metrics["price_related_differential"] == 1.0
 
 
 def test_median_baseline_uses_only_the_training_partition() -> None:
@@ -96,7 +110,31 @@ def test_temporal_cross_validation_returns_one_row_per_fold() -> None:
 
     assert len(results) == 2
     assert results["mae"].notna().all()
+    assert results["high_price_mae"].notna().all()
+    assert results["price_related_differential"].notna().all()
     assert (results["train_end"] < results["validation_start"]).all()
+
+
+def test_temporal_smearing_pipeline_estimates_positive_factor() -> None:
+    historical, _, _ = load_raw_data(DATA_DIR)
+    ordered = historical.sort_values("date").head(800).reset_index(drop=True)
+    split = temporal_train_test_split(ordered, test_size=0.2)
+    estimator = build_estimator(
+        "ridge",
+        "physical",
+        target_transform="log_temporal_smearing",
+        model_params={"calibration_fraction": 0.1},
+    )
+
+    evaluation = fit_and_evaluate(
+        estimator,
+        split.train,
+        split.test,
+        feature_set="physical",
+    )
+
+    assert evaluation.estimator.smearing_factor_ > 0
+    assert np.isfinite(evaluation.predictions).all()
 
 
 def test_temporal_cross_validation_keeps_complete_dates_in_each_partition() -> None:
@@ -169,6 +207,48 @@ def test_candidate_selection_prefers_stability_within_tolerance() -> None:
 
     assert selection.champion == "stable"
     assert selection.challenger == "best_mean"
+
+
+def test_calibration_selection_requires_general_and_upper_tail_improvement() -> None:
+    summary = pd.DataFrame(
+        [
+            {
+                "candidate": "reference",
+                "cv_mae_mean": 100.0,
+                "cv_mae_worst": 105.0,
+                "cv_high_price_mae_mean": 200.0,
+                "cv_high_price_abs_mean_error_mean": 120.0,
+                "cv_prd_deviation_mean": 0.04,
+                "high_price_mae_improved_folds": 0,
+            },
+            {
+                "candidate": "calibrated",
+                "cv_mae_mean": 100.2,
+                "cv_mae_worst": 104.0,
+                "cv_high_price_mae_mean": 190.0,
+                "cv_high_price_abs_mean_error_mean": 90.0,
+                "cv_prd_deviation_mean": 0.02,
+                "high_price_mae_improved_folds": 4,
+            },
+            {
+                "candidate": "unstable_tail",
+                "cv_mae_mean": 99.9,
+                "cv_mae_worst": 103.0,
+                "cv_high_price_mae_mean": 185.0,
+                "cv_high_price_abs_mean_error_mean": 80.0,
+                "cv_prd_deviation_mean": 0.01,
+                "high_price_mae_improved_folds": 3,
+            },
+        ]
+    )
+
+    selection = select_calibrated_candidate(
+        summary,
+        reference_candidate="reference",
+    )
+
+    assert selection.promoted
+    assert selection.champion == "calibrated"
 
 
 def test_segment_metrics_reports_group_sizes() -> None:
