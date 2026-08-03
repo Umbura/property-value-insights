@@ -1,0 +1,19 @@
+services:
+  api:
+    build:
+      context: .
+      target: runtime
+    image: property-value-insights:local
+    environment:
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      MAX_BATCH_SIZE: ${MAX_BATCH_SIZE:-100}
+      MODEL_ARTIFACT_PATH: /app/artifacts/property_value_model.joblib
+      MODEL_MANIFEST_PATH: /app/artifacts/model_manifest.json
+    ports:
+      - "${API_PORT:-8000}:8000"
+    init: true
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
