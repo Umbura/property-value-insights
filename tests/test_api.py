@@ -86,15 +86,19 @@ def test_invalid_payload_and_oversized_batch_are_rejected(
     invalid = dict(property_payloads[0])
     invalid["zipcode"] = "9811"
     invalid["unknown_feature"] = 1
+    incorrect_type = dict(property_payloads[0])
+    incorrect_type["bedrooms"] = "4"
 
     with TestClient(create_app(_settings(max_batch_size=1))) as client:
         invalid_response = client.post("/predict", json=invalid)
+        incorrect_type_response = client.post("/predict", json=incorrect_type)
         oversized_response = client.post(
             "/predict/batch",
             json={"items": property_payloads[:2]},
         )
 
     assert invalid_response.status_code == 422
+    assert incorrect_type_response.status_code == 422
     assert oversized_response.status_code == 413
     assert oversized_response.json()["detail"] == "Batch exceeds the limit of 1 items"
 

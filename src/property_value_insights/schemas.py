@@ -10,7 +10,7 @@ from pydantic import BaseModel, ConfigDict, Field
 class PropertyFeatures(BaseModel):
     """Features available for one property at inference time."""
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", strict=True)
 
     bedrooms: int = Field(ge=0)
     bathrooms: float = Field(ge=0)
@@ -35,7 +35,7 @@ class PropertyFeatures(BaseModel):
 class BatchPredictionRequest(BaseModel):
     """A bounded collection of properties for one inference request."""
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", strict=True)
 
     items: list[PropertyFeatures] = Field(min_length=1)
 
