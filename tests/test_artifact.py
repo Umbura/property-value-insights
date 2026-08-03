@@ -22,6 +22,7 @@ from property_value_insights.modeling import build_estimator, feature_columns
 from property_value_insights.training import filter_temporally_consistent_rows
 
 DATA_DIR = Path(__file__).parents[1] / "data" / "raw"
+PROJECT_ROOT = Path(__file__).parents[1]
 
 
 def _fitted_bundle() -> tuple[dict[str, object], pd.DataFrame]:
@@ -103,3 +104,18 @@ def test_text_hash_is_independent_of_line_endings(tmp_path: Path) -> None:
     crlf_path.write_bytes(b"column\r\nvalue\r\n")
 
     assert sha256_normalized_text_file(lf_path) == sha256_normalized_text_file(crlf_path)
+
+
+def test_versioned_artifact_reproduces_published_predictions() -> None:
+    artifact_path = PROJECT_ROOT / "artifacts" / "property_value_model.joblib"
+    manifest_path = PROJECT_ROOT / "artifacts" / "model_manifest.json"
+    expected_path = PROJECT_ROOT / "reports" / "future_predictions.csv"
+    _, _, future = load_raw_data(DATA_DIR)
+
+    bundle = load_model_bundle(artifact_path, manifest_path=manifest_path)
+    predictions = predict_future(bundle, future)
+    expected = pd.read_csv(expected_path)
+
+    assert bundle["feature_columns"] == feature_columns("physical")
+    pd.testing.assert_frame_equal(predictions, expected)
+    assert len(predictions) == 100
