@@ -213,7 +213,8 @@ def _manifest(
         "evaluation": evaluation,
         "prediction_output": {
             "path": predictions_path.relative_to(project_root).as_posix(),
-            "sha256": sha256_file(predictions_path),
+            "sha256": sha256_normalized_text_file(predictions_path),
+            "hash_normalization": "line endings normalized to LF",
             "rows": int(pd.read_csv(predictions_path).shape[0]),
             "source_path": future_path.relative_to(project_root).as_posix(),
             "source_sha256": sha256_normalized_text_file(future_path),

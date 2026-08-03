@@ -1,0 +1,3 @@
+artifacts/*.joblib binary
+artifacts/*.json text eol=lf
+reports/future_predictions.csv text eol=lf
