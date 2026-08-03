@@ -565,6 +565,28 @@ sera feita antes da instalacao ou escolha definitiva.
   `src/`.
 - Os notebooks nao serao a unica forma de executar o treinamento ou a API.
 
+### Linguagem dos artefatos destinados a avaliacao
+
+Todo material que possa ser lido pelo avaliador - README, notebooks,
+relatorios, diagramas, mensagens da aplicacao e exemplos de uso - devera
+conter somente linguagem tecnica, neutra e orientada ao problema. Termos do
+processo interno, como `fase`, `criterios de aceite`,
+`revisao supervisionada`, `branch`, `PR`, nomes de colaboradores ou
+instrucoes de trabalho, nao devem aparecer nesses artefatos.
+
+Esses registros permanecerao restritos ao planejamento interno, issues,
+pull requests e `docs/reviews/`. Mensagens exibidas durante a execucao devem
+descrever um resultado tecnico, como cobertura, cardinalidade ou validacao
+concluida, e nunca o estado da nossa revisao interna.
+
+Antes de cada commit e push de notebook ou relatorio, sera obrigatorio:
+
+1. revisar as celulas Markdown, codigo e saidas renderizadas;
+2. pesquisar termos de processo interno no arquivo e nos artefatos gerados;
+3. substituir mensagens de processo por descricoes tecnicas ou remover saidas
+   desnecessarias;
+4. reexecutar o notebook e conferir visualmente o resultado final.
+
 ### Artefatos e relatorios
 
 Os resultados serao organizados em:
