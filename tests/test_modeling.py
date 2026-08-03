@@ -13,6 +13,8 @@ from property_value_insights.modeling import (
     median_baseline_prediction,
     regression_metrics,
     segment_metrics,
+    select_temporal_candidates,
+    summarize_temporal_validation,
     temporal_train_test_split,
 )
 
@@ -60,6 +62,7 @@ def test_median_baseline_uses_only_the_training_partition() -> None:
     assert predictions.nunique() == 1
     assert len(results) == 2
     assert results["mae"].notna().all()
+    assert (results["train_end"] < results["validation_start"]).all()
 
 
 def test_ridge_pipeline_fits_without_using_identifier_or_target() -> None:
@@ -93,6 +96,79 @@ def test_temporal_cross_validation_returns_one_row_per_fold() -> None:
 
     assert len(results) == 2
     assert results["mae"].notna().all()
+    assert (results["train_end"] < results["validation_start"]).all()
+
+
+def test_temporal_cross_validation_keeps_complete_dates_in_each_partition() -> None:
+    historical, _, _ = load_raw_data(DATA_DIR)
+    repeated_dates = historical.sort_values("date").head(1200).reset_index(drop=True)
+    estimator = build_estimator("ridge", "physical")
+
+    results = cross_validate_temporal(
+        estimator,
+        repeated_dates,
+        feature_set="physical",
+        n_splits=3,
+    )
+
+    assert (results["train_end"] < results["validation_start"]).all()
+    assert (results["validation_start"] <= results["validation_end"]).all()
+
+
+def test_temporal_summary_reports_mean_variation_and_worst_fold() -> None:
+    results = {
+        "candidate_a": pd.DataFrame(
+            {
+                "mae": [100.0, 110.0],
+                "rmse": [120.0, 130.0],
+                "rmsle": [0.10, 0.12],
+            }
+        ),
+        "candidate_b": pd.DataFrame(
+            {
+                "mae": [105.0, 106.0],
+                "rmse": [125.0, 126.0],
+                "rmsle": [0.11, 0.11],
+            }
+        ),
+    }
+
+    summary = summarize_temporal_validation(results)
+
+    candidate_a = summary.loc[summary["candidate"] == "candidate_a"].iloc[0]
+    assert candidate_a["cv_mae_mean"] == 105.0
+    assert candidate_a["cv_mae_std"] == 5.0
+    assert candidate_a["cv_mae_worst"] == 110.0
+
+
+def test_candidate_selection_prefers_stability_within_tolerance() -> None:
+    summary = pd.DataFrame(
+        [
+            {
+                "candidate": "best_mean",
+                "cv_mae_mean": 100.0,
+                "cv_mae_std": 8.0,
+                "cv_mae_worst": 115.0,
+            },
+            {
+                "candidate": "stable",
+                "cv_mae_mean": 100.4,
+                "cv_mae_std": 2.0,
+                "cv_mae_worst": 104.0,
+            },
+            {
+                "candidate": "outside_tolerance",
+                "cv_mae_mean": 101.0,
+                "cv_mae_std": 1.0,
+                "cv_mae_worst": 102.0,
+            },
+        ]
+    )
+
+    selection = select_temporal_candidates(summary, relative_tolerance=0.005)
+
+    assert selection.champion == "stable"
+    assert selection.challenger == "best_mean"
 
 
 def test_segment_metrics_reports_group_sizes() -> None:

@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from math import ceil
 from time import perf_counter
-from typing import Literal
+from typing import Literal, Mapping
 
 import numpy as np
 import pandas as pd
@@ -76,6 +76,15 @@ class FittedEvaluation:
     predictions: pd.Series
     metrics: dict[str, float]
     fit_seconds: float
+
+
+@dataclass(frozen=True)
+class CandidateSelection:
+    """Champion and challenger selected from temporal validation results."""
+
+    champion: str
+    challenger: str
+    relative_tolerance: float
 
 
 def feature_columns(feature_set: FeatureSet) -> list[str]:
@@ -224,15 +233,24 @@ def cross_validate_temporal(
     ordered = ordered.sort_values(["_parsed_date", "id"], kind="mergesort").reset_index(drop=True)
     X = ordered[feature_columns(feature_set)]
     y = ordered["price"]
-    splitter = TimeSeriesSplit(n_splits=n_splits)
-    rows: list[dict[str, float | int]] = []
+    rows: list[dict[str, object]] = []
 
-    for fold, (train_idx, validation_idx) in enumerate(splitter.split(X), start=1):
+    for fold, train_idx, validation_idx in _complete_date_folds(ordered, n_splits):
         fitted = clone(estimator)
         fitted.fit(X.iloc[train_idx], y.iloc[train_idx])
         predictions = fitted.predict(X.iloc[validation_idx])
         metrics = regression_metrics(y.iloc[validation_idx], predictions)
-        rows.append({"fold": fold, **metrics})
+        rows.append(
+            {
+                "fold": fold,
+                "train_end": ordered.iloc[train_idx]["_parsed_date"].max(),
+                "validation_start": ordered.iloc[validation_idx]["_parsed_date"].min(),
+                "validation_end": ordered.iloc[validation_idx]["_parsed_date"].max(),
+                "train_rows": len(train_idx),
+                "validation_rows": len(validation_idx),
+                **metrics,
+            }
+        )
 
     return pd.DataFrame(rows)
 
@@ -285,15 +303,119 @@ def cross_validate_median_baseline(
     ordered["_parsed_date"] = pd.to_datetime(ordered["date"], format="mixed", errors="raise")
     ordered = ordered.sort_values(["_parsed_date", "id"], kind="mergesort").reset_index(drop=True)
     y = ordered["price"]
-    splitter = TimeSeriesSplit(n_splits=n_splits)
-    rows: list[dict[str, float | int]] = []
+    rows: list[dict[str, object]] = []
 
-    for fold, (train_idx, validation_idx) in enumerate(splitter.split(y), start=1):
+    for fold, train_idx, validation_idx in _complete_date_folds(ordered, n_splits):
         predictions = pd.Series(float(y.iloc[train_idx].median()), index=validation_idx)
         metrics = regression_metrics(y.iloc[validation_idx], predictions)
-        rows.append({"fold": fold, **metrics})
+        rows.append(
+            {
+                "fold": fold,
+                "train_end": ordered.iloc[train_idx]["_parsed_date"].max(),
+                "validation_start": ordered.iloc[validation_idx]["_parsed_date"].min(),
+                "validation_end": ordered.iloc[validation_idx]["_parsed_date"].max(),
+                "train_rows": len(train_idx),
+                "validation_rows": len(validation_idx),
+                **metrics,
+            }
+        )
 
     return pd.DataFrame(rows)
+
+
+def _complete_date_folds(
+    ordered: pd.DataFrame,
+    n_splits: int,
+) -> list[tuple[int, np.ndarray, np.ndarray]]:
+    """Build expanding folds without placing one date in two partitions."""
+
+    unique_dates = pd.Series(ordered["_parsed_date"].unique()).sort_values().reset_index(drop=True)
+    splitter = TimeSeriesSplit(n_splits=n_splits)
+    folds: list[tuple[int, np.ndarray, np.ndarray]] = []
+
+    for fold, (train_dates, validation_dates) in enumerate(
+        splitter.split(unique_dates),
+        start=1,
+    ):
+        train_end = unique_dates.iloc[train_dates[-1]]
+        validation_start = unique_dates.iloc[validation_dates[0]]
+        validation_end = unique_dates.iloc[validation_dates[-1]]
+        train_idx = np.flatnonzero(ordered["_parsed_date"].le(train_end).to_numpy())
+        validation_idx = np.flatnonzero(
+            ordered["_parsed_date"].between(validation_start, validation_end).to_numpy()
+        )
+        folds.append((fold, train_idx, validation_idx))
+
+    return folds
+
+
+def summarize_temporal_validation(
+    results: Mapping[str, pd.DataFrame],
+) -> pd.DataFrame:
+    """Aggregate temporal validation metrics for comparable candidates."""
+
+    if not results:
+        raise ValueError("At least one validation result is required")
+
+    rows: list[dict[str, float | str]] = []
+    required_columns = {"mae", "rmse", "rmsle"}
+    for candidate, scores in results.items():
+        missing = required_columns - set(scores.columns)
+        if missing:
+            missing_columns = ", ".join(sorted(missing))
+            raise ValueError(f"Validation result for {candidate} is missing: {missing_columns}")
+        rows.append(
+            {
+                "candidate": candidate,
+                "cv_mae_mean": float(scores["mae"].mean()),
+                "cv_mae_std": float(scores["mae"].std(ddof=0)),
+                "cv_mae_worst": float(scores["mae"].max()),
+                "cv_rmse_mean": float(scores["rmse"].mean()),
+                "cv_rmsle_mean": float(scores["rmsle"].mean()),
+            }
+        )
+
+    return pd.DataFrame(rows).sort_values(
+        ["cv_mae_mean", "cv_mae_std"],
+        ignore_index=True,
+    )
+
+
+def select_temporal_candidates(
+    summary: pd.DataFrame,
+    *,
+    relative_tolerance: float = 0.005,
+) -> CandidateSelection:
+    """Select a stable champion and the best-mean challenger without holdout data."""
+
+    if not 0 <= relative_tolerance < 1:
+        raise ValueError("relative_tolerance must be between 0 and 1")
+    required_columns = {"candidate", "cv_mae_mean", "cv_mae_std", "cv_mae_worst"}
+    missing = required_columns - set(summary.columns)
+    if missing:
+        missing_columns = ", ".join(sorted(missing))
+        raise ValueError(f"Validation summary is missing: {missing_columns}")
+    if len(summary) < 2:
+        raise ValueError("At least two candidates are required")
+
+    ranked = summary.sort_values(
+        ["cv_mae_mean", "cv_mae_std"],
+        ignore_index=True,
+    )
+    best_mean = float(ranked.iloc[0]["cv_mae_mean"])
+    eligible = ranked.loc[
+        ranked["cv_mae_mean"] <= best_mean * (1 + relative_tolerance)
+    ].sort_values(
+        ["cv_mae_worst", "cv_mae_std", "cv_mae_mean"],
+        ignore_index=True,
+    )
+    champion = str(eligible.iloc[0]["candidate"])
+    challenger = str(ranked.loc[ranked["candidate"] != champion].iloc[0]["candidate"])
+    return CandidateSelection(
+        champion=champion,
+        challenger=challenger,
+        relative_tolerance=relative_tolerance,
+    )
 
 
 def segment_metrics(

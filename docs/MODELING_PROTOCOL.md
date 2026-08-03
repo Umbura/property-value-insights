@@ -13,9 +13,11 @@ correspondentes a aproximadamente 20% dos registros, formam o teste temporal.
 Datas completas sao mantidas no mesmo conjunto para evitar que registros do
 mesmo dia aparecam nos dois lados da fronteira.
 
-O conjunto de desenvolvimento e avaliado com tres janelas temporais
-expansivas. O teste temporal permanece reservado para a avaliacao final dos
-candidatos.
+O conjunto de desenvolvimento e avaliado com cinco janelas temporais
+expansivas. Cada data completa permanece em apenas um lado de cada divisao,
+evitando que vendas do mesmo dia aparecam simultaneamente no treino e na
+validacao. O teste temporal permanece reservado para a avaliacao final dos
+resultados selecionados.
 
 ## Features
 
@@ -43,11 +45,24 @@ As metricas principais sao MAE e RMSE em dolares. RMSLE e R2 complementam a
 analise. O erro tambem e calculado por faixa de preco e por CEP, permitindo
 identificar concentracao de erro em segmentos especificos.
 
+## Busca limitada
+
+Depois da comparacao das referencias, uma busca deterministica avalia um
+conjunto pequeno de configuracoes do `HistGradientBoostingRegressor`. A busca
+varia transformacao do alvo, taxa de aprendizado, numero de iteracoes, numero
+maximo de folhas e regularizacao L2. Todas as configuracoes recebem as mesmas
+cinco janelas e nenhuma consulta o teste temporal durante a busca.
+
 ## Regra de comparacao
 
-A ordenacao inicial usa a MAE media na validacao temporal. O teste reservado
-serve para medir o comportamento temporal final, sem participar do ajuste dos
-pipelines ou hiperparametros.
+A menor MAE media define a referencia de desempenho da busca. Os candidatos
+que ficam ate 0,5% dessa referencia sao considerados tecnicamente proximos.
+Entre eles, o champion e aquele com menor MAE no pior fold, seguido pela menor
+variacao entre folds. O melhor candidato restante pela MAE media permanece
+como challenger.
+
+Depois dessa decisao, somente o champion e a referencia de mediana sao medidos
+no teste temporal. O challenger nao consulta esse periodo reservado.
 
 Nenhuma escolha de modelo e considerada suficiente apenas por reduzir uma
 metrica. A decisao deve considerar estabilidade entre janelas, erro em
