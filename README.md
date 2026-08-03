@@ -4,7 +4,7 @@ Sistema reprodutível de estimativa de preços residenciais com Machine Learning
 práticas de MLOps. O projeto foi desenvolvido para o desafio técnico de previsão
 de preços de imóveis e trata os dados como uma solução de cliente real.
 
-Status atual: análise exploratória e avaliação temporal em andamento.
+Status atual: modelo avaliado e pipeline de treinamento e inferência em revisão.
 
 ## Objetivo
 
@@ -37,7 +37,20 @@ py -3.13 -m venv .venv
 .\.venv\Scripts\python.exe -m ipykernel install --user --name property-value-insights --display-name "Property Value Insights (project)"
 .\.venv\Scripts\python.exe -m jupyter nbconvert --to notebook --execute notebooks/01_eda.ipynb --inplace --ExecutePreprocessor.kernel_name=property-value-insights --ExecutePreprocessor.timeout=600
 .\.venv\Scripts\python.exe -m jupyter nbconvert --to notebook --execute notebooks/02_modeling.ipynb --inplace --ExecutePreprocessor.kernel_name=property-value-insights --ExecutePreprocessor.timeout=600
+.\.venv\Scripts\python.exe -m property_value_insights.training --project-root .
 ```
+
+## Modelo e artefato
+
+O artefato principal usa características físicas e espaciais com
+HistGradientBoostingRegressor e calibração temporal. A alternativa com dados
+demográficos permanece documentada como experimento, mas não integra o modelo
+empacotado devido ao ganho marginal e ao risco de proxies socioeconômicas.
+
+O comando de treinamento valida a integridade temporal, exclui 18 registros
+com eventos posteriores à venda, treina com 21.595 registros, verifica o
+artefato por hash e gera as 100 previsões futuras. O contrato completo está em
+[`docs/ARTIFACT_CONTRACT.md`](docs/ARTIFACT_CONTRACT.md).
 
 ## Estrutura
 

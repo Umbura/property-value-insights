@@ -1,6 +1,6 @@
 # Revisão da Fase 2.1
 
-Status: aguardando revisão supervisionada.
+Status: aprovada com ressalva; decisão de empacotamento registrada na Fase 3.
 
 ## Objetivo
 
@@ -57,6 +57,15 @@ erro de cauda.
   produção;
 - uma avaliação futura verdadeiramente externa requer dados posteriores ou
   uma fonte independente.
+
+## Decisão de empacotamento
+
+Embora o modelo demográfico calibrado tenha sido promovido pelos critérios
+estatísticos da Fase 2.1, a revisão de governança aprovou o modelo somente
+físico para o artefato de produção. Na base temporalmente limpa, o ganho
+demográfico de MAE média foi de 0,71%, enquanto o modelo físico apresentou
+melhor MAE e R² no período diagnóstico. A escolha reduz o uso de proxies
+socioeconômicas sem sacrificar desempenho relevante.
 
 ## Verificações para aprovação
 

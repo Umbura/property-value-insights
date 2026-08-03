@@ -1,6 +1,6 @@
 # Contrato inicial de dados
 
-Status: proposta da Fase 0, pendente de revisao supervisionada.
+Status: aprovado e complementado pela auditoria temporal da Fase 3.
 
 ## Fontes
 
@@ -84,3 +84,20 @@ future_unseen_examples.csv
 ```
 
 Os hashes servem para identificar a versao dos arquivos usados na entrega.
+O manifesto do modelo normaliza terminações de linha para `LF` antes de
+calcular os hashes dos CSVs, preservando os mesmos identificadores no Windows
+e no Linux.
+
+## Consistência temporal para treinamento
+
+O arquivo bruto permanece inalterado. Antes do treinamento final, o pipeline
+compara o ano da venda com `yr_built` e `yr_renovated`:
+
+- 12 registros possuem ano de construção posterior à venda;
+- 6 registros possuem ano de reforma posterior à venda;
+- 18 registros são excluídos do treinamento;
+- 21.595 registros permanecem elegíveis.
+
+Essa regra impede que informações posteriores à transação sejam usadas como
+features. A exclusão é reproduzida em código e registrada no manifesto, sem
+reescrever ou apagar os dados fornecidos.
