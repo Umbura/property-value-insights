@@ -1,77 +1,112 @@
-# Protocolo de modelagem e avaliacao
+# Protocolo de modelagem, calibração e avaliação
 
 ## Objetivo
 
-Estimar o preco de imoveis residenciais usando as caracteristicas fisicas,
-espaciais e, quando justificadas, as variaveis demograficas agregadas por
+Estimar o preço de imóveis residenciais usando características físicas,
+espaciais e, quando justificadas, variáveis demográficas agregadas por
 `zipcode`.
 
-## Separacao dos dados
+## Separação dos dados
 
-Os registros sao ordenados pela data da venda. As datas mais recentes,
-correspondentes a aproximadamente 20% dos registros, formam o teste temporal.
-Datas completas sao mantidas no mesmo conjunto para evitar que registros do
-mesmo dia aparecam nos dois lados da fronteira.
+Os registros são ordenados pela data da venda. As datas mais recentes,
+correspondentes a aproximadamente 20% dos registros, formam o período de
+avaliação temporal. Datas completas são mantidas no mesmo conjunto para evitar
+que registros do mesmo dia apareçam nos dois lados da fronteira.
 
-O conjunto de desenvolvimento e avaliado com cinco janelas temporais
-expansivas. Cada data completa permanece em apenas um lado de cada divisao,
-evitando que vendas do mesmo dia aparecam simultaneamente no treino e na
-validacao. O teste temporal permanece reservado para a avaliacao final dos
-resultados selecionados.
+O conjunto de desenvolvimento é avaliado com cinco janelas temporais
+expansivas. Cada data completa permanece em apenas um lado de cada divisão,
+evitando que vendas do mesmo dia apareçam simultaneamente no treino e na
+validação.
+
+O período mais recente foi consultado na Fase 2 e seus resíduos motivaram a
+Fase 2.1. Portanto, ele passa a ser tratado como avaliação diagnóstica, e não
+como teste completamente intocado para novas decisões. A promoção da
+calibração utiliza exclusivamente as cinco janelas do desenvolvimento.
 
 ## Features
 
-- `id` e usado apenas para rastreabilidade e ordenacao;
-- `date` e usada para a ordenacao temporal, mas nao entra como feature final;
-- `zipcode` e tratado como categoria;
-- as features fisicas e espaciais formam o conjunto de referencia;
-- as features demograficas sao adicionadas em uma comparacao de ablation;
-- o pre-processamento e ajustado dentro de cada pipeline, somente com os dados
-  do respectivo treino.
+- `id` é usado apenas para rastreabilidade e ordenação;
+- `date` é usada para ordenação temporal, mas não entra como feature final;
+- `zipcode` é tratado como categoria;
+- as features físicas e espaciais formam o conjunto de referência;
+- as features demográficas são adicionadas em uma comparação de ablação;
+- o pré-processamento é ajustado dentro de cada pipeline, somente com os
+  dados do respectivo treino.
 
-## Candidatos
+## Candidatos da Fase 2
 
-1. Baseline da mediana do preco no treino.
-2. Ridge com features fisicas e espaciais.
-3. Ridge com features demograficas.
-4. HistGradientBoostingRegressor com features fisicas e espaciais.
-5. HistGradientBoostingRegressor com features demograficas.
-6. Variantes dos modelos com `log1p(price)`, convertendo as previsoes de volta
-   para a escala original antes das metricas.
+1. Baseline da mediana do preço no treino.
+2. Ridge com features físicas e espaciais.
+3. Ridge com features demográficas.
+4. HistGradientBoostingRegressor com features físicas e espaciais.
+5. HistGradientBoostingRegressor com features demográficas.
+6. Variantes dos modelos com `log1p(price)`, convertendo as previsões para a
+   escala original antes das métricas.
 
-## Metricas
+## Calibração da Fase 2.1
 
-As metricas principais sao MAE e RMSE em dolares. RMSLE e R2 complementam a
-analise. O erro tambem e calculado por faixa de preco e por CEP, permitindo
-identificar concentracao de erro em segmentos especificos.
+O modelo de referência usa HistGradientBoostingRegressor com features
+demográficas e transformação logarítmica do alvo. A transformação melhora a
+robustez diante da assimetria do preço, mas a retransformação direta pode
+subestimar a média condicional na escala original.
 
-## Busca limitada
+As alternativas avaliadas incluem perdas `gamma`, `poisson` e
+`absolute_error`, correção de retransformação calculada no treino e correção
+temporal. Na correção temporal, os 10% finais de cada partição de treino são
+usados para estimar o fator de smearing. Em seguida, o estimador é reajustado
+com toda a partição de treino e o fator é aplicado às previsões na escala
+original.
 
-Depois da comparacao das referencias, uma busca deterministica avalia um
-conjunto pequeno de configuracoes do `HistGradientBoostingRegressor`. A busca
-varia transformacao do alvo, taxa de aprendizado, numero de iteracoes, numero
-maximo de folhas e regularizacao L2. Todas as configuracoes recebem as mesmas
-cinco janelas e nenhuma consulta o teste temporal durante a busca.
+Esse procedimento preserva a ordem temporal e impede que observações da
+janela de validação participem da calibração.
 
-## Regra de comparacao
+## Métricas
 
-A menor MAE media define a referencia de desempenho da busca. Os candidatos
-que ficam ate 0,5% dessa referencia sao considerados tecnicamente proximos.
-Entre eles, o champion e aquele com menor MAE no pior fold, seguido pela menor
-variacao entre folds. O melhor candidato restante pela MAE media permanece
-como challenger.
+As métricas gerais são MAE e RMSE em dólares, RMSLE, R² e erro absoluto
+mediano. A calibração também é acompanhada por:
 
-Depois dessa decisao, somente o champion e a referencia de mediana sao medidos
-no teste temporal. O challenger nao consulta esse periodo reservado.
+- erro percentual absoluto médio;
+- erro médio assinado, definido como `previsão - valor observado`;
+- taxa de subestimação;
+- mediana da razão entre previsão e valor observado;
+- coeficiente de dispersão das razões;
+- diferencial relacionado ao preço.
 
-Nenhuma escolha de modelo e considerada suficiente apenas por reduzir uma
-metrica. A decisao deve considerar estabilidade entre janelas, erro em
-segmentos, desempenho em dolares, complexidade e possibilidade de carregar o
-pipeline na API.
+As mesmas métricas são calculadas para a faixa superior de preço, definida
+em cada janela pelo percentil 75 do respectivo treino. As métricas inspiradas
+em estudos de razão são diagnósticos de monitoramento preditivo e não
+representam uma certificação formal de conformidade tributária.
 
-## Reproducibilidade
+## Regra de promoção
+
+Uma calibração somente pode substituir o modelo de referência quando satisfaz
+simultaneamente os seguintes critérios nas cinco janelas de desenvolvimento:
+
+1. MAE média dentro da margem de 0,5% da melhor candidata e da referência;
+2. menor MAE média na faixa superior;
+3. menor viés absoluto médio na faixa superior;
+4. melhora do MAE da faixa superior em pelo menos quatro das cinco janelas.
+
+Entre as candidatas elegíveis, a ordenação considera MAE e viés absoluto da
+faixa superior, desvio do diferencial relacionado ao preço e pior MAE geral.
+Nenhuma escolha é considerada suficiente apenas por reduzir uma métrica.
+
+## Reprodutibilidade
 
 - semente dos experimentos: `42`;
-- pipeline de pre-processamento e modelo versionados em codigo;
+- pipeline de pré-processamento, modelo e calibração versionados em código;
 - resultados e figuras gerados por `notebooks/02_modeling.ipynb`;
-- relatorio gerado em `reports/model_comparison.md`.
+- relatório gerado em `reports/model_comparison.md`;
+- critérios de promoção cobertos por testes automatizados.
+
+## Referências metodológicas
+
+- Duan, N. (1983). *Smearing Estimate: A Nonparametric Retransformation
+  Method*. Journal of the American Statistical Association, 78(383), 605-610.
+  DOI: https://doi.org/10.1080/01621459.1983.10478017.
+- International Association of Assessing Officers (2013). *Standard on Ratio
+  Studies*. https://www.iaao.org/wp-content/uploads/Standard_on_Ratio_Studies.pdf.
+- scikit-learn. *TransformedTargetRegressor*.
+  https://scikit-learn.org/stable/modules/generated/sklearn.compose.TransformedTargetRegressor.html.
+- scikit-learn. *HistGradientBoostingRegressor*.
+  https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.HistGradientBoostingRegressor.html.
