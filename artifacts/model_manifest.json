@@ -3,7 +3,7 @@
     "path": "artifacts/property_value_model.joblib",
     "sha256": "90ffbab62970c805b7fd65a5488fa727026bdc59b81d56726318374cdce8c439"
   },
-  "created_at_utc": "2026-08-03T23:10:06.651028+00:00",
+  "created_at_utc": "2026-08-03T23:24:44.139717+00:00",
   "evaluation": {
     "cross_validation": {
       "mae_mean": 63880.797811,
@@ -90,7 +90,7 @@
     "scikit_learn": "1.9.0"
   },
   "schema_version": "1.0",
-  "source_revision": "45ebd02f4f58892cc1d4cd6c14a904ac28493ecf",
+  "source_revision": "3fdfdbff884357fdf7e39f96017d1e7ff6fa53ff",
   "training_data": {
     "construction_after_sale_rows": 12,
     "date_end": "2015-05-27",
