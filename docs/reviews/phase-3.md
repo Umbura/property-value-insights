@@ -31,7 +31,9 @@ diagnóstico, menor superfície de dados e menor risco de proxies sociais.
 - manifesto com hashes, versões, features, configuração e métricas;
 - 100 previsões futuras com identificador e versão do modelo;
 - resumo do treinamento e contrato do artefato;
-- testes de integridade, persistência e reprodução das previsões.
+- testes de integridade, persistência e reprodução das previsões;
+- teste integral do treinamento sem o arquivo demográfico;
+- rejeição de manifesto com schema, nome, versão ou features divergentes.
 
 ## Resultados
 

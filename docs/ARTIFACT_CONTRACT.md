@@ -77,6 +77,13 @@ devem ser apresentadas como métricas de acurácia.
 ## Segurança e compatibilidade
 
 Arquivos Joblib utilizam serialização baseada em pickle e somente devem ser
-carregados de uma origem confiável. O loader verifica o SHA-256 contra o
-manifesto antes de desserializar o artefato. A compatibilidade de bibliotecas
-está registrada no manifesto e é limitada pelas dependências do projeto.
+carregados de uma origem confiável. O manifesto é obrigatório no carregamento.
+O loader verifica o SHA-256 antes de desserializar e, depois, confronta versão
+do schema, nome, versão do modelo e ordem das features com o bundle. Qualquer
+divergência interrompe o carregamento. A compatibilidade de bibliotecas está
+registrada no manifesto e é limitada pelas dependências do projeto.
+
+Um teste de integração executa o treinamento completo em diretório temporário
+contendo somente o histórico e os exemplos futuros. Esse teste cobre o comando,
+a geração dos quatro arquivos, a recarga do artefato e a independência do CSV
+demográfico.
