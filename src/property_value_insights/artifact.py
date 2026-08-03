@@ -80,6 +80,9 @@ def validate_model_bundle(bundle: object) -> Mapping[str, Any]:
         )
     if bundle["schema_version"] != ARTIFACT_SCHEMA_VERSION:
         raise ArtifactIntegrityError("Unsupported model artifact schema version")
+    for field in ("model_name", "model_version"):
+        if not isinstance(bundle[field], str) or not bundle[field].strip():
+            raise ArtifactIntegrityError(f"Model artifact contains an invalid {field}")
     features = bundle["feature_columns"]
     if not isinstance(features, list) or not features or len(features) != len(set(features)):
         raise ArtifactIntegrityError("Model artifact contains invalid feature columns")
@@ -103,17 +106,40 @@ def save_model_bundle(bundle: Mapping[str, Any], path: str | Path) -> Path:
 def load_model_bundle(
     path: str | Path,
     *,
-    manifest_path: str | Path | None = None,
+    manifest_path: str | Path,
 ) -> Mapping[str, Any]:
-    """Load a model bundle and optionally verify it against its manifest."""
+    """Load a model bundle after verifying its hash and manifest metadata."""
 
     source = Path(path)
-    if manifest_path is not None:
+    try:
         manifest = json.loads(Path(manifest_path).read_text(encoding="utf-8"))
-        expected_hash = manifest.get("artifact", {}).get("sha256")
-        if not expected_hash or sha256_file(source) != expected_hash:
-            raise ArtifactIntegrityError("Model artifact hash does not match the manifest")
-    return validate_model_bundle(joblib.load(source))
+    except (OSError, json.JSONDecodeError) as error:
+        raise ArtifactIntegrityError("Model manifest could not be read") from error
+    if not isinstance(manifest, Mapping):
+        raise ArtifactIntegrityError("Model manifest must contain a mapping")
+    if manifest.get("schema_version") != ARTIFACT_SCHEMA_VERSION:
+        raise ArtifactIntegrityError("Unsupported model manifest schema version")
+
+    artifact_metadata = manifest.get("artifact")
+    model_metadata = manifest.get("model")
+    if not isinstance(artifact_metadata, Mapping) or not isinstance(model_metadata, Mapping):
+        raise ArtifactIntegrityError("Model manifest is missing artifact or model metadata")
+    expected_hash = artifact_metadata.get("sha256")
+    if not isinstance(expected_hash, str) or sha256_file(source) != expected_hash:
+        raise ArtifactIntegrityError("Model artifact hash does not match the manifest")
+
+    bundle = validate_model_bundle(joblib.load(source))
+    manifest_fields = {
+        "name": "model_name",
+        "version": "model_version",
+        "feature_columns": "feature_columns",
+    }
+    for manifest_field, bundle_field in manifest_fields.items():
+        if model_metadata.get(manifest_field) != bundle[bundle_field]:
+            raise ArtifactIntegrityError(
+                f"Model manifest {manifest_field} does not match the artifact"
+            )
+    return bundle
 
 
 def predict_future(bundle: Mapping[str, Any], frame: pd.DataFrame) -> pd.DataFrame:
