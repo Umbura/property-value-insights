@@ -15,6 +15,7 @@ from property_value_insights.artifact import (
     predict_future,
     save_model_bundle,
     sha256_file,
+    sha256_normalized_text_file,
 )
 from property_value_insights.data_contract import load_raw_data
 from property_value_insights.modeling import build_estimator, feature_columns
@@ -93,3 +94,12 @@ def test_loading_rejects_artifact_hash_mismatch(tmp_path: Path) -> None:
 
     with pytest.raises(ArtifactIntegrityError, match="hash"):
         load_model_bundle(artifact_path, manifest_path=manifest_path)
+
+
+def test_text_hash_is_independent_of_line_endings(tmp_path: Path) -> None:
+    lf_path = tmp_path / "lf.csv"
+    crlf_path = tmp_path / "crlf.csv"
+    lf_path.write_bytes(b"column\nvalue\n")
+    crlf_path.write_bytes(b"column\r\nvalue\r\n")
+
+    assert sha256_normalized_text_file(lf_path) == sha256_normalized_text_file(crlf_path)

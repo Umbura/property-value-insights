@@ -23,9 +23,14 @@ from .artifact import (
     predict_future,
     save_model_bundle,
     sha256_file,
+    sha256_normalized_text_file,
     write_json,
 )
-from .data_contract import HISTORICAL_COLUMNS, load_raw_data, validate_historical_frame
+from .data_contract import (
+    HISTORICAL_COLUMNS,
+    validate_future_frame,
+    validate_historical_frame,
+)
 from .modeling import (
     build_estimator,
     cross_validate_temporal,
@@ -199,7 +204,8 @@ def _manifest(
         },
         "training_data": {
             "path": historical_path.relative_to(project_root).as_posix(),
-            "sha256": sha256_file(historical_path),
+            "sha256": sha256_normalized_text_file(historical_path),
+            "hash_normalization": "line endings normalized to LF",
             "date_start": dates.min().date().isoformat(),
             "date_end": dates.max().date().isoformat(),
             **asdict(audit),
@@ -210,7 +216,8 @@ def _manifest(
             "sha256": sha256_file(predictions_path),
             "rows": int(pd.read_csv(predictions_path).shape[0]),
             "source_path": future_path.relative_to(project_root).as_posix(),
-            "source_sha256": sha256_file(future_path),
+            "source_sha256": sha256_normalized_text_file(future_path),
+            "source_hash_normalization": "line endings normalized to LF",
         },
         "runtime": {
             "python": platform.python_version(),
@@ -289,7 +296,10 @@ def run_training(project_root: str | Path) -> dict[str, Path]:
     historical_path = data_dir / "kc_house_data.csv"
     future_path = data_dir / "future_unseen_examples.csv"
 
-    historical, _, future = load_raw_data(data_dir)
+    historical = pd.read_csv(historical_path, dtype={"zipcode": "string"})
+    future = pd.read_csv(future_path, dtype={"zipcode": "string"})
+    validate_historical_frame(historical)
+    validate_future_frame(future)
     training_frame, audit = filter_temporally_consistent_rows(historical)
     evaluation = evaluate_model(training_frame)
     estimator = fit_final_model(training_frame)

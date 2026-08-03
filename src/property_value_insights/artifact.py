@@ -30,6 +30,13 @@ def sha256_file(path: str | Path) -> str:
     return digest.hexdigest()
 
 
+def sha256_normalized_text_file(path: str | Path) -> str:
+    """Calculate a cross-platform text digest with line endings normalized to LF."""
+
+    content = Path(path).read_bytes().replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+    return hashlib.sha256(content).hexdigest()
+
+
 def create_model_bundle(
     estimator: object,
     *,
