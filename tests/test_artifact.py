@@ -110,7 +110,10 @@ def test_versioned_artifact_reproduces_published_predictions() -> None:
     artifact_path = PROJECT_ROOT / "artifacts" / "property_value_model.joblib"
     manifest_path = PROJECT_ROOT / "artifacts" / "model_manifest.json"
     expected_path = PROJECT_ROOT / "reports" / "future_predictions.csv"
-    _, _, future = load_raw_data(DATA_DIR)
+    future = pd.read_csv(
+        DATA_DIR / "future_unseen_examples.csv",
+        dtype={"zipcode": "string"},
+    )
 
     bundle = load_model_bundle(artifact_path, manifest_path=manifest_path)
     predictions = predict_future(bundle, future)
