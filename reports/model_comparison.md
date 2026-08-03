@@ -6,29 +6,72 @@
 - Linhas do teste temporal: 4,640.
 - Ultima data do desenvolvimento: 2015-03-03.
 - Primeira data do teste: 2015-03-04.
-- Validacao: tres janelas temporais expansivas.
+- Validacao: cinco janelas temporais expansivas com datas completas.
+- Busca: conjunto pequeno e deterministico de configuracoes.
 - Features demograficas: comparadas por ablation.
 - O id foi excluido das features e o zipcode foi tratado como categoria.
+- O teste temporal foi consultado somente apos a selecao.
 
-## Comparacao
+## Validacao temporal
 
-| candidate                  | features          | target   |   cv_mae_mean |   cv_mae_std |   cv_rmse_mean |   cv_rmsle_mean |   holdout_mae |   holdout_rmse |   holdout_rmsle |   holdout_r2 |   fit_seconds |
-|:---------------------------|:------------------|:---------|--------------:|-------------:|---------------:|----------------:|--------------:|---------------:|----------------:|-------------:|--------------:|
-| hist_demographics_log      | with_demographics | log      |       63078   |      820.937 |         120855 |        0.164848 |       73912.4 |         129024 |        0.1818   |    0.877175  |     1.27002   |
-| hist_demographics_log_slow | with_demographics | log      |       63345   |     1276.59  |         121141 |        0.164363 |       73943.7 |         128893 |        0.181868 |    0.877425  |     2.03503   |
-| hist_demographics_log_wide | with_demographics | log      |       63734.6 |      812.634 |         121906 |        0.166261 |       74034.9 |         128179 |        0.182726 |    0.878779  |     1.89637   |
-| hist_demographics_raw      | with_demographics | raw      |       65522.6 |      340.925 |         126131 |        0.168386 |       72396.8 |         126085 |        0.179011 |    0.882706  |     1.02571   |
-| hist_physical_raw          | physical          | raw      |       66489.8 |      903.582 |         127827 |        0.170456 |       74455.2 |         126051 |        0.181861 |    0.88277   |     0.750508  |
-| ridge_demographics_log     | with_demographics | log      |       73774.6 |     2071.74  |         143097 |        0.182801 |       84812.2 |         143570 |        0.200393 |    0.84792   |     0.0854065 |
-| ridge_physical_log         | physical          | log      |       74844.9 |     1550.09  |         137578 |        0.184403 |       85667.9 |         144298 |        0.201133 |    0.846373  |     0.042778  |
-| ridge_demographics_raw     | with_demographics | raw      |       94378.4 |     2609.8   |         158453 |        0.767319 |      101491   |         171105 |        0.727899 |    0.783992  |     0.0814032 |
-| ridge_physical_raw         | physical          | raw      |       94989.8 |     2439.96  |         160622 |        0.815319 |      101607   |         170959 |        0.762547 |    0.784359  |     0.0468618 |
-| baseline_median            | physical          | raw      |      217589   |     1473.26  |         367729 |        0.524564 |      225354   |         382415 |        0.525018 |   -0.0789836 |     0         |
+| candidate                         |   cv_mae_mean |   cv_mae_std |   cv_mae_worst |   cv_rmse_mean |   cv_rmsle_mean |
+|:----------------------------------|--------------:|-------------:|---------------:|---------------:|----------------:|
+| hist_demographics_log_default     |     63128.370 |     1547.451 |      65603.156 |     117518.968 |           0.165 |
+| hist_demographics_log_regularized |     63174.280 |     1498.971 |      65856.540 |     118599.353 |           0.165 |
+| hist_physical_log                 |     63446.127 |     1987.592 |      65887.791 |     119528.952 |           0.166 |
+| hist_demographics_log_compact     |     63448.359 |     1591.989 |      66517.984 |     118678.396 |           0.164 |
+| hist_demographics_log_wide        |     63633.244 |     1509.352 |      65680.256 |     120067.486 |           0.166 |
+| hist_demographics_raw_regularized |     65237.570 |      918.714 |      66324.755 |     124113.924 |           0.168 |
+| hist_demographics_raw_default     |     65281.699 |      648.045 |      66147.670 |     123517.206 |           0.169 |
+| hist_demographics_raw_wide        |     65555.919 |     1048.415 |      66842.948 |     125786.020 |           0.169 |
+| hist_demographics_raw_compact     |     65846.619 |      687.676 |      66844.271 |     122395.857 |           0.170 |
+| hist_physical_raw                 |     67025.367 |     2115.784 |      70082.978 |     127212.944 |           0.172 |
+| ridge_demographics_log            |     74355.564 |     1593.834 |      77303.053 |     143817.268 |           0.184 |
+| ridge_physical_log                |     75805.686 |     1227.319 |      77879.837 |     139856.263 |           0.186 |
+| ridge_demographics_raw            |     95192.024 |     2158.789 |      98465.767 |     158699.888 |           0.762 |
+| ridge_physical_raw                |     95995.196 |     1840.264 |      98992.201 |     160603.046 |           0.806 |
+| baseline_median                   |    219003.585 |     3909.205 |     223307.567 |     369960.663 |           0.527 |
 
-## Resultado selecionado
+## Janelas temporais do champion
 
-O candidato selecionado pela menor MAE media na validacao temporal foi `hist_demographics_log`.
-A avaliacao final foi realizada no periodo temporal reservado e nao participou do ajuste.
+|   fold | train_end           | validation_start    | validation_end      |   train_rows |   validation_rows |
+|-------:|:--------------------|:--------------------|:--------------------|-------------:|------------------:|
+|      1 | 2014-06-22 00:00:00 | 2014-06-23 00:00:00 | 2014-08-10 00:00:00 |         3235 |              3442 |
+|      2 | 2014-08-10 00:00:00 | 2014-08-11 00:00:00 | 2014-09-28 00:00:00 |         6677 |              3058 |
+|      3 | 2014-09-28 00:00:00 | 2014-09-29 00:00:00 | 2014-11-16 00:00:00 |         9735 |              2792 |
+|      4 | 2014-11-16 00:00:00 | 2014-11-17 00:00:00 | 2015-01-10 00:00:00 |        12527 |              2392 |
+|      5 | 2015-01-10 00:00:00 | 2015-01-12 00:00:00 | 2015-03-03 00:00:00 |        14919 |              2054 |
+
+## Decisao do modelo
+
+| candidate                         |   cv_mae_mean |   cv_mae_std |   cv_mae_worst |   cv_rmse_mean |   cv_rmsle_mean | role       |
+|:----------------------------------|--------------:|-------------:|---------------:|---------------:|----------------:|:-----------|
+| hist_demographics_log_default     |     63128.370 |     1547.451 |      65603.156 |     117518.968 |           0.165 | champion   |
+| hist_demographics_log_regularized |     63174.280 |     1498.971 |      65856.540 |     118599.353 |           0.165 | challenger |
+
+O champion `hist_demographics_log_default` foi escolhido entre os candidatos ate 0.5% da menor MAE media, priorizando o menor erro no pior fold e a menor variacao temporal.
+O challenger `hist_demographics_log_regularized` apresentou a menor MAE media entre os candidatos restantes e nao foi avaliado no teste temporal.
+
+## Avaliacao temporal reservada
+
+| candidate                     |        mae |       rmse |   rmsle |     r2 |   median_absolute_error |   fit_seconds |
+|:------------------------------|-----------:|-----------:|--------:|-------:|------------------------:|--------------:|
+| baseline_median               | 225353.885 | 382414.550 |   0.525 | -0.079 |              149600.000 |         0.000 |
+| hist_demographics_log_default |  73912.439 | 129023.800 |   0.182 |  0.877 |               44598.518 |         1.620 |
+
+## Comparacao com a referencia
+
+A versao inicial nao incluia um modelo preditivo. A mediana dos precos no conjunto de desenvolvimento e a referencia quantitativa.
+
+| metric   |   median_baseline |   champion | relative_reduction_pct   |   absolute_change |
+|:---------|------------------:|-----------:|:-------------------------|------------------:|
+| MAE      |        225354     |  73912.4   | 67.2%                    |       -151441     |
+| RMSE     |        382415     | 129024     | 66.3%                    |       -253391     |
+| RMSLE    |             0.525 |      0.182 | 65.4%                    |            -0.343 |
+| R2       |            -0.079 |      0.877 | -                        |             0.956 |
+
+A MAE do champion foi reduzida em 67.2%.
+O R2 passou de -0.079 na referencia para 0.877 no champion.
 
 ## Erro por faixa de preco
 
