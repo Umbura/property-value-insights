@@ -19,8 +19,21 @@ def test_stakeholder_artifacts_reproduce_approved_diagnostic(tmp_path: Path) -> 
     assert int(price_bands["rows"].sum()) == 4640
     assert price_bands["mae"].is_monotonic_increasing
     assert price_bands.iloc[-1]["mean_error"] < 0
+    feature_importance = pd.read_csv(outputs["feature_importance"])
+    assert feature_importance["feature"].head(4).tolist() == [
+        "lat",
+        "sqft_living",
+        "grade",
+        "long",
+    ]
+    assert (feature_importance["mae_increase"] > 0).all()
     metrics = json.loads(outputs["metrics"].read_text(encoding="utf-8"))
     assert metrics["period"]["status"] == "diagnostic_only_previously_inspected"
+    assert metrics["model_identity"]["name"] == (
+        "property_value_hist_gradient_boosting_physical"
+    )
+    assert metrics["model_identity"]["version"] == "0.4.0-rc1"
+    assert len(metrics["model_identity"]["artifact_sha256"]) == 64
     assert metrics["model"]["mae"] == 67105.708262
     assert metrics["model"]["r2"] == 0.899781
     assert metrics["comparison"]["mae_reduction_pct"] > 70
