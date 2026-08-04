@@ -226,7 +226,7 @@ def write_shap_artifacts(
     """Write SHAP tables, metadata and a compact global/local figure."""
 
     import matplotlib.pyplot as plt
-    from matplotlib.ticker import FuncFormatter
+    from matplotlib.ticker import FuncFormatter, MaxNLocator
 
     root = Path(project_root)
     destination = Path(output_dir) if output_dir else root / "reports"
@@ -287,15 +287,28 @@ def write_shap_artifacts(
         "sqft_living15": "Área habitável vizinha",
         "sqft_lot": "Área do terreno",
         "sqft_lot15": "Terreno vizinho",
+        "bedrooms": "Quartos",
+        "bathrooms": "Banheiros",
+        "floors": "Andares",
         "yr_built": "Ano de construção",
         "yr_renovated": "Ano de reforma",
         "zipcode": "CEP",
         "waterfront": "Frente para água",
         "view": "Qualidade da vista",
+        "condition": "Conservação",
+        "sqft_above": "Área acima do solo",
+        "sqft_basement": "Área de porão",
         "other_features": "Demais características",
     }
-    currency = FuncFormatter(lambda value, _: f"US$ {value / 1_000:.0f} mil")
-    figure, axes = plt.subplots(2, 2, figsize=(13, 9), constrained_layout=True)
+
+    def format_currency(value: float, _: float) -> str:
+        sign = "-" if value < 0 else ""
+        if abs(value) < 500:
+            return f"{sign}US$ 0"
+        return f"{sign}US$ {abs(value) / 1_000:.0f} mil"
+
+    currency = FuncFormatter(format_currency)
+    figure, axes = plt.subplots(2, 2, figsize=(15, 9), constrained_layout=True)
     figure.patch.set_facecolor("#F7F8F5")
     axes_flat = axes.ravel()
     for axis in axes_flat:
@@ -313,6 +326,7 @@ def write_shap_artifacts(
     )
     axes_flat[0].set_title("Importância global")
     axes_flat[0].set_xlabel("Contribuição SHAP absoluta média")
+    axes_flat[0].xaxis.set_major_locator(MaxNLocator(nbins=5))
     axes_flat[0].xaxis.set_major_formatter(currency)
 
     panel_titles = {
@@ -336,6 +350,7 @@ def write_shap_artifacts(
         axis.axvline(0, color="#2F3E46", linewidth=0.8)
         axis.set_title(f"{panel_titles[example]} · US$ {prediction:,.0f}")
         axis.set_xlabel("Contribuição para a previsão")
+        axis.xaxis.set_major_locator(MaxNLocator(nbins=5))
         axis.xaxis.set_major_formatter(currency)
 
     figure.suptitle(
