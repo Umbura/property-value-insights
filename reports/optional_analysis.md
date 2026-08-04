@@ -33,29 +33,32 @@ futuros possivelmente dependentes ou sujeitos a mudança de distribuição.
 
 ## Explicabilidade SHAP
 
-O `PermutationExplainer` processou as 100 linhas futuras com um baseline de 50
-linhas históricas selecionadas deterministicamente. O valor-base médio foi
-US$ 617.691,95. As maiores contribuições absolutas médias foram:
+O `PermutationExplainer` processou as 100 linhas futuras em dez ciclos de
+permutação, com um baseline de 50 linhas históricas selecionadas
+deterministicamente. O valor-base médio foi US$ 617.691,95. As maiores
+contribuições absolutas médias foram:
 
 | Característica | Contribuição absoluta média |
 | --- | ---: |
-| Latitude | US$ 131.437,72 |
-| Área habitável | US$ 72.108,70 |
-| Padrão construtivo | US$ 66.675,50 |
-| Longitude | US$ 32.020,75 |
-| Área do terreno | US$ 21.175,38 |
-| Ano de construção | US$ 19.340,56 |
+| Latitude | US$ 131.949,10 |
+| Área habitável | US$ 71.713,71 |
+| Padrão construtivo | US$ 66.026,83 |
+| Longitude | US$ 31.935,77 |
+| Área do terreno | US$ 21.042,12 |
+| Ano de construção | US$ 18.795,89 |
 
 ![Importância global e explicações locais](figures/shap_explanations.png)
 
 As explicações locais representam as previsões baixa, mediana e alta do lote:
 US$ 196.786,80, US$ 460.744,04 e US$ 2.510.606,44. A soma entre valor-base e
-contribuições reproduziu as previsões com erro máximo de `1,40e-9`.
+contribuições reproduziu as previsões com erro relativo máximo de 0,0054%, ou
+US$ 50,11, dentro da tolerância registrada de 0,01%.
 
 SHAP explica como o artefato se comportou em relação ao baseline. Não demonstra
 efeito causal, mérito do imóvel ou acurácia, pois as linhas futuras não possuem
 preço observado. Features espaciais e correlacionadas podem dividir ou
-redistribuir atribuição.
+redistribuir atribuição. As contribuições são aproximações; a dispersão entre
+permutações está registrada em `mean_permutation_std` na tabela completa.
 
 ## Rastreabilidade
 

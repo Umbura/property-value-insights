@@ -1,6 +1,6 @@
 # Revisão da Fase 6
 
-Status: pronta para revisão supervisionada.
+Status: correções da revisão implementadas; pronta para nova revisão supervisionada.
 
 ## Objetivo
 
@@ -53,12 +53,15 @@ docker compose config --quiet
 Resultados observados localmente:
 
 - Ruff: aprovado;
-- pytest: 75 testes aprovados;
+- pytest: 78 testes aprovados;
 - dependências: consistentes;
 - configuração do Docker Compose: válida;
 - regeneração integral de CSVs, JSONs e PNGs: reproduzível e sem diff;
 - figuras inspecionadas sem sobreposição de texto;
-- aditividade SHAP: erro máximo de `1,40e-9`;
+- SHAP: dez ciclos de permutação registrados;
+- aditividade SHAP: erro relativo máximo de 0,0054%, abaixo do limite de 0,01%;
+- sensibilidade entre sementes: diferença média de 1,0% a 1,3% nas atribuições
+  e seis primeiras features estáveis;
 - cobertura diagnóstica: 89,40% para nível nominal de 90%;
 - dependências de explicabilidade: ausentes do runtime de serving;
 - build da imagem não repetido nesta revisão porque o Docker Desktop estava
@@ -73,6 +76,8 @@ Resultados observados localmente:
 - a menor cobertura em Q1 e Q4 é apresentada sem suavização;
 - SHAP explica comportamento em relação ao baseline, não causalidade;
 - o baseline usa 50 linhas históricas determinísticas;
+- a análise exige ao menos três linhas para exemplos locais distintos;
+- as atribuições agregam dez ciclos e registram dispersão por feature;
 - explicabilidade não cria endpoint nem altera a resposta da API;
 - o adaptador generativo permanece excluído;
 - publicação, merge e release permanecem sob responsabilidade do autor.

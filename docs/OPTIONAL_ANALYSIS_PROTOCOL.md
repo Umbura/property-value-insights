@@ -51,10 +51,10 @@ model-agnostic opera sobre as 18 features originais do pipeline físico; nenhuma
 feature demográfica é aceita.
 
 O baseline usa uma amostra determinística do histórico. As explicações globais
-agregam o valor absoluto das contribuições nas 100 linhas futuras, enquanto
-exemplos locais mostram como o valor-base e as contribuições reconciliam a
-previsão. A diferença de aditividade deve permanecer dentro da tolerância
-numérica definida nos testes.
+agregam dez ciclos de permutação nas 100 linhas futuras e registram a dispersão
+das contribuições entre permutações. Exemplos locais mostram três imóveis
+distintos, representando previsões baixa, mediana e alta. A diferença de
+aditividade deve permanecer abaixo de 0,01% da previsão em todas as linhas.
 
 SHAP descreve o comportamento do modelo em relação ao baseline escolhido. Não
 mede causalidade, mérito do imóvel nem efeito isolado de features correlacionadas.

@@ -3,11 +3,13 @@
   "base_value": 617691.950932,
   "explained_rows": 100,
   "limitations": [
+    "Attributions are approximate estimates across recorded permutation cycles.",
     "Contributions describe model behavior relative to the selected baseline.",
     "SHAP values do not establish causal effects.",
     "Correlated features may share or redistribute attribution."
   ],
-  "max_additivity_error": 1.3969838619232178e-09,
+  "max_additivity_error": 50.11304523481522,
+  "max_relative_additivity_error": 5.435641392618554e-05,
   "method": "shap_permutation_explainer",
   "model_identity": {
     "artifact_sha256": "90ffbab62970c805b7fd65a5488fa727026bdc59b81d56726318374cdce8c439",
@@ -16,6 +18,7 @@
     "name": "property_value_hist_gradient_boosting_physical",
     "version": "0.4.0-rc1"
   },
+  "permutation_cycles": 10,
   "scope": "offline_behavioral_explanation_not_causal_effect",
   "shap_version": "0.52.0"
 }

@@ -130,15 +130,15 @@ também impedem apresentar esse diagnóstico como garantia conformal em produç�
 
 ### Explicabilidade SHAP
 
-O `PermutationExplainer` foi aplicado offline ao Joblib verificado, usando 50
-linhas históricas como baseline determinístico e as 100 linhas futuras como
-amostra explicada. Latitude, área habitável, padrão construtivo e longitude
-apresentaram as maiores contribuições absolutas médias.
+O `PermutationExplainer` foi aplicado offline ao Joblib verificado em dez ciclos
+de permutação, usando 50 linhas históricas como baseline determinístico e as 100
+linhas futuras como amostra explicada. Latitude, área habitável, padrão
+construtivo e longitude apresentaram as maiores contribuições absolutas médias.
 
-As contribuições locais reconciliaram baseline e previsão com erro numérico
-máximo de `1,40e-9`. Elas descrevem o comportamento do modelo em relação ao
-baseline escolhido; não medem causalidade, acurácia futura nem efeito isolado de
-features correlacionadas. Os resultados completos estão no
+As contribuições locais reconciliaram baseline e previsão com erro relativo
+máximo de 0,0054%, dentro da tolerância de 0,01%. Elas descrevem o comportamento
+do modelo em relação ao baseline escolhido; não medem causalidade, acurácia
+futura nem efeito isolado de features correlacionadas. Os resultados completos estão no
 [`relatório opcional`](../reports/optional_analysis.md).
 
 ## Limitações
