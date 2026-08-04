@@ -4,7 +4,7 @@ Sistema reprodutível de estimativa de preços residenciais com Machine Learning
 práticas de MLOps. O projeto foi desenvolvido para o desafio técnico de previsão
 de preços de imóveis e trata os dados como uma solução de cliente real.
 
-Status atual: Fase 0 em revisão supervisionada.
+Status atual: análise exploratória e qualidade dos dados concluídas; modelagem em preparação.
 
 ## Objetivo
 
@@ -34,6 +34,8 @@ py -3.13 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -e ".[dev]"
 .\.venv\Scripts\python.exe -m pytest -q
 .\.venv\Scripts\python.exe -m ruff check .
+.\.venv\Scripts\python.exe -m ipykernel install --user --name property-value-insights --display-name "Property Value Insights (project)"
+.\.venv\Scripts\python.exe -m jupyter nbconvert --to notebook --execute notebooks/01_eda.ipynb --inplace --ExecutePreprocessor.kernel_name=property-value-insights --ExecutePreprocessor.timeout=600
 ```
 
 ## Estrutura
@@ -45,6 +47,7 @@ tests/          testes automatizados
 docs/           contrato, especificacao e revisoes
 artifacts/      artefatos de modelo versionados nas fases futuras
 reports/        relatorios e resultados gerados
+notebooks/      analises exploratorias reproduziveis
 diagrams/       diagramas de arquitetura e deploy
 ```
 
