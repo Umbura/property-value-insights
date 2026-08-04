@@ -11,7 +11,8 @@ flowchart TD
     Segments --> Gates{"Gates de promoção aprovados?"}
     Gates -- "Não" --> Archive["Registrar rejeição e evidências"]
     Gates -- "Sim" --> Registry["Registrar artefato, hash, lineage e métricas"]
-    Registry --> Staging["Staging, contrato e shadow"]
+    Registry --> Build["Build, testes e registro do digest"]
+    Build --> Staging["Staging, contrato e shadow"]
     Staging --> Human{"Aprovação humana?"}
     Human -- "Não" --> Archive
     Human -- "Sim" --> Canary["Canary controlado"]

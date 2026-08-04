@@ -20,8 +20,17 @@ geram nova versão; o lote anterior não é sobrescrito.
 
 As previsões online não devem ser unidas aos rótulos por conteúdo de log. Um
 sistema de origem autorizado mantém uma chave de negócio protegida ou
-pseudonimizada e a relaciona ao `request_id`, à versão do modelo, ao timestamp e
-ao preço estimado. Logs operacionais permanecem sem payload.
+pseudonimizada e a relaciona ao `request_id`, à versão do modelo, ao timestamp,
+ao preço estimado e ao conjunto mínimo de features necessário para avaliação
+posterior. Esse ledger possui finalidade, retenção, criptografia e acesso
+restrito definidos antes da implantação. Logs operacionais permanecem sem
+payload.
+
+O monitoramento sem rótulos usa outro caminho. Durante a validação da requisição,
+o serviço produz contagens, histogramas e estatísticas agregadas das features e
+previsões. Valores individuais não se tornam labels de Prometheus nem conteúdo
+de logs. CEPs são acompanhados por cobertura conhecida/desconhecida ou grupos
+com suporte suficiente, evitando cardinalidade e exposição desnecessárias.
 
 ## Validação antes do treino
 
@@ -63,10 +72,11 @@ registrar a cadência escolhida.
 6. Comparar champion e challenger nas mesmas linhas e segmentos.
 7. Empacotar pipeline, manifesto, dependências, métricas e model card.
 8. Registrar o candidato com status `validation_status=pending`.
-9. Executar API, contrato e imagem em staging e shadow.
-10. Submeter evidências à aprovação humana.
-11. Promover o mesmo digest por canary e depois atualizar o alias `champion`.
-12. Preservar a versão anterior e observar o rollout.
+9. Construir a imagem, executar testes e registrar seu digest imutável.
+10. Executar o mesmo digest em staging e shadow.
+11. Submeter evidências técnicas e preditivas à aprovação humana.
+12. Promover o digest por canary e depois atualizar o alias `champion`.
+13. Preservar a versão anterior e observar o rollout.
 
 ## Gates de promoção
 
@@ -109,6 +119,11 @@ de risco aprovados. Um ganho pequeno de MAE não é suficiente.
 - distribuição dos preços estimados e frequência por faixa;
 - mudança de cobertura espacial e temporal;
 - proporção de entradas rejeitadas.
+
+Esses sinais são calculados em agregados operacionais próprios. O ledger
+protegido é reservado para análises com rótulo e auditoria; logs da aplicação não
+recebem payloads, e identificadores ou CEPs não são usados como labels de alta
+cardinalidade.
 
 Os limites de drift devem ser calibrados com janelas históricas por bootstrap ou
 backtesting, controlando falsos alertas. Enquanto essa calibração não existir,

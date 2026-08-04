@@ -35,25 +35,29 @@ flowchart TB
     Edge --> LoadBalancer["Balanceador"]
     LoadBalancer --> Serving["Réplicas do contêiner de inferência"]
 
-    Source["Git e pull request"] --> CI["CI: lint, testes, imagem e smoke test"]
-    CI --> ImageRegistry["Registro de imagens por digest"]
-    ImageRegistry --> Deployment["Entrega em staging e produção"]
-    Deployment --> Serving
+    Source["Git e pull request"] --> CI["CI: lint, testes e contrato"]
+    CI --> Build["Build e smoke test da imagem candidata"]
+    ModelRegistry --> Build
+    Build --> ImageRegistry["Registro de imagens por digest"]
+    ImageRegistry --> Staging["Staging e shadow"]
+    Staging --> Approval["Gate técnico e aprovação humana"]
+    Approval --> Canary["Canary controlado"]
+    Canary --> Serving
 
     Serving --> Telemetry["Logs, métricas e traces"]
     Telemetry --> Monitoring["Painéis e alertas"]
-    Serving --> Ledger["Registro mínimo de predições"]
+    Serving --> DriftSignals["Agregados de features e previsões"]
+    DriftSignals --> Monitoring
+    Serving --> Ledger["Ledger protegido de predições"]
 
     NewLabels["Novas vendas rotuladas"] --> DataStore["Dados brutos versionados"]
     DataStore --> Training["Pipeline de validação e treinamento"]
     Ledger --> Training
     Training --> ModelRegistry["Registro champion e challenger"]
-    ModelRegistry --> Approval["Gate técnico e aprovação humana"]
-    Approval --> CI
     Monitoring --> Triage["Triagem de incidente ou reavaliação"]
     Triage --> Training
     Triage --> Rollback["Rollback por digest"]
-    Rollback --> Deployment
+    Rollback --> Serving
 ```
 
 ## Componentes
@@ -65,6 +69,7 @@ flowchart TB
 | Inferência | Validar payload e executar o modelo | Implementada |
 | Artefato | Garantir versão, hash e contrato de features | Implementada |
 | Observabilidade | Requests, erros, latência, logs e correlação | Parcialmente implementada |
+| Sinais preditivos | Agregar features e previsões sem expor payload em logs | Proposto |
 | Registro | Manter lineage e aliases `champion` e `challenger` | Proposta |
 | CI/CD | Testar código e imagem; promover digest aprovado | CI implementada, entrega proposta |
 | Dados | Preservar lotes brutos, rótulos e hashes | Contrato local implementado, storage proposto |
@@ -78,15 +83,20 @@ flowchart TB
 3. A API valida tipos, domínios, campos desconhecidos e tamanho do lote.
 4. O pipeline imutável produz o preço, a moeda e a versão do modelo.
 5. O serviço registra duração, status e `request_id`, sem registrar o payload.
-6. Um ledger protegido mantém somente os dados mínimos autorizados para ligar
-   previsões a rótulos futuros.
+6. Um componente separado atualiza histogramas, contagens e estatísticas
+   agregadas das features e previsões, sem usar valores de entrada como labels
+   de métricas e sem gravá-los nos logs operacionais.
+7. Um ledger protegido mantém a chave pseudonimizada, a versão, a previsão e o
+   conjunto mínimo de features autorizado para reunir a inferência ao preço
+   observado. Retenção, acesso e finalidade são definidos antes da implantação.
 
 ## Estratégia de entrega
 
 Cada imagem deve ser identificada por digest e carregar uma única versão do
-modelo. `staging` recebe o digest candidato, executa smoke tests e compara o
-contrato OpenAPI. Após aprovação, o mesmo digest é promovido para produção; a
-imagem não é reconstruída entre ambientes.
+modelo. O candidato registrado e o código aprovado produzem uma imagem; CI
+executa o smoke test antes de publicá-la. `staging` recebe esse digest, compara o
+contrato OpenAPI e executa shadow. Após aprovação, o mesmo digest segue para
+canary e produção; a imagem não é reconstruída entre ambientes.
 
 O rollout começa sem tráfego ou em shadow, segue para uma parcela controlada e
 só então substitui o champion. A versão anterior permanece disponível para
@@ -121,7 +131,7 @@ uso de recursos, reinicializações, sucesso do healthcheck e versão implantada
 | Manifesto ou hash inválido | Startup e healthcheck | Bloquear a réplica |
 | Aumento de erros ou latência | Métricas operacionais | Interromper rollout ou reverter digest |
 | Schema incompatível | Testes de contrato e HTTP 422 | Corrigir consumidor ou versionar a API |
-| Drift sem rótulo | Monitoramento de entrada | Investigar; não promover automaticamente |
+| Drift sem rótulo | Agregados de entrada e previsão | Investigar; não promover automaticamente |
 | Degradação com rótulo | Métricas temporais e por segmento | Reavaliar champion e challenger |
 | Viés crescente no quartil superior | MAE, erro médio e taxa de subestimação | Bloquear promoção e revisar calibração |
 
