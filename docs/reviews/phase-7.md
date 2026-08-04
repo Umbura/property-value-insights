@@ -71,6 +71,11 @@ Resultados:
 - dependências opcionais: ausentes da imagem de serving;
 - credenciais: nenhum padrão encontrado no conteúdo atual ou no histórico Git.
 
+GitHub Actions no primeiro envio da branch:
+
+- job `quality`: aprovado em 1 min 31 s;
+- job `container`: aprovado em 30 s.
+
 ## Limitações e ações manuais
 
 - o lock foi validado em Windows e Linux; macOS não integra o contrato atual;
