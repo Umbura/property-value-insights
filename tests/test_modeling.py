@@ -17,6 +17,7 @@ from property_value_insights.modeling import (
     select_temporal_candidates,
     summarize_temporal_validation,
     temporal_train_test_split,
+    temporal_validation_predictions,
     vertical_equity_metrics,
 )
 
@@ -151,6 +152,26 @@ def test_temporal_cross_validation_keeps_complete_dates_in_each_partition() -> N
 
     assert (results["train_end"] < results["validation_start"]).all()
     assert (results["validation_start"] <= results["validation_end"]).all()
+
+
+def test_temporal_validation_predictions_are_out_of_sample_and_complete() -> None:
+    historical, _, _ = load_raw_data(DATA_DIR)
+    ordered = historical.sort_values("date").head(1200).reset_index(drop=True)
+    estimator = build_estimator("ridge", "physical")
+
+    predictions = temporal_validation_predictions(
+        estimator,
+        ordered,
+        feature_set="physical",
+        n_splits=3,
+    )
+
+    assert predictions["fold"].nunique() == 3
+    assert predictions["property_id"].is_unique
+    assert np.isfinite(predictions["predicted_price"]).all()
+    assert (predictions["train_end"] < predictions["validation_start"]).all()
+    assert (predictions["date"] >= predictions["validation_start"]).all()
+    assert (predictions["date"] <= predictions["validation_end"]).all()
 
 
 def test_temporal_summary_reports_mean_variation_and_worst_fold() -> None:

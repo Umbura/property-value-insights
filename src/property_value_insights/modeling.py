@@ -438,6 +438,52 @@ def cross_validate_temporal(
     return pd.DataFrame(rows)
 
 
+def temporal_validation_predictions(
+    estimator: RegressorMixin,
+    frame: pd.DataFrame,
+    *,
+    feature_set: FeatureSet,
+    n_splits: int = 3,
+) -> pd.DataFrame:
+    """Return out-of-sample predictions from complete-date temporal folds."""
+
+    ordered = frame.copy()
+    ordered["_parsed_date"] = pd.to_datetime(
+        ordered["date"], format="mixed", errors="raise"
+    )
+    ordered = ordered.sort_values(
+        ["_parsed_date", "id"], kind="mergesort"
+    ).reset_index(drop=True)
+    columns = feature_columns(feature_set)
+    rows: list[pd.DataFrame] = []
+
+    for fold, train_idx, validation_idx in _complete_date_folds(ordered, n_splits):
+        fitted = clone(estimator)
+        fitted.fit(ordered.iloc[train_idx][columns], ordered.iloc[train_idx]["price"])
+        predictions = np.clip(
+            fitted.predict(ordered.iloc[validation_idx][columns]),
+            a_min=0,
+            a_max=None,
+        )
+        validation = ordered.iloc[validation_idx]
+        rows.append(
+            pd.DataFrame(
+                {
+                    "fold": fold,
+                    "property_id": validation["id"].to_numpy(),
+                    "date": validation["_parsed_date"].to_numpy(),
+                    "observed_price": validation["price"].to_numpy(dtype=float),
+                    "predicted_price": predictions,
+                    "train_end": ordered.iloc[train_idx]["_parsed_date"].max(),
+                    "validation_start": validation["_parsed_date"].min(),
+                    "validation_end": validation["_parsed_date"].max(),
+                }
+            )
+        )
+
+    return pd.concat(rows, ignore_index=True)
+
+
 def fit_and_evaluate(
     estimator: RegressorMixin,
     train: pd.DataFrame,

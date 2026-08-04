@@ -95,7 +95,7 @@ def evaluate_stakeholder_diagnostics(project_root: str | Path) -> StakeholderDia
     baseline = median_baseline_prediction(split.train, split.test).reset_index(drop=True)
     baseline_metrics = regression_metrics(observed, baseline)
     period_end = pd.to_datetime(split.test["date"], format="mixed", errors="raise").max()
-    manifest = _validate_against_manifest(
+    manifest = validate_diagnostic_against_manifest(
         root,
         metrics,
         len(rows),
@@ -142,7 +142,7 @@ def evaluate_stakeholder_diagnostics(project_root: str | Path) -> StakeholderDia
     )
 
 
-def _validate_against_manifest(
+def validate_diagnostic_against_manifest(
     project_root: Path,
     metrics: dict[str, float],
     rows: int,
@@ -150,6 +150,8 @@ def _validate_against_manifest(
     period_end: pd.Timestamp,
     historical_path: Path,
 ) -> dict[str, object]:
+    """Validate reproduced diagnostics and approved inputs against the manifest."""
+
     manifest = json.loads(
         (project_root / "artifacts" / "model_manifest.json").read_text(encoding="utf-8")
     )

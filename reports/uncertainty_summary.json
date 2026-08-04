@@ -1,0 +1,33 @@
+{
+  "calibration": {
+    "confidence_level": 0.9,
+    "finite_sample_quantile_level": 0.9001020110754882,
+    "folds": 5,
+    "log_absolute_error_quantile": 0.26169218272341865,
+    "rows": 13724
+  },
+  "diagnostic_period": {
+    "end": "2015-05-27",
+    "rows": 4640,
+    "start": "2015-03-04"
+  },
+  "limitations": [
+    "Temporal dependence and distribution shift may change future coverage.",
+    "Coverage and interval width must be interpreted together.",
+    "The latest period is diagnostic because it was previously inspected."
+  ],
+  "method": "empirical_temporal_log_residual_interval",
+  "metrics": {
+    "coverage": 0.893966,
+    "mean_relative_width": 0.52938,
+    "mean_width": 281835.453894,
+    "median_width": 239598.196022
+  },
+  "model_identity": {
+    "artifact_sha256": "90ffbab62970c805b7fd65a5488fa727026bdc59b81d56726318374cdce8c439",
+    "name": "property_value_hist_gradient_boosting_physical",
+    "training_data_sha256": "d0875baa0251b21d4bdc9d2ae940a4fe0bb6009824f23dd0e2a5b2bf04557b7e",
+    "version": "0.4.0-rc1"
+  },
+  "status": "diagnostic_not_formal_coverage_guarantee"
+}
