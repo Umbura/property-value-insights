@@ -42,7 +42,7 @@ docker build --tag property-value-insights:phase4 .
 Resultados observados localmente:
 
 - Ruff: aprovado;
-- pytest: 49 testes aprovados;
+- pytest: 51 testes aprovados;
 - construção da imagem: aprovada;
 - tamanho final da imagem: aproximadamente 163 MB;
 - saúde do contêiner: `healthy`;
@@ -60,6 +60,16 @@ Resultados observados localmente:
 - os logs da aplicação são estruturados e não incluem os corpos das requisições;
 - cada instância da aplicação possui seu próprio registro de métricas, mantendo
   testes isolados e evitando coletores duplicados.
+
+## Correções da revisão
+
+- respostas `500` agora preservam `X-Request-ID`, retornam JSON estável e geram
+  log estruturado em nível `ERROR`;
+- todos os metadados usados por `/model-info` são validados antes de o serviço
+  ficar saudável;
+- a versão `0.5.0-rc1` da API foi separada da versão `0.4.0-rc1` do modelo;
+- respostas de predição agora declaram a moeda `USD`;
+- testes de regressão cobrem manifesto incompleto e falha interna correlacionada.
 
 ## Limitações conhecidas
 

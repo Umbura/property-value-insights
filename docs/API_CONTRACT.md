@@ -9,8 +9,9 @@ está ilegível ou quando hash, schema, nome, versão ou features são
 inconsistentes.
 
 A documentação OpenAPI interativa fica disponível em `/docs` durante a
-execução. A versão do modelo candidato é `0.4.0-rc1` e acompanha toda resposta
-de predição.
+execução. O contrato da API possui versão `0.5.0-rc1`, enquanto a versão do
+modelo candidato é `0.4.0-rc1`. As duas versões evoluem de forma independente,
+e a versão do modelo acompanha toda resposta de predição.
 
 ## Execução local
 
@@ -37,6 +38,7 @@ Confirma que a aplicação iniciou e que o artefato verificado está carregado.
 ```json
 {
   "status": "healthy",
+  "api_version": "0.5.0-rc1",
   "model_version": "0.4.0-rc1"
 }
 ```
@@ -85,6 +87,7 @@ Exemplo de resposta:
 ```json
 {
   "predicted_price": 372953.43,
+  "currency": "USD",
   "model_version": "0.4.0-rc1",
   "request_id": "b55ae80b6ad24ffb97a06e4963781637"
 }
@@ -93,8 +96,9 @@ Exemplo de resposta:
 ### `POST /predict/batch`
 
 Recebe `{"items": [...]}` e preserva a ordem de entrada com valores de
-`item_id` iniciados em um. Lotes vazios retornam `422`. Lotes acima de
-`MAX_BATCH_SIZE` retornam `413`; o limite padrão é 100.
+`item_id` iniciados em um. A resposta declara `currency` uma vez para todo o
+lote. Lotes vazios retornam `422`. Lotes acima de `MAX_BATCH_SIZE` retornam
+`413`; o limite padrão é 100.
 
 ### `GET /metrics`
 
@@ -107,10 +111,13 @@ operacional não integra o schema OpenAPI público.
 - `413`: o lote contém mais itens do que o limite configurado;
 - `422`: um campo está ausente, desconhecido, com tipo inválido ou fora do
   domínio permitido;
-- `500`: ocorreu uma falha inesperada de processamento.
+- `500`: ocorreu uma falha inesperada de processamento. A resposta contém
+  `detail` e `request_id`, sem expor detalhes internos.
 
-Erros de validação seguem o schema padrão do FastAPI. Os dados recebidos nas
-requisições não são escritos nos logs da aplicação.
+Erros de validação seguem o schema padrão do FastAPI. Toda resposta inclui o
+cabeçalho `X-Request-ID`. Falhas inesperadas geram log JSON em nível `ERROR`,
+com o mesmo identificador, enquanto os dados recebidos não são escritos nos
+logs da aplicação.
 
 ## Limites operacionais
 
