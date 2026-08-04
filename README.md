@@ -4,7 +4,7 @@ Sistema reprodutível de estimativa de preços residenciais com Machine Learning
 práticas de MLOps. O projeto foi desenvolvido para o desafio técnico de previsão
 de preços de imóveis e trata os dados como uma solução de cliente real.
 
-Status atual: modelo avaliado e pipeline de treinamento e inferência em revisão.
+Status atual: modelo avaliado, API de inferência e contêiner em revisão.
 
 ## Objetivo
 
@@ -38,6 +38,7 @@ py -3.13 -m venv .venv
 .\.venv\Scripts\python.exe -m jupyter nbconvert --to notebook --execute notebooks/01_eda.ipynb --inplace --ExecutePreprocessor.kernel_name=property-value-insights --ExecutePreprocessor.timeout=600
 .\.venv\Scripts\python.exe -m jupyter nbconvert --to notebook --execute notebooks/02_modeling.ipynb --inplace --ExecutePreprocessor.kernel_name=property-value-insights --ExecutePreprocessor.timeout=600
 .\.venv\Scripts\python.exe -m property_value_insights.training --project-root .
+docker compose up --build
 ```
 
 ## Modelo e artefato
@@ -52,6 +53,18 @@ com eventos posteriores à venda, treina com 21.595 registros, verifica o
 artefato por hash e gera as 100 previsões futuras. O contrato completo está em
 [`docs/ARTIFACT_CONTRACT.md`](docs/ARTIFACT_CONTRACT.md).
 
+## API de inferência
+
+A API FastAPI carrega e verifica o artefato durante a inicialização. Ela oferece
+predição individual e em lote, metadados do modelo, healthcheck, identificadores
+de requisição, logs estruturados e métricas Prometheus. O contrato, os exemplos
+de requisição e os limites operacionais estão em
+[`docs/API_CONTRACT.md`](docs/API_CONTRACT.md).
+
+Após `docker compose up --build`, a documentação OpenAPI fica disponível em
+`http://127.0.0.1:8000/docs`. O contêiner executa como usuário sem privilégios e
+é compatível com sistema de arquivos raiz somente leitura.
+
 ## Estrutura
 
 ```text
@@ -59,7 +72,7 @@ data/raw/       arquivos de entrada fornecidos
 src/            codigo reutilizavel do projeto
 tests/          testes automatizados
 docs/           contrato, especificacao e revisoes
-artifacts/      artefatos de modelo versionados nas fases futuras
+artifacts/      artefato e manifesto versionados do modelo
 reports/        relatorios e resultados gerados
 notebooks/      analises exploratorias reproduziveis
 diagrams/       diagramas de arquitetura e deploy
