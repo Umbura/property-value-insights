@@ -33,6 +33,7 @@ dev = [
 ]
 
 [project.scripts]
+generate-stakeholder-report = "property_value_insights.stakeholder_reporting:main"
 train-property-model = "property_value_insights.training:main"
 
 [tool.setuptools.packages.find]
