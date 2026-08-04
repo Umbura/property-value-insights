@@ -1,6 +1,6 @@
 # Revisão da Fase 4
 
-Status: pendente de revisão supervisionada.
+Status: aprovada após correção dos achados da revisão supervisionada.
 
 ## Objetivo
 
@@ -87,3 +87,11 @@ Resultados observados localmente:
 - confirmar o limite padrão de 100 imóveis por lote;
 - executar o fluxo Docker e inspecionar `/docs`;
 - aprovar ou solicitar correções antes do início da Fase 5.
+
+## Aprovação
+
+A revisão supervisionada aprovou a continuidade para a Fase 5 após confirmar a
+correlação de falhas internas, a validação completa dos metadados de serviço, a
+separação entre as versões da API e do modelo e a declaração explícita da moeda
+nas predições. A incorporação e a tag permanecem condicionadas à organização
+final das pull requests empilhadas.
