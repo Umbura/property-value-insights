@@ -1,5 +1,14 @@
 # Relatório de modelagem, calibração e avaliação
 
+> **Status histórico:** este relatório registra a promoção estatística realizada
+> na Fase 2.1. A revisão de governança posterior selecionou o modelo somente
+> físico como artefato final. Portanto, as seções "modelo promovido" e
+> "importância das variáveis" abaixo descrevem o experimento demográfico e não o
+> modelo servido pela API. Os resultados vigentes estão no
+> [`training_summary.md`](training_summary.md), no
+> [`MODEL_CARD.md`](../docs/MODEL_CARD.md) e no
+> [`stakeholder_summary.md`](stakeholder_summary.md).
+
 ## Protocolo
 
 - Linhas de desenvolvimento: 16,973.

@@ -1,0 +1,40 @@
+{
+  "comparison": {
+    "mae_reduction_pct": 70.222885,
+    "rmse_reduction_pct": 69.52548
+  },
+  "median_baseline": {
+    "mae": 225360.006034,
+    "median_absolute_error": 149600.0,
+    "r2": -0.079136,
+    "rmse": 382441.617931,
+    "rmsle": 0.525043
+  },
+  "model": {
+    "coefficient_of_dispersion": 12.161725,
+    "mae": 67105.708262,
+    "mape": 0.120651,
+    "mean_error": -20577.296614,
+    "mean_percentage_error": -0.010816,
+    "median_absolute_error": 40331.599415,
+    "median_prediction_ratio": 0.974369,
+    "price_related_differential": 1.027417,
+    "r2": 0.899781,
+    "rmse": 116547.248993,
+    "rmsle": 0.168779,
+    "underprediction_rate": 0.587716
+  },
+  "model_identity": {
+    "artifact_sha256": "90ffbab62970c805b7fd65a5488fa727026bdc59b81d56726318374cdce8c439",
+    "feature_set": "physical",
+    "name": "property_value_hist_gradient_boosting_physical",
+    "training_data_sha256": "d0875baa0251b21d4bdc9d2ae940a4fe0bb6009824f23dd0e2a5b2bf04557b7e",
+    "version": "0.4.0-rc1"
+  },
+  "period": {
+    "end": "2015-05-27",
+    "rows": 4640,
+    "start": "2015-03-04",
+    "status": "diagnostic_only_previously_inspected"
+  }
+}

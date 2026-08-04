@@ -4,13 +4,15 @@ Sistema reprodutível de estimativa de preços residenciais com Machine Learning
 práticas de MLOps. O projeto foi desenvolvido para o desafio técnico de previsão
 de preços de imóveis e trata os dados como uma solução de cliente real.
 
-Status atual: modelo avaliado, API de inferência e contêiner em revisão.
+Status atual: modelo e API executáveis; arquitetura, ciclo de vida e comunicação
+com stakeholders em revisão supervisionada.
 
 ## Objetivo
 
-Estimar o preço de imóveis a partir de características físicas e informações
-demográficas agregadas por CEP, preservando rastreabilidade dos dados,
-validação, avaliação do modelo e documentação das decisões técnicas.
+Estimar o preço de imóveis a partir de características físicas e espaciais,
+preservando rastreabilidade dos dados, validação, avaliação do modelo e
+documentação das decisões técnicas. Informações demográficas agregadas por CEP
+foram avaliadas por ablação, mas não integram o artefato aprovado.
 
 ## Dados
 
@@ -38,8 +40,14 @@ py -3.13 -m venv .venv
 .\.venv\Scripts\python.exe -m jupyter nbconvert --to notebook --execute notebooks/01_eda.ipynb --inplace --ExecutePreprocessor.kernel_name=property-value-insights --ExecutePreprocessor.timeout=600
 .\.venv\Scripts\python.exe -m jupyter nbconvert --to notebook --execute notebooks/02_modeling.ipynb --inplace --ExecutePreprocessor.kernel_name=property-value-insights --ExecutePreprocessor.timeout=600
 .\.venv\Scripts\python.exe -m property_value_insights.training --project-root .
+.\.venv\Scripts\python.exe -m property_value_insights.stakeholder_reporting --project-root .
 docker compose up --build
 ```
+
+O ambiente `dev` inclui as dependências de geração dos relatórios. Para instalar
+somente o projeto e essas dependências, use `pip install -e ".[reporting]"`. A
+imagem de serving não inclui Matplotlib nem os dados brutos e executa somente a
+API de inferência.
 
 ## Modelo e artefato
 
@@ -65,6 +73,27 @@ Após `docker compose up --build`, a documentação OpenAPI fica disponível em
 `http://127.0.0.1:8000/docs`. O contêiner executa como usuário sem privilégios e
 é compatível com sistema de arquivos raiz somente leitura.
 
+## Arquitetura e ciclo de vida
+
+A solução distingue o runtime implementado da topologia recomendada para
+produção. O [diagrama de arquitetura](diagrams/production_architecture.md) cobre
+entrada, serving, observabilidade, CI/CD, registro e rollback. O
+[ciclo de vida](diagrams/model_lifecycle.md) mostra a passagem de novos rótulos
+por validação, treinamento, gates, staging, aprovação e monitoramento.
+
+A estratégia de reentreinamento está em
+[`docs/CONTINUOUS_LEARNING.md`](docs/CONTINUOUS_LEARNING.md). Ela não promove
+modelos automaticamente: a automação prepara evidências, e a mudança do
+champion exige critérios temporais e aprovação humana.
+
+## Comunicação e governança
+
+O [model card](docs/MODEL_CARD.md) registra uso pretendido, dados, métricas,
+importância por permutação, desempenho por faixa, limitações e considerações éticas. O
+[resumo para stakeholders](reports/stakeholder_summary.md) traduz as métricas
+para decisão de negócio e utiliza um gráfico reproduzido especificamente para o
+modelo físico aprovado.
+
 ## Estrutura
 
 ```text
@@ -80,7 +109,8 @@ diagrams/       diagramas de arquitetura e deploy
 
 ## Processo
 
-O desenvolvimento ocorre por fases, branches, commits atomicos, revisao
-supervisionada e pull requests. As decisoes de modelagem, deploy, aprendizado
-continuo e comunicacao com stakeholders serao incorporadas nas fases seguintes.
+O desenvolvimento ocorre por fases, branches, commits atômicos, revisão
+supervisionada e pull requests. As decisões de modelagem, deploy, aprendizado
+contínuo e comunicação com stakeholders são documentadas junto às respectivas
+entregas.
 O fluxo completo esta em [`PROCESSO_GIT_GITHUB.md`](PROCESSO_GIT_GITHUB.md).
