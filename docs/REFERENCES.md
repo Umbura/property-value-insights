@@ -46,4 +46,17 @@ mas não afirma implantação das ferramentas ou plataformas citadas.
   Studies](https://www.iaao.org/wp-content/uploads/Standard_on_Ratio_Studies.pdf).
 - scikit-learn. [HistGradientBoostingRegressor](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.HistGradientBoostingRegressor.html).
 
+## Incerteza e explicabilidade
+
+- SHAP. [Permutation explainer](https://shap.readthedocs.io/en/stable/example_notebooks/api_examples/explainers/Permutation.html).
+  Referência para explicações model-agnostic e aditividade das contribuições.
+- Lundberg, S. M. e Lee, S.-I. [A Unified Approach to Interpreting Model
+  Predictions](https://arxiv.org/abs/1705.07874).
+  Fundamenta o uso de valores de Shapley para explicar previsões individuais.
+- MAPIE. [Exchangeability testing on a fixed dataset](https://contrib.scikit-learn.org/MAPIE/1.4.1/generated/exchangeability_testing/1-quickstart/plot_exchangeability_fixed_dataset/).
+  Apoia a cautela com garantias conformais quando há dependência temporal.
+- Barber, R. F. et al. [Conformal Prediction Beyond
+  Exchangeability](https://arxiv.org/abs/2202.13415).
+  Referência para os limites do conformal clássico sob não intercambialidade.
+
 Consulta realizada em agosto de 2026.
