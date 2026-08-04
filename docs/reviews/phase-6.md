@@ -62,7 +62,9 @@ Resultados observados localmente:
 - cobertura diagnóstica: 89,40% para nível nominal de 90%;
 - dependências de explicabilidade: ausentes do runtime de serving;
 - build da imagem não repetido nesta revisão porque o Docker Desktop estava
-  desligado; o isolamento foi verificado estaticamente e por teste automatizado.
+  desligado;
+- GitHub Actions: jobs `quality` e `container` aprovados;
+- CI remoto: imagem construída, API saudável e endpoints públicos verificados.
 
 ## Decisões
 
