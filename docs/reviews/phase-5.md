@@ -1,6 +1,6 @@
 # Revisão da Fase 5
 
-Status: pendente de revisão supervisionada.
+Status: aprovada em revisão supervisionada.
 
 ## Objetivo
 
@@ -89,3 +89,12 @@ Resultados observados localmente:
 - conferir o resumo executivo e a ênfase no quartil superior;
 - decidir se a Fase 6 deve implementar explicabilidade ou registrar a decisão de
   não incluir.
+
+## Aprovação
+
+A revisão supervisionada aprovou o encerramento da Fase 5 após confirmar a ordem
+de promoção entre build, staging, aprovação, canary e produção; a separação entre
+telemetria agregada e ledger protegido; a importância por permutação do modelo
+físico; a rastreabilidade entre relatório, manifesto, dados e artefato; e o
+isolamento das dependências de reporting da imagem de serving. A incorporação e
+a tag permanecem condicionadas à organização final das pull requests empilhadas.
