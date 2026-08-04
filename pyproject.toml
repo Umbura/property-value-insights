@@ -37,6 +37,7 @@ dev = [
 
 [project.scripts]
 train-property-model = "property_value_insights.training:main"
+analyze-property-uncertainty = "property_value_insights.uncertainty:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
