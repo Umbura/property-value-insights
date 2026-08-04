@@ -60,8 +60,9 @@ docker build --tag property-value-insights:release-candidate .
 ```
 
 `verify-property-release` confere a identidade do pacote, os caminhos
-obrigatórios, o contrato de ambiente, os hashes do artefato, as 100 previsões,
-os notebooks executados e os links relativos da documentação.
+obrigatórios, o contrato de ambiente, os hashes do artefato e dos dados, as 100
+previsões, os notebooks executados, os links relativos da documentação e a
+ausência de arquivos sensíveis em toda a árvore publicada.
 
 Após executar notebooks, `sanitize-property-notebooks --project-root .` remove
 somente os horários transitórios registrados pelo Jupyter. Células, contagens
@@ -87,7 +88,7 @@ repositório.
 Validação executada em 4 de agosto de 2026:
 
 - instalação criada do zero com Python 3.13 e `uv sync --locked --extra dev`;
-- Ruff aprovado e 80 testes automatizados aprovados;
+- Ruff aprovado e 86 testes automatizados aprovados;
 - `pip-audit` sem vulnerabilidades conhecidas nas dependências publicadas;
 - sete controles de integridade da entrega aprovados;
 - notebooks exploratório e de modelagem reproduzidos byte a byte após a

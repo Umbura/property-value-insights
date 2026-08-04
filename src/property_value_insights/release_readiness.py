@@ -58,6 +58,8 @@ PUBLIC_TEXT_SUFFIXES = {
     ".yaml",
     ".yml",
 }
+EXCLUDED_SCAN_DIRECTORIES = {".git", ".pytest_cache", ".ruff_cache", ".venv"}
+SENSITIVE_FILE_SUFFIXES = {".key", ".pem"}
 
 
 @dataclass(frozen=True)
@@ -114,11 +116,17 @@ def _validate_artifact_and_predictions(root: Path) -> str:
         (root / "artifacts" / "model_manifest.json").read_text(encoding="utf-8")
     )
     artifact_path = root / manifest["artifact"]["path"]
+    historical_path = root / manifest["training_data"]["path"]
     predictions_path = root / manifest["prediction_output"]["path"]
     future_path = root / manifest["prediction_output"]["source_path"]
 
     if sha256_file(artifact_path) != manifest["artifact"]["sha256"]:
         raise ValueError("Model artifact hash differs from the manifest")
+    if (
+        sha256_normalized_text_file(historical_path)
+        != manifest["training_data"]["sha256"]
+    ):
+        raise ValueError("Historical input hash differs from the manifest")
     if (
         sha256_normalized_text_file(predictions_path)
         != manifest["prediction_output"]["sha256"]
@@ -142,7 +150,7 @@ def _validate_artifact_and_predictions(root: Path) -> str:
         raise ValueError("Prediction model version differs from the manifest")
     if any(float(row["predicted_price"]) <= 0 for row in rows):
         raise ValueError("Prediction file contains a non-positive price")
-    return "artifact hashes and 100 ordered predictions match the manifest"
+    return "artifact, input hashes, and 100 ordered predictions match the manifest"
 
 
 def _validate_notebooks(root: Path) -> str:
@@ -190,17 +198,21 @@ def _validate_markdown_links(root: Path) -> str:
 
 
 def _validate_publication_hygiene(root: Path) -> str:
-    forbidden_local = [root / ".env", *root.glob("*.pem"), *root.glob("*.key")]
-    present = [path.name for path in forbidden_local if path.exists()]
-    if present:
-        raise ValueError(f"Local sensitive files must be removed before publication: {present}")
-
     scanned = 0
     for path in root.rglob("*"):
         if not path.is_file() or any(
-            part in {".git", ".pytest_cache", ".ruff_cache", ".venv"} for part in path.parts
+            part in EXCLUDED_SCAN_DIRECTORIES for part in path.relative_to(root).parts
         ):
             continue
+        normalized_name = path.name.lower()
+        is_private_environment = normalized_name == ".env" or (
+            normalized_name.startswith(".env.") and normalized_name != ".env.example"
+        )
+        if is_private_environment or path.suffix.lower() in SENSITIVE_FILE_SUFFIXES:
+            raise ValueError(
+                "Local sensitive file must be removed before publication: "
+                f"{path.relative_to(root)}"
+            )
         if path.suffix.lower() not in PUBLIC_TEXT_SUFFIXES and path.name not in {
             "Dockerfile",
             ".env.example",

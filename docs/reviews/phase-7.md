@@ -39,6 +39,11 @@ execução.
 6. O notebook de modelagem não reproduzia a ressalva de governança do relatório.
 7. `fit_seconds` introduzia variação sem significado nos artefatos publicados.
 8. O Jupyter persistia horários de execução que produziam diffs em cada rodada.
+9. O gate de entrega não comparava o conjunto histórico com o hash registrado
+   no manifesto; a entrada de treinamento passou a integrar a verificação.
+10. A higiene de publicação restringia arquivos sensíveis apenas na raiz; a
+    proibição de `.env`, `.env.*`, `*.pem` e `*.key` passou a ser recursiva,
+    preservando `.env.example` como contrato público.
 
 ## Validação executada
 
@@ -56,7 +61,8 @@ Resultados:
 
 - ambiente Python 3.13 criado do zero: aprovado;
 - Ruff: aprovado;
-- pytest: 80 testes aprovados;
+- pytest: 86 testes aprovados, incluindo cenários negativos de adulteração dos
+  dados históricos e arquivos sensíveis aninhados;
 - dependências: 124 pacotes resolvidos no lock;
 - auditoria: nenhuma vulnerabilidade conhecida;
 - verificador da entrega: sete controles aprovados;
