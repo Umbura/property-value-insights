@@ -38,6 +38,7 @@ py -3.13 -m venv .venv
 .\.venv\Scripts\python.exe -m jupyter nbconvert --to notebook --execute notebooks/01_eda.ipynb --inplace --ExecutePreprocessor.kernel_name=property-value-insights --ExecutePreprocessor.timeout=600
 .\.venv\Scripts\python.exe -m jupyter nbconvert --to notebook --execute notebooks/02_modeling.ipynb --inplace --ExecutePreprocessor.kernel_name=property-value-insights --ExecutePreprocessor.timeout=600
 .\.venv\Scripts\python.exe -m property_value_insights.training --project-root .
+.\.venv\Scripts\python.exe -m property_value_insights.stakeholder_reporting --project-root .
 docker compose up --build
 ```
 
@@ -64,6 +65,27 @@ de requisição e os limites operacionais estão em
 Após `docker compose up --build`, a documentação OpenAPI fica disponível em
 `http://127.0.0.1:8000/docs`. O contêiner executa como usuário sem privilégios e
 é compatível com sistema de arquivos raiz somente leitura.
+
+## Arquitetura e ciclo de vida
+
+A solução distingue o runtime implementado da topologia recomendada para
+produção. O [diagrama de arquitetura](diagrams/production_architecture.md) cobre
+entrada, serving, observabilidade, CI/CD, registro e rollback. O
+[ciclo de vida](diagrams/model_lifecycle.md) mostra a passagem de novos rótulos
+por validação, treinamento, gates, staging, aprovação e monitoramento.
+
+A estratégia de reentreinamento está em
+[`docs/CONTINUOUS_LEARNING.md`](docs/CONTINUOUS_LEARNING.md). Ela não promove
+modelos automaticamente: a automação prepara evidências, e a mudança do
+champion exige critérios temporais e aprovação humana.
+
+## Comunicação e governança
+
+O [model card](docs/MODEL_CARD.md) registra uso pretendido, dados, métricas,
+desempenho por faixa, limitações e considerações éticas. O
+[resumo para stakeholders](reports/stakeholder_summary.md) traduz as métricas
+para decisão de negócio e utiliza um gráfico reproduzido especificamente para o
+modelo físico aprovado.
 
 ## Estrutura
 
