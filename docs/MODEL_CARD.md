@@ -110,6 +110,37 @@ Features espaciais e correlacionadas podem dividir ou concentrar importância. A
 tabela completa e o desvio entre repetições estão em
 [`reports/approved_model_feature_importance.csv`](../reports/approved_model_feature_importance.csv).
 
+### Incerteza diagnóstica
+
+Um intervalo empírico temporal de nível nominal de 90% foi calibrado com 13.724
+resíduos fora de amostra das cinco janelas de desenvolvimento. No período
+diagnóstico, a cobertura observada foi de 89,40%, com largura média de
+US$ 281.835,45 e mediana de US$ 239.598,20.
+
+| Faixa | Cobertura | Largura média |
+| --- | ---: | ---: |
+| Q1 | 85,71% | US$ 144.163,08 |
+| Q2 | 91,31% | US$ 206.500,44 |
+| Q3 | 93,72% | US$ 283.703,72 |
+| Q4 | 86,87% | US$ 493.820,50 |
+
+A cobertura inferior a 90% nos extremos e o aumento de largura no Q4 impedem
+uma promessa uniforme por imóvel. Dependência temporal e mudança de distribuição
+também impedem apresentar esse diagnóstico como garantia conformal em produção.
+
+### Explicabilidade SHAP
+
+O `PermutationExplainer` foi aplicado offline ao Joblib verificado, usando 50
+linhas históricas como baseline determinístico e as 100 linhas futuras como
+amostra explicada. Latitude, área habitável, padrão construtivo e longitude
+apresentaram as maiores contribuições absolutas médias.
+
+As contribuições locais reconciliaram baseline e previsão com erro numérico
+máximo de `1,40e-9`. Elas descrevem o comportamento do modelo em relação ao
+baseline escolhido; não medem causalidade, acurácia futura nem efeito isolado de
+features correlacionadas. Os resultados completos estão no
+[`relatório opcional`](../reports/optional_analysis.md).
+
 ## Limitações
 
 - cobertura restrita a uma região e pouco mais de um ano;
@@ -143,7 +174,8 @@ indivíduos.
 - API com validação estrita, moeda, versão e correlação;
 - revisão humana para promoção e rollback;
 - monitoramento geral e por segmentos após novos rótulos;
-- retenção do champion anterior.
+- retenção do champion anterior;
+- análises de incerteza e SHAP isoladas do runtime de inferência.
 
 ## Manutenção
 

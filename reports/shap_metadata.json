@@ -1,0 +1,21 @@
+{
+  "background_rows": 50,
+  "base_value": 617691.950932,
+  "explained_rows": 100,
+  "limitations": [
+    "Contributions describe model behavior relative to the selected baseline.",
+    "SHAP values do not establish causal effects.",
+    "Correlated features may share or redistribute attribution."
+  ],
+  "max_additivity_error": 1.3969838619232178e-09,
+  "method": "shap_permutation_explainer",
+  "model_identity": {
+    "artifact_sha256": "90ffbab62970c805b7fd65a5488fa727026bdc59b81d56726318374cdce8c439",
+    "future_data_sha256": "5a31ff0c888bef204776208fcd7360859f12cab5e5bff30a8252715928cdd517",
+    "historical_data_sha256": "d0875baa0251b21d4bdc9d2ae940a4fe0bb6009824f23dd0e2a5b2bf04557b7e",
+    "name": "property_value_hist_gradient_boosting_physical",
+    "version": "0.4.0-rc1"
+  },
+  "scope": "offline_behavioral_explanation_not_causal_effect",
+  "shap_version": "0.52.0"
+}

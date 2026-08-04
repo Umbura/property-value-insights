@@ -4,8 +4,8 @@ Sistema reprodutível de estimativa de preços residenciais com Machine Learning
 práticas de MLOps. O projeto foi desenvolvido para o desafio técnico de previsão
 de preços de imóveis e trata os dados como uma solução de cliente real.
 
-Status atual: modelo e API executáveis; arquitetura, ciclo de vida e comunicação
-com stakeholders em revisão supervisionada.
+Status atual: modelo e API executáveis; análises opcionais de incerteza temporal
+e explicabilidade em revisão supervisionada.
 
 ## Objetivo
 
@@ -41,13 +41,16 @@ py -3.13 -m venv .venv
 .\.venv\Scripts\python.exe -m jupyter nbconvert --to notebook --execute notebooks/02_modeling.ipynb --inplace --ExecutePreprocessor.kernel_name=property-value-insights --ExecutePreprocessor.timeout=600
 .\.venv\Scripts\python.exe -m property_value_insights.training --project-root .
 .\.venv\Scripts\python.exe -m property_value_insights.stakeholder_reporting --project-root .
+.\.venv\Scripts\python.exe -m property_value_insights.uncertainty --project-root .
+.\.venv\Scripts\python.exe -m property_value_insights.explainability --project-root .
 docker compose up --build
 ```
 
 O ambiente `dev` inclui as dependências de geração dos relatórios. Para instalar
-somente o projeto e essas dependências, use `pip install -e ".[reporting]"`. A
-imagem de serving não inclui Matplotlib nem os dados brutos e executa somente a
-API de inferência.
+somente o projeto e as dependências de explicabilidade, use
+`pip install -e ".[explainability]"`. O grupo `reporting` mantém apenas a geração
+dos relatórios da Fase 5. A imagem de serving não inclui Matplotlib, SHAP nem os
+dados brutos e executa somente a API de inferência.
 
 ## Modelo e artefato
 
@@ -93,6 +96,18 @@ importância por permutação, desempenho por faixa, limitações e consideraç�
 [resumo para stakeholders](reports/stakeholder_summary.md) traduz as métricas
 para decisão de negócio e utiliza um gráfico reproduzido especificamente para o
 modelo físico aprovado.
+
+## Análises opcionais
+
+A Fase 6 calibra um intervalo empírico com previsões fora de amostra das cinco
+janelas de desenvolvimento e mede cobertura e largura no período diagnóstico.
+Também gera explicações SHAP globais e locais diretamente do Joblib verificado.
+Os resultados e as ressalvas estão no
+[`relatório de incerteza e explicabilidade`](reports/optional_analysis.md).
+
+Essas rotinas são offline: não modificam o modelo promovido, as 100 previsões,
+o contrato da API ou a imagem de serving. O intervalo não é apresentado como
+garantia conformal, e as contribuições SHAP não são efeitos causais.
 
 ## Estrutura
 
