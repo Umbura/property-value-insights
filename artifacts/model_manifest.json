@@ -68,7 +68,7 @@
     "parameters": {
       "calibration_fraction": 0.1
     },
-    "selection_reason": "Modelo somente físico selecionado após revisão supervisionada porque a alternativa demográfica apresentou ganho marginal de MAE e introduziu risco de proxies socioeconômicas.",
+    "selection_reason": "Modelo somente físico selecionado após avaliação de governança porque a alternativa demográfica apresentou ganho marginal de MAE e introduziu risco de proxies socioeconômicas.",
     "target_transform": "log_temporal_smearing",
     "version": "0.4.0-rc1"
   },

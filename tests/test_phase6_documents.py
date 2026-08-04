@@ -98,7 +98,9 @@ def test_optional_dependencies_remain_outside_serving_runtime() -> None:
 
     assert not any(dependency.startswith("shap") for dependency in base_dependencies)
     assert any(dependency.startswith("shap==") for dependency in explainability)
-    assert "python -m pip install ." in dockerfile
+    assert "uv sync --locked --no-dev --no-install-project" in dockerfile
+    assert "uv sync --locked --no-dev --no-editable" in dockerfile
+    assert "--extra explainability" not in dockerfile
     assert ".[explainability]" not in dockerfile
 
 

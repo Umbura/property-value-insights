@@ -2,7 +2,7 @@
 
 ## Escopo
 
-A Fase 6 adiciona duas análises offline ao modelo físico aprovado:
+O diagnóstico opcional adiciona duas análises offline ao modelo físico aprovado:
 
 1. intervalo empírico de previsão baseado em resíduos temporais;
 2. explicações SHAP globais e locais do artefato servido.

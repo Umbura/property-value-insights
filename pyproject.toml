@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "property-value-insights"
-version = "0.1.0.dev0"
+version = "1.0.0rc1"
 description = "Reproducible residential price estimation system with machine learning and MLOps."
 readme = "README.md"
 requires-python = ">=3.13,<3.14"
@@ -24,7 +24,9 @@ reporting = [
     "matplotlib>=3.9,<4",
 ]
 explainability = [
+    "llvmlite==0.48.0",
     "matplotlib>=3.9,<4",
+    "numba==0.66.0",
     "shap==0.52.0",
 ]
 dev = [
@@ -34,7 +36,10 @@ dev = [
     "nbclient>=0.10,<1",
     "nbconvert>=7.16,<8",
     "nbformat>=5.10,<6",
-    "pytest>=8,<9",
+    "llvmlite==0.48.0",
+    "numba==0.66.0",
+    "pip-audit==2.10.1",
+    "pytest==9.0.3",
     "ruff>=0.8,<1",
     "shap==0.52.0",
     "tabulate>=0.9,<1",
@@ -44,6 +49,8 @@ dev = [
 train-property-model = "property_value_insights.training:main"
 analyze-property-uncertainty = "property_value_insights.uncertainty:main"
 explain-property-model = "property_value_insights.explainability:main"
+sanitize-property-notebooks = "property_value_insights.notebook_hygiene:main"
+verify-property-release = "property_value_insights.release_readiness:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -58,3 +65,10 @@ line-length = 100
 
 [tool.ruff.lint]
 select = ["E", "F", "I"]
+
+[tool.uv]
+required-version = "==0.12.1"
+environments = [
+    "sys_platform == 'linux'",
+    "sys_platform == 'win32'",
+]

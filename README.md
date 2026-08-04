@@ -4,8 +4,8 @@ Sistema reprodutível de estimativa de preços residenciais com Machine Learning
 práticas de MLOps. O projeto foi desenvolvido para o desafio técnico de previsão
 de preços de imóveis e trata os dados como uma solução de cliente real.
 
-Status atual: modelo e API executáveis; análises opcionais de incerteza temporal
-e explicabilidade em revisão supervisionada.
+Status atual: versão candidata integrada, com modelo, API, análises e artefatos
+reproduzíveis disponíveis para avaliação técnica.
 
 ## Objetivo
 
@@ -28,29 +28,30 @@ desafio está preservada em [`docs/CHALLENGE_README.md`](docs/CHALLENGE_README.m
 
 ## Execução local
 
-O ambiente de referência usa Python 3.13. No PowerShell:
+O ambiente de referência usa Python 3.13 e `uv 0.12.1`. O arquivo `uv.lock`
+fixa as dependências diretas e transitivas. No PowerShell:
 
 ```powershell
-py -3.13 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install --upgrade pip
-.\.venv\Scripts\python.exe -m pip install -e ".[dev]"
-.\.venv\Scripts\python.exe -m pytest -q
-.\.venv\Scripts\python.exe -m ruff check .
-.\.venv\Scripts\python.exe -m ipykernel install --user --name property-value-insights --display-name "Property Value Insights (project)"
-.\.venv\Scripts\python.exe -m jupyter nbconvert --to notebook --execute notebooks/01_eda.ipynb --inplace --ExecutePreprocessor.kernel_name=property-value-insights --ExecutePreprocessor.timeout=600
-.\.venv\Scripts\python.exe -m jupyter nbconvert --to notebook --execute notebooks/02_modeling.ipynb --inplace --ExecutePreprocessor.kernel_name=property-value-insights --ExecutePreprocessor.timeout=600
-.\.venv\Scripts\python.exe -m property_value_insights.training --project-root .
-.\.venv\Scripts\python.exe -m property_value_insights.stakeholder_reporting --project-root .
-.\.venv\Scripts\python.exe -m property_value_insights.uncertainty --project-root .
-.\.venv\Scripts\python.exe -m property_value_insights.explainability --project-root .
+uv sync --locked --extra dev
+uv run --locked ruff check .
+uv run --locked pytest -q
+uv run --locked verify-property-release --project-root .
+uv run --locked python -m ipykernel install --user --name property-value-insights --display-name "Property Value Insights (project)"
+uv run --locked jupyter nbconvert --to notebook --execute notebooks/01_eda.ipynb --inplace --ExecutePreprocessor.kernel_name=property-value-insights --ExecutePreprocessor.timeout=600
+uv run --locked jupyter nbconvert --to notebook --execute notebooks/02_modeling.ipynb --inplace --ExecutePreprocessor.kernel_name=property-value-insights --ExecutePreprocessor.timeout=600
+uv run --locked sanitize-property-notebooks --project-root .
+uv run --locked python -m property_value_insights.training --project-root .
+uv run --locked python -m property_value_insights.stakeholder_reporting --project-root .
+uv run --locked python -m property_value_insights.uncertainty --project-root .
+uv run --locked python -m property_value_insights.explainability --project-root .
 docker compose up --build
 ```
 
-O ambiente `dev` inclui as dependências de geração dos relatórios. Para instalar
-somente o projeto e as dependências de explicabilidade, use
-`pip install -e ".[explainability]"`. O grupo `reporting` mantém apenas a geração
-dos relatórios da Fase 5. A imagem de serving não inclui Matplotlib, SHAP nem os
-dados brutos e executa somente a API de inferência.
+O extra `dev` inclui as dependências de teste, notebooks e geração dos
+relatórios. Para instalar somente o projeto e a explicabilidade, use
+`uv sync --locked --extra explainability`. O extra `reporting` mantém apenas a
+geração dos relatórios de negócio. A imagem de serving não inclui Matplotlib,
+SHAP nem os dados brutos e executa somente a API de inferência.
 
 ## Modelo e artefato
 
@@ -99,9 +100,10 @@ modelo físico aprovado.
 
 ## Análises opcionais
 
-A Fase 6 calibra um intervalo empírico com previsões fora de amostra das cinco
-janelas de desenvolvimento e mede cobertura e largura no período diagnóstico.
-Também gera explicações SHAP globais e locais diretamente do Joblib verificado.
+O diagnóstico opcional calibra um intervalo empírico com previsões fora de
+amostra das cinco janelas de desenvolvimento e mede cobertura e largura no
+período mais recente. Também gera explicações SHAP globais e locais diretamente
+do Joblib verificado.
 Os resultados e as ressalvas estão no
 [`relatório de incerteza e explicabilidade`](reports/optional_analysis.md).
 
@@ -113,7 +115,7 @@ garantia conformal, e as contribuições SHAP não são efeitos causais.
 
 ```text
 data/raw/       arquivos de entrada fornecidos
-src/            codigo reutilizavel do projeto
+src/            código reutilizável do projeto
 tests/          testes automatizados
 docs/           contrato, especificacao e revisoes
 artifacts/      artefato e manifesto versionados do modelo
@@ -129,3 +131,7 @@ supervisionada e pull requests. As decisões de modelagem, deploy, aprendizado
 contínuo e comunicação com stakeholders são documentadas junto às respectivas
 entregas.
 O fluxo completo esta em [`PROCESSO_GIT_GITHUB.md`](PROCESSO_GIT_GITHUB.md).
+
+A estratégia de dependências, a verificação em ambiente limpo e as ações
+manuais de publicação estão em
+[`docs/RELEASE_READINESS.md`](docs/RELEASE_READINESS.md).

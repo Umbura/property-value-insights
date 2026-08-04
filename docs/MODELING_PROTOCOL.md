@@ -18,10 +18,11 @@ expansivas. Cada data completa permanece em apenas um lado de cada divisão,
 evitando que vendas do mesmo dia apareçam simultaneamente no treino e na
 validação.
 
-O período mais recente foi consultado na Fase 2 e seus resíduos motivaram a
-Fase 2.1. Portanto, ele passa a ser tratado como avaliação diagnóstica, e não
-como teste completamente intocado para novas decisões. A promoção da
-calibração utiliza exclusivamente as cinco janelas do desenvolvimento.
+O período mais recente foi consultado durante a análise inicial e seus resíduos
+motivaram a calibração adicional. Portanto, ele passa a ser tratado como
+avaliação diagnóstica, e não como teste completamente intocado para novas
+decisões. A promoção da calibração utiliza exclusivamente as cinco janelas do
+desenvolvimento.
 
 ## Features
 
@@ -33,7 +34,7 @@ calibração utiliza exclusivamente as cinco janelas do desenvolvimento.
 - o pré-processamento é ajustado dentro de cada pipeline, somente com os
   dados do respectivo treino.
 
-## Candidatos da Fase 2
+## Modelos candidatos
 
 1. Baseline da mediana do preço no treino.
 2. Ridge com features físicas e espaciais.
@@ -43,7 +44,7 @@ calibração utiliza exclusivamente as cinco janelas do desenvolvimento.
 6. Variantes dos modelos com `log1p(price)`, convertendo as previsões para a
    escala original antes das métricas.
 
-## Calibração da Fase 2.1
+## Calibração adicional
 
 O modelo de referência usa HistGradientBoostingRegressor com features
 demográficas e transformação logarítmica do alvo. A transformação melhora a
@@ -101,10 +102,9 @@ Nenhuma escolha é considerada suficiente apenas por reduzir uma métrica.
 
 ## Decisão para o artefato
 
-A promoção estatística da Fase 2.1 identificou o modelo demográfico calibrado
-como melhor candidato segundo os critérios definidos naquela etapa. A revisão
-de governança posterior selecionou o modelo somente físico para o artefato da
-Fase 3.
+A promoção estatística identificou o modelo demográfico calibrado como melhor
+candidato segundo os critérios definidos. A avaliação de governança posterior
+selecionou o modelo somente físico para o artefato servido.
 
 Depois da exclusão dos 18 registros temporalmente inconsistentes, a demografia
 reduziu a MAE média das cinco janelas em 0,71%. O modelo físico apresentou MAE

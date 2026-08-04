@@ -22,10 +22,10 @@ ingles, seguindo as convencoes do ecossistema de software.
 ## Verificacoes locais
 
 ```powershell
-py -3.13 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -e ".[dev]"
-.\.venv\Scripts\python.exe -m pytest
-.\.venv\Scripts\python.exe -m ruff check .
+uv sync --locked --extra dev
+uv run --locked pytest
+uv run --locked ruff check .
+uv run --locked verify-property-release --project-root .
 ```
 
 Nao enviar credenciais, arquivos `.env`, logs locais ou dados fora do escopo do

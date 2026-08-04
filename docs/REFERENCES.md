@@ -1,6 +1,6 @@
 # Referências da arquitetura e do ciclo de vida
 
-Fontes consultadas para fundamentar a Fase 5. A arquitetura adota os princípios,
+Fontes consultadas para fundamentar a arquitetura. A solução adota os princípios,
 mas não afirma implantação das ferramentas ou plataformas citadas.
 
 ## MLOps e entrega

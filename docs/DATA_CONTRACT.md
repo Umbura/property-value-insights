@@ -1,6 +1,6 @@
 # Contrato inicial de dados
 
-Status: aprovado e complementado pela auditoria temporal da Fase 3.
+Status: aprovado e complementado pela auditoria temporal do treinamento final.
 
 ## Fontes
 
