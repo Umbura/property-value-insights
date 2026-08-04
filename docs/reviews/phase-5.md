@@ -33,7 +33,7 @@ infraestrutura proposta como implementada.
 - comando reproduzível `generate-stakeholder-report`;
 - teste de consistência entre diagnóstico e manifesto.
 
-## Evidências previstas
+## Evidências de verificação
 
 ```powershell
 .\.venv\Scripts\python.exe -m property_value_insights.stakeholder_reporting --project-root .
@@ -41,7 +41,19 @@ infraestrutura proposta como implementada.
 .\.venv\Scripts\python.exe -m pytest -q
 .\.venv\Scripts\python.exe -m pip check
 docker compose config
+docker build --tag property-value-insights:phase5 .
 ```
+
+Resultados observados localmente:
+
+- Ruff: aprovado;
+- pytest: 60 testes aprovados;
+- dependências: consistentes;
+- links e artefatos locais da fase: verificados;
+- regeneração de gráfico, CSV e JSON: reproduzível e sem diff;
+- construção da imagem: aprovada;
+- módulo de reporting importável no runtime sem instalar Matplotlib;
+- configuração do Docker Compose: válida.
 
 ## Decisões
 
