@@ -94,8 +94,21 @@ abaixo do observado.
 | Q4 | US$ 655.100 a US$ 5.350.000 | 1.158 | US$ 134.877,87 | -US$ 71.568,18 | 67,62% |
 
 O quartil superior concentra o maior erro e a maior subestimação. A tabela é
-gerada por `generate-stakeholder-report` e pode ser auditada em
+gerada por `python -m property_value_insights.stakeholder_reporting` e pode ser auditada em
 [`reports/approved_model_price_bands.csv`](../reports/approved_model_price_bands.csv).
+
+### Importância das variáveis
+
+A importância por permutação foi calculada no mesmo período diagnóstico com o
+modelo físico. Em cada repetição, uma feature é embaralhada e mede-se o aumento
+da MAE. As quatro maiores variações foram latitude (US$ 112.415,66), área
+habitável (US$ 55.841,29), padrão construtivo (US$ 38.219,50) e longitude
+(US$ 27.246,21).
+
+Essa medida descreve dependência preditiva no recorte avaliado, não causalidade.
+Features espaciais e correlacionadas podem dividir ou concentrar importância. A
+tabela completa e o desvio entre repetições estão em
+[`reports/approved_model_feature_importance.csv`](../reports/approved_model_feature_importance.csv).
 
 ## Limitações
 

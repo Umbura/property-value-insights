@@ -48,6 +48,27 @@ Dados demográficos foram avaliados, mas não incorporados. O ganho médio de MA
 foi de 0,71%, enquanto o uso adicionaria risco de proxies socioeconômicas. A
 escolha preserva desempenho competitivo com menor superfície de dados.
 
+## Fatores com maior influência
+
+A importância por permutação mede quanto a MAE aumenta quando uma variável é
+embaralhada, mantendo o restante do período diagnóstico. No modelo físico, os
+maiores aumentos foram:
+
+| Variável | Aumento da MAE |
+| --- | ---: |
+| Latitude | US$ 112.415,66 |
+| Área habitável | US$ 55.841,29 |
+| Padrão construtivo | US$ 38.219,50 |
+| Longitude | US$ 27.246,21 |
+| Área do terreno | US$ 11.005,30 |
+| Ano de construção | US$ 8.924,98 |
+| CEP | US$ 7.463,66 |
+| Qualidade da vista | US$ 5.780,90 |
+
+O resultado mostra dependência preditiva, não efeito causal. Latitude,
+longitude e CEP também compartilham informação espacial, portanto seus valores
+não devem ser interpretados como contribuições independentes.
+
 ## Recomendações de uso
 
 1. Exibir preço estimado, moeda, versão e aviso de incerteza ao analista.
@@ -73,5 +94,8 @@ canary; o dataset sozinho não responde a essas perguntas.
 
 Os números reproduzíveis estão em
 [`approved_model_stakeholder_metrics.json`](approved_model_stakeholder_metrics.json)
-e [`approved_model_price_bands.csv`](approved_model_price_bands.csv). Os riscos e
-controles completos estão em [`docs/MODEL_CARD.md`](../docs/MODEL_CARD.md).
+e [`approved_model_price_bands.csv`](approved_model_price_bands.csv). A
+importância completa está em
+[`approved_model_feature_importance.csv`](approved_model_feature_importance.csv).
+Os riscos e controles completos estão em
+[`docs/MODEL_CARD.md`](../docs/MODEL_CARD.md).

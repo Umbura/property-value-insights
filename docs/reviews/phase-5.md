@@ -29,8 +29,9 @@ infraestrutura proposta como implementada.
 - `reports/stakeholder_summary.md`;
 - gráfico diagnóstico do modelo físico aprovado;
 - tabela de desempenho por quartil;
+- importância por permutação do modelo físico aprovado;
 - JSON de métricas e comparação com baseline;
-- comando reproduzível `generate-stakeholder-report`;
+- comando reproduzível `python -m property_value_insights.stakeholder_reporting`;
 - teste de consistência entre diagnóstico e manifesto.
 
 ## Evidências de verificação
@@ -65,6 +66,8 @@ Resultados observados localmente:
 - toda promoção de champion exige aprovação humana;
 - o relatório executivo usa um diagnóstico novo do artefato aprovado, pois a
   figura anterior correspondia ao campeão demográfico experimental.
+- o relatório de modelagem anterior permanece histórico e está identificado como
+  anterior à decisão de governança pelo modelo físico.
 
 ## Limitações conhecidas
 

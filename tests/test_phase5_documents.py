@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import json
 import re
 from pathlib import Path
 from urllib.parse import unquote
 
+import pandas as pd
 import pytest
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -42,11 +44,65 @@ def test_phase5_diagrams_and_business_artifacts_are_present() -> None:
     stakeholder_summary = (
         PROJECT_ROOT / "reports" / "stakeholder_summary.md"
     ).read_text(encoding="utf-8")
+    manifest = json.loads(
+        (PROJECT_ROOT / "artifacts" / "model_manifest.json").read_text(encoding="utf-8")
+    )
+    stakeholder_metrics = json.loads(
+        (PROJECT_ROOT / "reports" / "approved_model_stakeholder_metrics.json").read_text(
+            encoding="utf-8"
+        )
+    )
 
     assert "```mermaid" in architecture
     assert "```mermaid" in lifecycle
     assert "Implementada" in architecture and "Proposta" in architecture
-    assert "property_value_hist_gradient_boosting_physical" in model_card
-    assert "0.4.0-rc1" in model_card
-    assert "70,22%" in stakeholder_summary
+    assert manifest["model"]["name"] in model_card
+    assert manifest["model"]["version"] in model_card
+    reduction = stakeholder_metrics["comparison"]["mae_reduction_pct"]
+    assert f"{reduction:.2f}%".replace(".", ",") in stakeholder_summary
     assert (PROJECT_ROOT / "reports" / "figures" / "approved_model_diagnostic.png").exists()
+
+
+def _format_br_number(value: float) -> str:
+    return f"{value:,.2f}".replace(",", "_").replace(".", ",").replace("_", ".")
+
+
+def _format_br_integer(value: int) -> str:
+    return f"{value:,}".replace(",", ".")
+
+
+def test_stakeholder_tables_match_generated_artifacts() -> None:
+    summary = (PROJECT_ROOT / "reports" / "stakeholder_summary.md").read_text(
+        encoding="utf-8"
+    )
+    price_bands = pd.read_csv(PROJECT_ROOT / "reports" / "approved_model_price_bands.csv")
+    feature_importance = pd.read_csv(
+        PROJECT_ROOT / "reports" / "approved_model_feature_importance.csv"
+    )
+
+    for row in price_bands.itertuples(index=False):
+        signed_error = (
+            f"-US$ {_format_br_number(abs(row.mean_error))}"
+            if row.mean_error < 0
+            else f"US$ {_format_br_number(row.mean_error)}"
+        )
+        expected = (
+            f"| {row.price_band} | {_format_br_integer(int(row.rows))} | "
+            f"US$ {_format_br_number(row.mae)} | "
+            f"{signed_error} | {_format_br_number(100 * row.underprediction_rate)}% |"
+        )
+        assert expected in summary
+
+    feature_labels = {
+        "lat": "Latitude",
+        "sqft_living": "Área habitável",
+        "grade": "Padrão construtivo",
+        "long": "Longitude",
+        "sqft_lot": "Área do terreno",
+        "yr_built": "Ano de construção",
+        "zipcode": "CEP",
+        "view": "Qualidade da vista",
+    }
+    for row in feature_importance.head(8).itertuples(index=False):
+        expected = f"| {feature_labels[row.feature]} | US$ {_format_br_number(row.mae_increase)} |"
+        assert expected in summary
