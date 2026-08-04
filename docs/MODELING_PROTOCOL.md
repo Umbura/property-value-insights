@@ -99,6 +99,20 @@ Nenhuma escolha é considerada suficiente apenas por reduzir uma métrica.
 - relatório gerado em `reports/model_comparison.md`;
 - critérios de promoção cobertos por testes automatizados.
 
+## Decisão para o artefato
+
+A promoção estatística da Fase 2.1 identificou o modelo demográfico calibrado
+como melhor candidato segundo os critérios definidos naquela etapa. A revisão
+de governança posterior selecionou o modelo somente físico para o artefato da
+Fase 3.
+
+Depois da exclusão dos 18 registros temporalmente inconsistentes, a demografia
+reduziu a MAE média das cinco janelas em 0,71%. O modelo físico apresentou MAE
+e R² melhores no período diagnóstico. O ganho marginal não foi considerado
+suficiente para incorporar variáveis com risco de representar proxies
+socioeconômicas. `zipcode` permanece como categoria geográfica e continua
+sujeito a monitoramento por segmento.
+
 ## Referências metodológicas
 
 - Duan, N. (1983). *Smearing Estimate: A Nonparametric Retransformation

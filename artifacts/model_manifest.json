@@ -1,0 +1,106 @@
+{
+  "artifact": {
+    "path": "artifacts/property_value_model.joblib",
+    "sha256": "90ffbab62970c805b7fd65a5488fa727026bdc59b81d56726318374cdce8c439"
+  },
+  "created_at_utc": "2026-08-03T23:24:44.139717+00:00",
+  "evaluation": {
+    "cross_validation": {
+      "mae_mean": 63880.797811,
+      "mae_std": 2215.211195,
+      "mae_worst": 66613.264452,
+      "rmse_mean": 119965.693905,
+      "rmsle_mean": 0.165964
+    },
+    "development_end": "2015-03-03",
+    "development_rows": 16955,
+    "diagnostic_rows": 4640,
+    "diagnostic_start": "2015-03-04",
+    "folds": 5,
+    "latest_period_diagnostic": {
+      "coefficient_of_dispersion": 12.161725,
+      "mae": 67105.708262,
+      "mape": 0.120651,
+      "mean_error": -20577.296614,
+      "mean_percentage_error": -0.010816,
+      "median_absolute_error": 40331.599415,
+      "median_prediction_ratio": 0.974369,
+      "price_related_differential": 1.027417,
+      "r2": 0.899781,
+      "rmse": 116547.248993,
+      "rmsle": 0.168779,
+      "status": "diagnostic_only_previously_inspected",
+      "underprediction_rate": 0.587716
+    },
+    "protocol": "five expanding temporal folds on the development period"
+  },
+  "limitations": [
+    "O período temporal mais recente foi consultado e possui uso diagnóstico.",
+    "Os dados de treinamento cobrem uma região e um intervalo temporal limitado.",
+    "Imóveis de maior valor mantêm erro absoluto e viés negativo mais elevados.",
+    "O CEP permanece como categoria geográfica e pode representar disparidades contextuais."
+  ],
+  "model": {
+    "algorithm": "HistGradientBoostingRegressor",
+    "calibration": "smearing temporal nos 10% finais de cada treino",
+    "feature_columns": [
+      "bedrooms",
+      "bathrooms",
+      "sqft_living",
+      "sqft_lot",
+      "floors",
+      "waterfront",
+      "view",
+      "condition",
+      "grade",
+      "sqft_above",
+      "sqft_basement",
+      "yr_built",
+      "yr_renovated",
+      "zipcode",
+      "lat",
+      "long",
+      "sqft_living15",
+      "sqft_lot15"
+    ],
+    "feature_set": "physical",
+    "name": "property_value_hist_gradient_boosting_physical",
+    "parameters": {
+      "calibration_fraction": 0.1
+    },
+    "selection_reason": "Modelo somente físico selecionado após revisão supervisionada porque a alternativa demográfica apresentou ganho marginal de MAE e introduziu risco de proxies socioeconômicas.",
+    "target_transform": "log_temporal_smearing",
+    "version": "0.4.0-rc1"
+  },
+  "prediction_output": {
+    "hash_normalization": "line endings normalized to LF",
+    "path": "reports/future_predictions.csv",
+    "rows": 100,
+    "sha256": "ef906b4307f3e28e47564b0571cef39b816422dad87f829275e7bdc880b5bfcc",
+    "source_hash_normalization": "line endings normalized to LF",
+    "source_path": "data/raw/future_unseen_examples.csv",
+    "source_sha256": "5a31ff0c888bef204776208fcd7360859f12cab5e5bff30a8252715928cdd517"
+  },
+  "runtime": {
+    "joblib": "1.5.3",
+    "numpy": "2.4.6",
+    "pandas": "2.3.3",
+    "property_value_insights": "0.1.0.dev0",
+    "python": "3.13.7",
+    "scikit_learn": "1.9.0"
+  },
+  "schema_version": "1.0",
+  "source_revision": "3fdfdbff884357fdf7e39f96017d1e7ff6fa53ff",
+  "training_data": {
+    "construction_after_sale_rows": 12,
+    "date_end": "2015-05-27",
+    "date_start": "2014-05-02",
+    "excluded_rows": 18,
+    "hash_normalization": "line endings normalized to LF",
+    "input_rows": 21613,
+    "path": "data/raw/kc_house_data.csv",
+    "renovation_after_sale_rows": 6,
+    "retained_rows": 21595,
+    "sha256": "d0875baa0251b21d4bdc9d2ae940a4fe0bb6009824f23dd0e2a5b2bf04557b7e"
+  }
+}
