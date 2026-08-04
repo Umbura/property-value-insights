@@ -2,7 +2,7 @@
 
 ## Finalidade
 
-O artefato da Fase 3 encapsula o pré-processamento e o estimador aprovados em
+O artefato versionado encapsula o pré-processamento e o estimador aprovados em
 um único arquivo carregável. O treinamento e a inferência usam a mesma lista
 ordenada de features, evitando diferenças entre notebook, execução em lote e
 futura API.

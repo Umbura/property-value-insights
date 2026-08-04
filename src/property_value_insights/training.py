@@ -197,7 +197,7 @@ def _manifest(
             "algorithm": "HistGradientBoostingRegressor",
             "calibration": "smearing temporal nos 10% finais de cada treino",
             "selection_reason": (
-                "Modelo somente físico selecionado após revisão supervisionada porque "
+                "Modelo somente físico selecionado após avaliação de governança porque "
                 "a alternativa demográfica apresentou ganho marginal de MAE e introduziu "
                 "risco de proxies socioeconômicas."
             ),

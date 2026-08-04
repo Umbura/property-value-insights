@@ -1,13 +1,6 @@
 # Relatório de modelagem, calibração e avaliação
 
-> **Status histórico:** este relatório registra a promoção estatística realizada
-> na Fase 2.1. A revisão de governança posterior selecionou o modelo somente
-> físico como artefato final. Portanto, as seções "modelo promovido" e
-> "importância das variáveis" abaixo descrevem o experimento demográfico e não o
-> modelo servido pela API. Os resultados vigentes estão no
-> [`training_summary.md`](training_summary.md), no
-> [`MODEL_CARD.md`](../docs/MODEL_CARD.md) e no
-> [`stakeholder_summary.md`](stakeholder_summary.md).
+> **Contexto do experimento:** este relatório registra a promoção estatística dos candidatos calibrados. A avaliação de governança posterior selecionou o modelo somente físico como artefato final. Portanto, as seções "modelo promovido" e "importância das variáveis" abaixo descrevem o experimento demográfico e não o modelo servido pela API. Os resultados vigentes estão em [`training_summary.md`](training_summary.md), [`MODEL_CARD.md`](../docs/MODEL_CARD.md) e [`stakeholder_summary.md`](stakeholder_summary.md).
 
 ## Protocolo
 
@@ -48,7 +41,7 @@
 | ridge_physical_raw                         |     95995.196 |     1840.264 |      98992.201 |     160603.046 |           0.806 |
 | baseline_median                            |    219003.585 |     3909.205 |     223307.567 |     369960.663 |           0.527 |
 
-## Candidatos da Fase 2.1
+## Candidatos calibrados
 
 | candidate                                  |   cv_mae_mean |   cv_mape_mean |   cv_mean_error_mean |   cv_underprediction_rate_mean |   cv_prd_mean |   cv_high_price_mae_mean |   cv_high_price_mean_error_mean |   cv_high_price_underprediction_rate_mean |   high_price_mae_improved_folds |
 |:-------------------------------------------|--------------:|---------------:|---------------------:|-------------------------------:|--------------:|-------------------------:|--------------------------------:|------------------------------------------:|--------------------------------:|
@@ -84,13 +77,13 @@ O modelo `hist_demographics_log_temporal_smearing_10` foi promovido porque perma
 
 ## Avaliação temporal diagnóstica
 
-Os resíduos deste período motivaram a Fase 2.1. Por isso, os resultados abaixo são diagnósticos posteriores à seleção temporal e não um novo teste completamente intocado.
+Os resíduos deste período motivaram a calibração adicional. Por isso, os resultados abaixo são diagnósticos posteriores à seleção temporal e não um novo teste completamente intocado.
 
-| candidate                                  |         mae |        rmse |   rmsle |      r2 |   median_absolute_error |   mape |   mean_error |   mean_percentage_error |   underprediction_rate |   median_prediction_ratio |   coefficient_of_dispersion |   price_related_differential |   fit_seconds |
-|:-------------------------------------------|------------:|------------:|--------:|--------:|------------------------:|-------:|-------------:|------------------------:|-----------------------:|--------------------------:|----------------------------:|-----------------------------:|--------------:|
-| baseline_median                            | 225353.8853 | 382414.5500 |  0.5250 | -0.0790 |             149600.0000 | 0.4097 | -103465.4466 |                  0.0717 |                 0.5304 |                    0.9678 |                     42.2629 |                       1.3184 |        0.0000 |
-| hist_demographics_log_default              |  73912.4389 | 129023.8004 |  0.1818 |  0.8772 |              44598.5181 | 0.1289 |  -43927.8127 |                 -0.0531 |                 0.7147 |                    0.9319 |                     12.1739 |                       1.0286 |        1.1055 |
-| hist_demographics_log_temporal_smearing_10 |  67455.9069 | 120406.8921 |  0.1700 |  0.8930 |              39888.9647 | 0.1209 |  -20891.8611 |                 -0.0102 |                 0.5890 |                    0.9740 |                     12.1739 |                       1.0286 |        2.3966 |
+| candidate                                  |         mae |        rmse |   rmsle |      r2 |   median_absolute_error |   mape |   mean_error |   mean_percentage_error |   underprediction_rate |   median_prediction_ratio |   coefficient_of_dispersion |   price_related_differential |
+|:-------------------------------------------|------------:|------------:|--------:|--------:|------------------------:|-------:|-------------:|------------------------:|-----------------------:|--------------------------:|----------------------------:|-----------------------------:|
+| baseline_median                            | 225353.8853 | 382414.5500 |  0.5250 | -0.0790 |             149600.0000 | 0.4097 | -103465.4466 |                  0.0717 |                 0.5304 |                    0.9678 |                     42.2629 |                       1.3184 |
+| hist_demographics_log_default              |  73912.4389 | 129023.8004 |  0.1818 |  0.8772 |              44598.5181 | 0.1289 |  -43927.8127 |                 -0.0531 |                 0.7147 |                    0.9319 |                     12.1739 |                       1.0286 |
+| hist_demographics_log_temporal_smearing_10 |  67455.9069 | 120406.8921 |  0.1700 |  0.8930 |              39888.9647 | 0.1209 |  -20891.8611 |                 -0.0102 |                 0.5890 |                    0.9740 |                     12.1739 |                       1.0286 |
 
 ## Comparação com a mediana
 
