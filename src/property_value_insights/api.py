@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 import re
 from contextlib import asynccontextmanager
 from time import perf_counter
@@ -11,8 +10,10 @@ from uuid import uuid4
 
 import pandas as pd
 from fastapi import FastAPI, HTTPException, Request, Response
+from fastapi.responses import JSONResponse
+from pydantic import ValidationError
 
-from .artifact import ArtifactIntegrityError, load_model_bundle, predict_future
+from .artifact import ArtifactIntegrityError, load_model_bundle_with_manifest, predict_future
 from .config import Settings
 from .observability import OperationalMetrics, configure_logging
 from .schemas import (
@@ -20,12 +21,14 @@ from .schemas import (
     BatchPredictionRequest,
     BatchPredictionResponse,
     HealthResponse,
+    InternalErrorResponse,
     ModelInfoResponse,
     PredictionResponse,
     PropertyFeatures,
 )
 
 REQUEST_ID_PATTERN = re.compile(r"^[A-Za-z0-9._-]{1,64}$")
+API_VERSION = "0.5.0-rc1"
 
 
 def _request_id(request: Request) -> str:
@@ -37,6 +40,26 @@ def _prediction_frame(items: list[PropertyFeatures]) -> pd.DataFrame:
     return pd.DataFrame([item.model_dump() for item in items])
 
 
+def _model_info_from_manifest(manifest: Mapping[str, Any]) -> ModelInfoResponse:
+    try:
+        model = manifest["model"]
+        return ModelInfoResponse(
+            name=model["name"],
+            model_version=model["version"],
+            algorithm=model["algorithm"],
+            feature_set=model["feature_set"],
+            feature_columns=model["feature_columns"],
+            created_at_utc=manifest["created_at_utc"],
+            artifact_sha256=manifest["artifact"]["sha256"],
+            evaluation=manifest["evaluation"],
+            limitations=manifest["limitations"],
+        )
+    except (KeyError, TypeError, ValidationError) as error:
+        raise ArtifactIntegrityError(
+            "Model manifest contains invalid serving metadata"
+        ) from error
+
+
 def create_app(settings: Settings | None = None) -> FastAPI:
     """Create an isolated API instance with its own model state and metrics."""
 
@@ -46,13 +69,13 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
-        bundle = load_model_bundle(
+        bundle, manifest = load_model_bundle_with_manifest(
             runtime_settings.artifact_path,
             manifest_path=runtime_settings.manifest_path,
         )
-        manifest = json.loads(runtime_settings.manifest_path.read_text(encoding="utf-8"))
+        model_info = _model_info_from_manifest(manifest)
         app.state.bundle = bundle
-        app.state.manifest = manifest
+        app.state.model_info = model_info
         logger.info(
             "model_loaded",
             extra={"model_version": bundle["model_version"]},
@@ -62,7 +85,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     app = FastAPI(
         title="Property Value Insights API",
-        version="0.4.0-rc1",
+        version=API_VERSION,
         lifespan=lifespan,
     )
     app.state.settings = runtime_settings
@@ -78,9 +101,6 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             response = await call_next(request)
             status_code = response.status_code
             return response
-        except Exception as error:
-            metrics.failures.labels(type(error).__name__).inc()
-            raise
         finally:
             elapsed = perf_counter() - started
             route = getattr(request.scope.get("route"), "path", "unmatched")
@@ -99,30 +119,44 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             if "response" in locals():
                 response.headers["X-Request-ID"] = request_id
 
+    @app.exception_handler(Exception)
+    async def handle_unexpected_error(request: Request, error: Exception) -> JSONResponse:
+        request_id = getattr(request.state, "request_id", uuid4().hex)
+        metrics.failures.labels(type(error).__name__).inc()
+        logger.exception(
+            "request_failed",
+            extra={
+                "request_id": request_id,
+                "method": request.method,
+                "path": request.url.path,
+                "status_code": 500,
+            },
+        )
+        payload = InternalErrorResponse(request_id=request_id)
+        return JSONResponse(
+            status_code=500,
+            content=payload.model_dump(),
+            headers={"X-Request-ID": request_id},
+        )
+
     @app.get("/health", response_model=HealthResponse, tags=["operations"])
     def health(request: Request) -> HealthResponse:
         return HealthResponse(
             status="healthy",
+            api_version=API_VERSION,
             model_version=request.app.state.bundle["model_version"],
         )
 
     @app.get("/model-info", response_model=ModelInfoResponse, tags=["operations"])
     def model_info(request: Request) -> ModelInfoResponse:
-        manifest: Mapping[str, Any] = request.app.state.manifest
-        model = manifest["model"]
-        return ModelInfoResponse(
-            name=model["name"],
-            version=model["version"],
-            algorithm=model["algorithm"],
-            feature_set=model["feature_set"],
-            feature_columns=model["feature_columns"],
-            created_at_utc=manifest["created_at_utc"],
-            artifact_sha256=manifest["artifact"]["sha256"],
-            evaluation=manifest["evaluation"],
-            limitations=manifest["limitations"],
-        )
+        return request.app.state.model_info
 
-    @app.post("/predict", response_model=PredictionResponse, tags=["inference"])
+    @app.post(
+        "/predict",
+        response_model=PredictionResponse,
+        responses={500: {"model": InternalErrorResponse}},
+        tags=["inference"],
+    )
     def predict(payload: PropertyFeatures, request: Request) -> PredictionResponse:
         result = predict_future(request.app.state.bundle, _prediction_frame([payload])).iloc[0]
         metrics.predictions.labels("single").inc()
@@ -132,7 +166,12 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             request_id=request.state.request_id,
         )
 
-    @app.post("/predict/batch", response_model=BatchPredictionResponse, tags=["inference"])
+    @app.post(
+        "/predict/batch",
+        response_model=BatchPredictionResponse,
+        responses={500: {"model": InternalErrorResponse}},
+        tags=["inference"],
+    )
     def predict_batch(
         payload: BatchPredictionRequest,
         request: Request,

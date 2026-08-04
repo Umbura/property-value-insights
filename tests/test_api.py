@@ -5,6 +5,7 @@ import logging
 from concurrent.futures import ThreadPoolExecutor
 from io import StringIO
 from pathlib import Path
+from unittest.mock import patch
 
 import pandas as pd
 import pytest
@@ -43,14 +44,22 @@ def test_health_and_model_info_expose_loaded_model_metadata() -> None:
     with TestClient(create_app(_settings())) as client:
         health = client.get("/health", headers={"X-Request-ID": "health-check-1"})
         model_info = client.get("/model-info")
+        openapi = client.get("/openapi.json")
 
     assert health.status_code == 200
     assert health.headers["X-Request-ID"] == "health-check-1"
-    assert health.json() == {"status": "healthy", "model_version": "0.4.0-rc1"}
+    assert health.json() == {
+        "status": "healthy",
+        "api_version": "0.5.0-rc1",
+        "model_version": "0.4.0-rc1",
+    }
     assert model_info.status_code == 200
+    assert model_info.json()["model_version"] == "0.4.0-rc1"
     assert model_info.json()["feature_set"] == "physical"
     assert model_info.json()["algorithm"] == "HistGradientBoostingRegressor"
     assert len(model_info.json()["feature_columns"]) == 18
+    assert openapi.json()["info"]["version"] == "0.5.0-rc1"
+    assert openapi.json()["info"]["version"] != model_info.json()["model_version"]
 
 
 def test_single_prediction_matches_the_versioned_batch_output(
@@ -61,6 +70,7 @@ def test_single_prediction_matches_the_versioned_batch_output(
         response = client.post("/predict", json=property_payloads[0])
 
     assert response.status_code == 200
+    assert response.json()["currency"] == "USD"
     assert response.json()["model_version"] == expected["model_version"]
     assert response.json()["predicted_price"] == pytest.approx(expected["predicted_price"])
     assert response.headers["X-Request-ID"] == response.json()["request_id"]
@@ -74,6 +84,7 @@ def test_batch_prediction_preserves_input_order(
         response = client.post("/predict/batch", json={"items": property_payloads[:3]})
 
     assert response.status_code == 200
+    assert response.json()["currency"] == "USD"
     assert [item["item_id"] for item in response.json()["predictions"]] == [1, 2, 3]
     assert [item["predicted_price"] for item in response.json()["predictions"]] == pytest.approx(
         expected["predicted_price"].tolist()
@@ -123,6 +134,54 @@ def test_invalid_artifact_prevents_service_startup(tmp_path: Path) -> None:
     with pytest.raises(ArtifactIntegrityError, match="hash does not match"):
         with TestClient(create_app(_settings(artifact_path=invalid_artifact))):
             pass
+
+
+def test_incomplete_serving_manifest_prevents_service_startup(tmp_path: Path) -> None:
+    manifest = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
+    manifest.pop("evaluation")
+    incomplete_manifest = tmp_path / "model_manifest.json"
+    incomplete_manifest.write_text(json.dumps(manifest), encoding="utf-8")
+
+    with pytest.raises(ArtifactIntegrityError, match="serving metadata"):
+        with TestClient(create_app(_settings(manifest_path=incomplete_manifest))):
+            pass
+
+
+def test_unexpected_failure_returns_correlated_structured_error(
+    property_payloads: list[dict[str, object]],
+) -> None:
+    stream = StringIO()
+    handler = logging.StreamHandler(stream)
+    handler.setFormatter(JsonFormatter())
+    logger = logging.getLogger("property_value_insights.api")
+    logger.addHandler(handler)
+    try:
+        with TestClient(create_app(_settings()), raise_server_exceptions=False) as client:
+            with patch(
+                "property_value_insights.api.predict_future",
+                side_effect=RuntimeError("forced failure"),
+            ):
+                response = client.post(
+                    "/predict",
+                    json=property_payloads[0],
+                    headers={"X-Request-ID": "failed-request"},
+                )
+            metrics = client.get("/metrics").text
+    finally:
+        logger.removeHandler(handler)
+
+    assert response.status_code == 500
+    assert response.headers["X-Request-ID"] == "failed-request"
+    assert response.json() == {
+        "detail": "Internal server error",
+        "request_id": "failed-request",
+    }
+    assert 'pvi_request_failures_total{exception_type="RuntimeError"} 1.0' in metrics
+    records = [json.loads(line) for line in stream.getvalue().splitlines() if line]
+    error_record = next(record for record in records if record["message"] == "request_failed")
+    assert error_record["level"] == "ERROR"
+    assert error_record["request_id"] == "failed-request"
+    assert "RuntimeError: forced failure" in error_record["exception"]
 
 
 def test_concurrent_requests_return_stable_predictions(

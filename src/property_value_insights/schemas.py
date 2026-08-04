@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from typing import Any
+from datetime import datetime
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -44,6 +45,7 @@ class PredictionResponse(BaseModel):
     """Prediction returned for one property."""
 
     predicted_price: float
+    currency: Literal["USD"] = "USD"
     model_version: str
     request_id: str
 
@@ -59,22 +61,29 @@ class BatchPredictionResponse(BaseModel):
     """Predictions returned for a batch."""
 
     predictions: list[BatchPredictionItem]
+    currency: Literal["USD"] = "USD"
     model_version: str
     request_id: str
 
 
 class HealthResponse(BaseModel):
     status: str
+    api_version: str
     model_version: str
 
 
 class ModelInfoResponse(BaseModel):
-    name: str
-    version: str
-    algorithm: str
-    feature_set: str
-    feature_columns: list[str]
-    created_at_utc: str
-    artifact_sha256: str
-    evaluation: dict[str, Any]
-    limitations: list[str]
+    name: str = Field(min_length=1)
+    model_version: str = Field(min_length=1)
+    algorithm: str = Field(min_length=1)
+    feature_set: str = Field(min_length=1)
+    feature_columns: list[str] = Field(min_length=1)
+    created_at_utc: datetime
+    artifact_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    evaluation: dict[str, Any] = Field(min_length=1)
+    limitations: list[str] = Field(min_length=1)
+
+
+class InternalErrorResponse(BaseModel):
+    detail: Literal["Internal server error"] = "Internal server error"
+    request_id: str

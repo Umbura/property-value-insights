@@ -110,6 +110,17 @@ def load_model_bundle(
 ) -> Mapping[str, Any]:
     """Load a model bundle after verifying its hash and manifest metadata."""
 
+    bundle, _ = load_model_bundle_with_manifest(path, manifest_path=manifest_path)
+    return bundle
+
+
+def load_model_bundle_with_manifest(
+    path: str | Path,
+    *,
+    manifest_path: str | Path,
+) -> tuple[Mapping[str, Any], Mapping[str, Any]]:
+    """Load a model bundle and return the exact manifest used for verification."""
+
     source = Path(path)
     try:
         manifest = json.loads(Path(manifest_path).read_text(encoding="utf-8"))
@@ -139,7 +150,7 @@ def load_model_bundle(
             raise ArtifactIntegrityError(
                 f"Model manifest {manifest_field} does not match the artifact"
             )
-    return bundle
+    return bundle, manifest
 
 
 def predict_future(bundle: Mapping[str, Any], frame: pd.DataFrame) -> pd.DataFrame:
