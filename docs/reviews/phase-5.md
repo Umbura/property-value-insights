@@ -48,12 +48,15 @@ docker build --tag property-value-insights:phase5 .
 Resultados observados localmente:
 
 - Ruff: aprovado;
-- pytest: 60 testes aprovados;
+- pytest: 61 testes aprovados;
 - dependências: consistentes;
 - links e artefatos locais da fase: verificados;
-- regeneração de gráfico, CSV e JSON: reproduzível e sem diff;
+- regeneração de gráfico, CSV de faixas, CSV de importância e JSON: reproduzível
+  e sem diff;
+- três blocos Mermaid renderizados em SVG sem erro;
 - construção da imagem: aprovada;
-- módulo de reporting importável no runtime sem instalar Matplotlib;
+- imagem mínima sem Matplotlib e sem expor o comando opcional de reporting;
+- API saudável com versões `0.5.0-rc1` e `0.4.0-rc1`;
 - configuração do Docker Compose: válida.
 
 ## Decisões
