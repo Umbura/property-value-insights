@@ -20,6 +20,10 @@ from .artifact import (
 from .data_contract import validate_future_frame
 from .training import filter_temporally_consistent_rows
 
+DEFAULT_PERMUTATION_CYCLES = 10
+SHAP_BASE_SEED = 42
+MAX_RELATIVE_ADDITIVITY_ERROR = 1e-4
+
 
 @dataclass(frozen=True)
 class ShapDiagnostics:
@@ -30,8 +34,10 @@ class ShapDiagnostics:
     explained_rows: int
     background_rows: int
     max_additivity_error: float
+    max_relative_additivity_error: float
     elapsed_seconds: float
     base_value: float
+    permutation_cycles: int
     model_identity: dict[str, str]
 
 
@@ -90,8 +96,14 @@ def evaluate_shap_explanations(
     *,
     background_size: int = 50,
     explanation_size: int | None = None,
+    permutation_cycles: int = DEFAULT_PERMUTATION_CYCLES,
 ) -> ShapDiagnostics:
     """Explain future predictions with a deterministic permutation explainer."""
+
+    if explanation_size is not None and explanation_size < 3:
+        raise ValueError("explanation_size must be at least three")
+    if permutation_cycles < 1:
+        raise ValueError("permutation_cycles must be positive")
 
     import shap
 
@@ -129,11 +141,12 @@ def evaluate_shap_explanations(
         predict,
         background,
         feature_names=features,
-        seed=42,
+        seed=SHAP_BASE_SEED,
     )
     explanation = explainer(
         explanation_values,
-        max_evals=2 * len(features) + 1,
+        max_evals=permutation_cycles * (2 * len(features) + 1),
+        error_bounds=True,
         batch_size=min(20, len(explanation_values)),
         silent=True,
     )
@@ -143,11 +156,16 @@ def evaluate_shap_explanations(
         np.asarray(explanation.base_values, dtype=float),
         len(explanation_values),
     )
+    permutation_std = np.asarray(explanation.error_std, dtype=float)
     predictions = predict(explanation_values)
     reconstructed = base_values + shap_values.sum(axis=1)
     additivity_errors = np.abs(reconstructed - predictions)
     max_additivity_error = float(additivity_errors.max())
-    if max_additivity_error > 1e-5:
+    relative_additivity_errors = additivity_errors / np.maximum(
+        np.abs(predictions), 1.0
+    )
+    max_relative_additivity_error = float(relative_additivity_errors.max())
+    if max_relative_additivity_error > MAX_RELATIVE_ADDITIVITY_ERROR:
         raise RuntimeError("SHAP contributions do not reproduce model predictions")
 
     global_importance = (
@@ -156,6 +174,7 @@ def evaluate_shap_explanations(
                 "feature": features,
                 "mean_absolute_shap": np.abs(shap_values).mean(axis=0),
                 "mean_signed_shap": shap_values.mean(axis=0),
+                "mean_permutation_std": permutation_std.mean(axis=0),
             }
         )
         .sort_values("mean_absolute_shap", ascending=False, kind="mergesort")
@@ -195,8 +214,10 @@ def evaluate_shap_explanations(
         explained_rows=len(explanation_values),
         background_rows=len(background),
         max_additivity_error=max_additivity_error,
+        max_relative_additivity_error=max_relative_additivity_error,
         elapsed_seconds=elapsed_seconds,
         base_value=float(base_values.mean()),
+        permutation_cycles=permutation_cycles,
         model_identity={
             "name": str(model["name"]),
             "version": str(model["version"]),
@@ -222,6 +243,7 @@ def write_shap_artifacts(
     *,
     background_size: int = 50,
     explanation_size: int | None = None,
+    permutation_cycles: int = DEFAULT_PERMUTATION_CYCLES,
 ) -> dict[str, Path]:
     """Write SHAP tables, metadata and a compact global/local figure."""
 
@@ -236,6 +258,7 @@ def write_shap_artifacts(
         root,
         background_size=background_size,
         explanation_size=explanation_size,
+        permutation_cycles=permutation_cycles,
     )
 
     global_path = destination / "shap_global_importance.csv"
@@ -243,7 +266,11 @@ def write_shap_artifacts(
     metadata_path = destination / "shap_metadata.json"
     figure_path = figure_dir / "shap_explanations.png"
     diagnostics.global_importance.round(
-        {"mean_absolute_shap": 2, "mean_signed_shap": 2}
+        {
+            "mean_absolute_shap": 2,
+            "mean_signed_shap": 2,
+            "mean_permutation_std": 2,
+        }
     ).to_csv(global_path, index=False, encoding="utf-8", lineterminator="\n")
     diagnostics.local_explanations.round(
         {
@@ -262,10 +289,15 @@ def write_shap_artifacts(
                 "model_identity": diagnostics.model_identity,
                 "explained_rows": diagnostics.explained_rows,
                 "background_rows": diagnostics.background_rows,
+                "permutation_cycles": diagnostics.permutation_cycles,
                 "base_value": round(diagnostics.base_value, 6),
                 "max_additivity_error": diagnostics.max_additivity_error,
+                "max_relative_additivity_error": (
+                    diagnostics.max_relative_additivity_error
+                ),
                 "shap_version": version("shap"),
                 "limitations": [
+                    "Attributions are approximate estimates across recorded permutation cycles.",
                     "Contributions describe model behavior relative to the selected baseline.",
                     "SHAP values do not establish causal effects.",
                     "Correlated features may share or redistribute attribution.",
@@ -373,6 +405,11 @@ def _parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--output-dir", type=Path)
     parser.add_argument("--background-size", type=int, default=50)
     parser.add_argument("--explanation-size", type=int)
+    parser.add_argument(
+        "--permutation-cycles",
+        type=int,
+        default=DEFAULT_PERMUTATION_CYCLES,
+    )
     return parser.parse_args(argv)
 
 
@@ -383,6 +420,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         args.output_dir,
         background_size=args.background_size,
         explanation_size=args.explanation_size,
+        permutation_cycles=args.permutation_cycles,
     )
     for name, path in outputs.items():
         print(f"{name}: {path}")
