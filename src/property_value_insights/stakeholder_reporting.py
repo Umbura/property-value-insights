@@ -12,7 +12,7 @@ import numpy as np
 import pandas as pd
 from sklearn.inspection import permutation_importance
 
-from .artifact import sha256_normalized_text_file
+from .artifact import sha256_file, sha256_normalized_text_file
 from .modeling import (
     feature_columns,
     fit_and_evaluate,
@@ -172,6 +172,9 @@ def _validate_against_manifest(
         raise ValueError("Diagnostic period end does not match the model manifest")
     if sha256_normalized_text_file(historical_path) != manifest["training_data"]["sha256"]:
         raise ValueError("Historical data hash does not match the model manifest")
+    artifact_path = project_root / manifest["artifact"]["path"]
+    if sha256_file(artifact_path) != manifest["artifact"]["sha256"]:
+        raise ValueError("Model artifact hash does not match the model manifest")
     missing_metrics = set(metrics) - set(expected)
     if missing_metrics:
         names = ", ".join(sorted(missing_metrics))

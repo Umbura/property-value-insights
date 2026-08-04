@@ -60,6 +60,11 @@ def test_phase5_diagrams_and_business_artifacts_are_present() -> None:
     assert manifest["model"]["version"] in model_card
     reduction = stakeholder_metrics["comparison"]["mae_reduction_pct"]
     assert f"{reduction:.2f}%".replace(".", ",") in stakeholder_summary
+    assert stakeholder_metrics["model_identity"]["name"] == manifest["model"]["name"]
+    assert stakeholder_metrics["model_identity"]["version"] == manifest["model"]["version"]
+    assert stakeholder_metrics["model_identity"]["artifact_sha256"] == (
+        manifest["artifact"]["sha256"]
+    )
     assert (PROJECT_ROOT / "reports" / "figures" / "approved_model_diagnostic.png").exists()
 
 
