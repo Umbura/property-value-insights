@@ -264,7 +264,6 @@ def write_shap_artifacts(
                 "background_rows": diagnostics.background_rows,
                 "base_value": round(diagnostics.base_value, 6),
                 "max_additivity_error": diagnostics.max_additivity_error,
-                "elapsed_seconds": round(diagnostics.elapsed_seconds, 6),
                 "shap_version": version("shap"),
                 "limitations": [
                     "Contributions describe model behavior relative to the selected baseline.",
