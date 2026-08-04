@@ -1,6 +1,6 @@
 # Revisão da Fase 6
 
-Status: em desenvolvimento.
+Status: pronta para revisão supervisionada.
 
 ## Objetivo
 
@@ -26,6 +26,55 @@ o artefato aprovado ou o contrato da API.
 - adaptador generativo ou provedor externo;
 - publicação, merge final ou release.
 
+## Entregas
+
+- protocolo de avaliação e referências metodológicas;
+- intervalo empírico calibrado em cinco janelas temporais;
+- diagnóstico geral e por quartil com cobertura e largura;
+- explicações SHAP globais nas 100 linhas futuras;
+- explicações locais para previsões baixa, mediana e alta;
+- CSVs, JSONs e figuras reproduzíveis;
+- relatório opcional e atualização do model card;
+- comandos `property_value_insights.uncertainty` e
+  `property_value_insights.explainability`;
+- testes de integridade, aditividade, rastreabilidade e isolamento do runtime.
+
+## Evidências de verificação
+
+```powershell
+.\.venv\Scripts\python.exe -m property_value_insights.uncertainty --project-root .
+.\.venv\Scripts\python.exe -m property_value_insights.explainability --project-root .
+.\.venv\Scripts\python.exe -m ruff check .
+.\.venv\Scripts\python.exe -m pytest -q
+.\.venv\Scripts\python.exe -m pip check
+docker compose config --quiet
+```
+
+Resultados observados localmente:
+
+- Ruff: aprovado;
+- pytest: 75 testes aprovados;
+- dependências: consistentes;
+- configuração do Docker Compose: válida;
+- regeneração integral de CSVs, JSONs e PNGs: reproduzível e sem diff;
+- figuras inspecionadas sem sobreposição de texto;
+- aditividade SHAP: erro máximo de `1,40e-9`;
+- cobertura diagnóstica: 89,40% para nível nominal de 90%;
+- dependências de explicabilidade: ausentes do runtime de serving;
+- build da imagem não repetido nesta revisão porque o Docker Desktop estava
+  desligado; o isolamento foi verificado estaticamente e por teste automatizado.
+
+## Decisões
+
+- o intervalo é diagnóstico e não oferece garantia conformal em produção;
+- cobertura e largura permanecem inseparáveis na comunicação;
+- a menor cobertura em Q1 e Q4 é apresentada sem suavização;
+- SHAP explica comportamento em relação ao baseline, não causalidade;
+- o baseline usa 50 linhas históricas determinísticas;
+- explicabilidade não cria endpoint nem altera a resposta da API;
+- o adaptador generativo permanece excluído;
+- publicação, merge e release permanecem sob responsabilidade do autor.
+
 ## Pontos para revisão
 
 - avaliar cobertura geral e por quartil;
@@ -33,4 +82,3 @@ o artefato aprovado ou o contrato da API.
 - revisar baseline e estabilidade das explicações SHAP;
 - confirmar isolamento das dependências opcionais;
 - decidir pela aprovação ou remoção de cada opcional separadamente.
-

@@ -71,4 +71,3 @@ aumento de superfície, latência e custo no caminho de inferência.
 - Lundberg, S. M. e Lee, S.-I. [A Unified Approach to Interpreting Model Predictions](https://arxiv.org/abs/1705.07874).
 - MAPIE. [Exchangeability testing on a fixed dataset](https://contrib.scikit-learn.org/MAPIE/1.4.1/generated/exchangeability_testing/1-quickstart/plot_exchangeability_fixed_dataset/).
 - Barber, R. F. et al. [Conformal Prediction Beyond Exchangeability](https://arxiv.org/abs/2202.13415).
-
