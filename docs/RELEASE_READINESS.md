@@ -2,24 +2,24 @@
 
 ## Escopo
 
-Este documento descreve como reproduzir e verificar a versão candidata do
-projeto. A preparação não publica pacotes, não cria tags e não altera o modelo
-aprovado nem o contrato da API.
+Este documento descreve como reproduzir e verificar a primeira versão estável
+integrada do projeto. A publicação não altera o modelo aprovado nem o contrato
+da API.
 
 ## Identidade das versões
 
 O projeto mantém versões independentes para componentes com ciclos de vida
 distintos:
 
-| Componente | Versão candidata | Finalidade |
+| Componente | Versão publicada | Finalidade |
 | --- | --- | --- |
-| entrega integrada | `1.0.0rc1` | código, documentação e artefatos reunidos |
+| entrega integrada | `1.0.0` | código, documentação e artefatos reunidos |
 | API | `0.5.0-rc1` | contrato HTTP de inferência |
 | modelo | `0.4.0-rc1` | pipeline treinado e previsões associadas |
 
-A versão integrada somente deve mudar para `1.0.0` após a revisão final e a
-autorização do responsável pela publicação. Alterar a versão da entrega não
-renomeia retroativamente a API nem o artefato de modelo.
+A versão integrada foi promovida para `1.0.0` após a revisão final. Essa
+promoção não renomeia retroativamente a API nem o artefato de modelo, que
+mantêm identidades e ciclos de vida independentes.
 
 ## Dependências
 
@@ -68,20 +68,18 @@ Após executar notebooks, `sanitize-property-notebooks --project-root .` remove
 somente os horários transitórios registrados pelo Jupyter. Células, contagens
 de execução e saídas permanecem intactas, evitando diffs sem significado.
 
-## Publicação manual
+## Publicação
 
-As ações abaixo permanecem intencionalmente manuais:
+As ações de publicação são intencionalmente manuais:
 
-1. concluir a revisão dos pull requests empilhados;
-2. definir a licença do código e confirmar a permissão aplicável aos dados;
-3. promover a versão integrada de `1.0.0rc1` para `1.0.0`;
-4. regenerar `uv.lock` e repetir todas as verificações;
-5. incorporar as branches aprovadas no `main`;
-6. criar a tag e as notas de release;
-7. enviar o link do repositório conforme as instruções do desafio.
+1. revisar e incorporar o pull request de publicação no `main`;
+2. criar a tag anotada `v1.0.0` no commit aprovado;
+3. publicar a GitHub Release com as notas correspondentes;
+4. enviar o link do repositório conforme as instruções do desafio.
 
 Não existe workflow de publicação automática nem credencial de publicação no
-repositório.
+repositório. O código original usa a licença MIT; `DATA_NOTICE.md` exclui
+explicitamente os dados fornecidos desse licenciamento.
 
 ## Evidências locais
 
@@ -91,6 +89,8 @@ Validação executada em 4 de agosto de 2026:
 - Ruff aprovado e 86 testes automatizados aprovados;
 - `pip-audit` sem vulnerabilidades conhecidas nas dependências publicadas;
 - sete controles de integridade da entrega aprovados;
+- distribuições `sdist` e wheel construídas com versão `1.0.0` e expressão
+  de licença MIT nos metadados;
 - notebooks exploratório e de modelagem reproduzidos byte a byte após a
   sanitização dos horários de execução;
 - relatório de modelagem reproduzido byte a byte;

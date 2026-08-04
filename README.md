@@ -4,8 +4,8 @@ Sistema reprodutível de estimativa de preços residenciais com Machine Learning
 práticas de MLOps. O projeto foi desenvolvido para o desafio técnico de previsão
 de preços de imóveis e trata os dados como uma solução de cliente real.
 
-Status atual: versão candidata integrada, com modelo, API, análises e artefatos
-reproduzíveis disponíveis para avaliação técnica.
+Status atual: versão estável integrada `1.0.0`, com modelo, API, análises e
+artefatos reproduzíveis disponíveis para avaliação técnica.
 
 ## Objetivo
 
@@ -135,3 +135,12 @@ O fluxo completo esta em [`PROCESSO_GIT_GITHUB.md`](PROCESSO_GIT_GITHUB.md).
 A estratégia de dependências, a verificação em ambiente limpo e as ações
 manuais de publicação estão em
 [`docs/RELEASE_READINESS.md`](docs/RELEASE_READINESS.md).
+
+## Licença e dados
+
+O código-fonte e a documentação original estão disponíveis sob a
+[licença MIT](LICENSE). Os arquivos brutos recebidos para o desafio não são
+relicenciados; as condições e os limites aplicáveis estão descritos no
+[`DATA_NOTICE.md`](DATA_NOTICE.md).
+
+As mudanças publicadas estão registradas no [`CHANGELOG.md`](CHANGELOG.md).

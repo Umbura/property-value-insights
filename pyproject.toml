@@ -4,9 +4,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "property-value-insights"
-version = "1.0.0rc1"
+version = "1.0.0"
 description = "Reproducible residential price estimation system with machine learning and MLOps."
 readme = "README.md"
+license = "MIT"
 requires-python = ">=3.13,<3.14"
 dependencies = [
     "fastapi==0.141.1",
