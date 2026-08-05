@@ -1,0 +1,139 @@
+name: Relato de bug
+description: Registrar um comportamento incorreto, regressão ou falha reproduzível.
+title: ""
+labels:
+  - bug
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Registre somente comportamentos observados. Não inclua segredos, dados pessoais, payloads sensíveis ou credenciais nas evidências.
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Resumo do problema
+      description: Descreva o defeito de forma curta, objetiva e impessoal.
+      placeholder: Qual comportamento está incorreto?
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Contexto e ambiente
+      description: Informe versão, branch, commit, sistema, Python, Docker ou endpoint relevantes.
+      placeholder: |
+        - release ou commit:
+        - ambiente:
+        - comando, endpoint ou componente:
+    validations:
+      required: true
+
+  - type: textarea
+    id: current-behavior
+    attributes:
+      label: Comportamento atual
+      description: Explique exatamente o que ocorreu, incluindo status, mensagem ou resultado observado.
+      placeholder: O que aconteceu?
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Comportamento esperado
+      description: Explique o resultado correto conforme contrato, teste ou documentação existente.
+      placeholder: O que deveria ter acontecido?
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Passos para reproduzir
+      description: Forneça uma sequência mínima e reproduzível.
+      placeholder: |
+        1. executar ...
+        2. enviar ...
+        3. observar ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidências
+      description: Inclua logs sanitizados, respostas, screenshots, testes falhos ou referências, sem expor informações sensíveis.
+      placeholder: Cole apenas evidências necessárias e sanitizadas.
+    validations:
+      required: false
+
+  - type: dropdown
+    id: impact
+    attributes:
+      label: Impacto
+      description: Classifique o efeito prático do problema atual.
+      options:
+        - Baixo - inconveniente sem comprometer o fluxo principal
+        - Médio - comportamento incorreto com alternativa disponível
+        - Alto - fluxo principal comprometido ou resultado não confiável
+        - Crítico - risco de segurança, corrupção, perda de dados ou serving inseguro
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: affected-area
+    attributes:
+      label: Área afetada
+      options:
+        - label: API ou schemas
+        - label: Modelo, artefato ou manifesto
+        - label: Dados ou validação
+        - label: Testes ou CI
+        - label: Docker ou operação
+        - label: Documentação
+        - label: Outro componente
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Critérios de aceite
+      description: Defina como a correção e a ausência de regressão serão verificadas.
+      placeholder: |
+        - [ ] o caso reproduzido passa;
+        - [ ] teste de regressão adicionado;
+        - [ ] comportamento existente compatível preservado.
+    validations:
+      required: true
+
+  - type: textarea
+    id: validation
+    attributes:
+      label: Validação esperada
+      description: Indique comandos, cenários e inspeções necessários para confirmar a correção.
+      placeholder: |
+        - teste direcionado;
+        - suíte completa;
+        - Ruff;
+        - validação manual do fluxo afetado.
+    validations:
+      required: true
+
+  - type: textarea
+    id: out-of-scope
+    attributes:
+      label: Fora do escopo
+      description: Liste refatorações, melhorias ou alterações de contrato que não fazem parte desta correção.
+      placeholder: Nenhuma alteração adicional aprovada.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: security-confirmation
+    attributes:
+      label: Confirmação de segurança
+      options:
+        - label: As evidências foram revisadas e não contêm segredos, credenciais ou dados pessoais.
+          required: true
