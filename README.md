@@ -7,6 +7,25 @@ de preços de imóveis e trata os dados como uma solução de cliente real.
 Status atual: versão estável integrada `1.0.0`, com modelo, API, análises e
 artefatos reproduzíveis disponíveis para avaliação técnica.
 
+## Ciclo de vida do projeto
+
+As Fases 0–7 registram o desenvolvimento da primeira versão estável integrada,
+publicada como `v1.0.0`. A publicação dessa release não representa a submissão
+do desafio técnico: o projeto encontra-se em revisão pré-entrega.
+
+O trabalho atual está organizado em três ciclos:
+
+1. **Revisão e diagnóstico:** testar a release e registrar evidências e achados;
+2. **Correções e estabilização:** corrigir bugs confirmados e implementar
+   melhorias aprovadas;
+3. **Validação final e entrega:** validar o projeto completo e consolidar o
+   build final da imagem Docker de runtime.
+
+Integrações com IA, templates, automações e configurações do repositório são
+tratadas como manutenção de engenharia, separadas do desenvolvimento funcional
+do sistema. O fluxo completo está em
+[`docs/REVIEW_AND_DELIVERY_PROCESS.md`](docs/REVIEW_AND_DELIVERY_PROCESS.md).
+
 ## Objetivo
 
 Estimar o preço de imóveis a partir de características físicas e espaciais,
@@ -126,11 +145,12 @@ diagrams/       diagramas de arquitetura e deploy
 
 ## Processo
 
-O desenvolvimento ocorre por fases, branches, commits atômicos, revisão
-supervisionada e pull requests. As decisões de modelagem, deploy, aprendizado
-contínuo e comunicação com stakeholders são documentadas junto às respectivas
-entregas.
-O fluxo completo esta em [`PROCESSO_GIT_GITHUB.md`](PROCESSO_GIT_GITHUB.md).
+As Fases 0–7 foram desenvolvidas por branches, commits atômicos, revisão
+supervisionada e pull requests. O histórico completo dessa construção está em
+[`PROCESSO_GIT_GITHUB.md`](PROCESSO_GIT_GITHUB.md).
+
+A revisão pré-entrega, a classificação das demandas e os ciclos atuais estão em
+[`docs/REVIEW_AND_DELIVERY_PROCESS.md`](docs/REVIEW_AND_DELIVERY_PROCESS.md).
 
 A estratégia de dependências, a verificação em ambiente limpo e as ações
 manuais de publicação estão em
