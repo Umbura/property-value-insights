@@ -62,7 +62,8 @@ sucesso.
 
 | Verificação | Comando ou evidência | Resultado |
 |---|---|---|
-| <!-- teste, inspeção ou check --> | <!-- comando, link ou evidência --> | <!-- aprovado, falhou ou observação --> |
+
+<!-- Preencha as linhas da tabela acima conforme as validações realmente executadas. -->
 
 ## Validações não executadas
 
