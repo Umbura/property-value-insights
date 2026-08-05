@@ -2,9 +2,11 @@
 
 ## Project context
 
-Property Value Insights is a machine learning project for property value prediction.
+Property Value Insights is a machine learning project for residential property value prediction.
 
-The repository includes model development, trained artifacts, a FastAPI inference API, Pydantic schemas, OpenAPI documentation, automated tests, Docker configuration, and model governance documentation.
+The repository includes model development, trained artifacts, a FastAPI inference API, Pydantic schemas, OpenAPI documentation, automated tests, Docker configuration, observability, and model governance documentation.
+
+The published `v1.0.0` is the first stable integrated release and the baseline for review. It does not mean that the technical challenge has already been submitted.
 
 Prioritize:
 
@@ -15,6 +17,59 @@ Prioritize:
 - small, reviewable changes;
 - honest communication of model limitations.
 
+## Project lifecycle
+
+The historical Phases 0–7 record the construction of `v1.0.0`. Current work follows three cycles:
+
+1. **Ciclo 1 — Revisão e diagnóstico:** inspect, test, and record evidence without silently implementing findings;
+2. **Ciclo 2 — Correções e estabilização:** correct confirmed bugs and implement approved improvements with regression coverage;
+3. **Ciclo 3 — Validação final e entrega:** validate the complete submission state, including clean installation, documentation, CI, artifacts, hashes, and the final Docker runtime image.
+
+The final Docker image intended for submission belongs to Cycle 3. Reviews in Cycle 1 may build and inspect the current image, but must not publish or present it as the final delivery image.
+
+Use `docs/REVIEW_AND_DELIVERY_PROCESS.md` as the source of truth for the current lifecycle. Use `PROCESSO_GIT_GITHUB.md` as the historical record of Phases 0–7.
+
+## Work classification
+
+Each Issue and pull request must record:
+
+- one primary nature;
+- one or more affected areas;
+- cycle or approved maintenance context;
+- priority.
+
+### Primary nature
+
+- **Review:** test, audit, or investigation that produces evidence. It does not authorize a correction or improvement automatically.
+- **Bug:** confirmed incorrect behavior or regression against code, tests, contract, or current documentation.
+- **Improvement:** approved additive change with a verifiable benefit.
+- **Maintenance:** engineering maintenance that is not a new product capability.
+- **Documentation:** exclusively documentary correction or expansion.
+- **Release:** versioning, packaging, release-candidate validation, or delivery preparation.
+
+### Areas
+
+Use one or more of:
+
+- API;
+- Model;
+- Data;
+- Testing;
+- Docker;
+- CI;
+- Documentation;
+- Governance;
+- Repository;
+- Automation.
+
+### Priority
+
+- **High:** blocks delivery or compromises reliability, security, reproducibility, or a main workflow;
+- **Medium:** relevant impact with an available workaround or no immediate delivery block;
+- **Low:** non-blocking refinement, cleanup, or minor improvement.
+
+Copilot, ChatGPT, AI integrations, templates, automations, dependency maintenance, CI configuration, rulesets, and repository organization must be classified as **Maintenance**, normally in **Repository**, **Automation**, **CI**, or **Governance**, unless they also change product behavior.
+
 ## Sources of truth
 
 Before making changes, inspect the relevant:
@@ -23,24 +78,42 @@ Before making changes, inspect the relevant:
 2. existing implementation;
 3. automated tests;
 4. `README.md`;
-5. `pyproject.toml` and lock files;
-6. GitHub Actions workflows;
-7. model manifests and technical documentation.
+5. `docs/REVIEW_AND_DELIVERY_PROCESS.md`;
+6. `pyproject.toml` and `uv.lock`;
+7. GitHub Actions workflows;
+8. model manifests and technical documentation.
 
-The current Issue defines the task scope.
+The current Issue defines the approved task scope. AI suggestions are not autonomous sources of truth.
 
-Do not treat review notes, historical reports, recommendations, or future possibilities as approved requirements unless the Issue explicitly approves them.
+Do not treat review notes, historical reports, recommendations, Copilot comments, or future possibilities as approved requirements unless the Issue explicitly approves them.
+
+## Issue, branch, and pull request flow
+
+Every repository change must follow this flow:
+
+1. read or create an Issue with classification, objective, scope, acceptance criteria, validation, risks, and out-of-scope items;
+2. create a short branch from `main`;
+3. implement only the approved scope;
+4. open a pull request linked to the Issue;
+5. record executed and unexecuted validations separately;
+6. address review findings;
+7. merge only after explicit supervised approval and required checks.
+
+Use `Closes #<number>` only when the pull request fully completes that Issue. Use a descriptive reference such as `Relacionado a #<number>` when the relationship must not close the Issue automatically.
+
+Do not push changes directly to `main`.
 
 ## Before editing
 
 Before changing files:
 
 1. read the complete Issue;
-2. inspect the affected code, tests, and documentation;
-3. confirm whether the requested behavior already exists;
-4. identify the smallest change that satisfies the Issue;
-5. check compatibility, data, security, and model-governance risks;
-6. prepare a concise implementation plan.
+2. confirm its primary nature, areas, cycle, priority, and acceptance criteria;
+3. inspect the affected code, tests, documentation, and current branch state;
+4. confirm whether the requested behavior already exists;
+5. identify the smallest change that satisfies the Issue;
+6. check compatibility, data, security, artifact, and model-governance risks;
+7. prepare a concise implementation plan.
 
 ## Scope control
 
@@ -51,10 +124,12 @@ Before changing files:
 - Do not silently expand the task.
 - Report useful out-of-scope improvements in the pull request instead of implementing them.
 - Do not implement optional or future ideas unless explicitly requested.
+- During a Review, record findings and open derived Issues instead of applying silent corrections.
+- Separate findings with different nature, risk, or acceptance criteria into different Issues.
 
 ## Handling ambiguity
 
-Do not guess when a task requires an undocumented architectural, breaking, modeling, governance, data-policy, or dependency decision.
+Do not guess when a task requires an undocumented architectural, breaking, modeling, governance, data-policy, security, dependency, or serving decision.
 
 When an important decision is unresolved:
 
@@ -128,7 +203,7 @@ Preserve documented limitations, including high-value underprediction and limite
 For API changes:
 
 - preserve the existing contract by default;
-- keep implementation, Pydantic schemas, tests, and OpenAPI documentation consistent;
+- keep implementation, Pydantic schemas, tests, OpenAPI documentation, and `docs/API_CONTRACT.md` consistent;
 - apply equivalent behavior to single and batch prediction where appropriate;
 - distinguish syntactic validation, domain validation, and out-of-distribution detection;
 - use correct HTTP semantics;
@@ -158,19 +233,25 @@ API examples must be plausible and valid for the model domain.
 
 ## Commands and validation
 
-Inspect repository configuration before running commands.
-
-Expected commands include:
+Inspect repository configuration before running commands. The locked development and CI baseline is:
 
 ```bash
-uv sync --frozen
-uv run pytest
-uv run ruff check .
-uv run ruff format --check .
+uv sync --locked --extra dev
+uv run --locked ruff check .
+uv run --locked pytest -q
+uv run --locked verify-property-release --project-root .
+uv run --locked pip-audit
+```
+
+For local runtime validation when relevant:
+
+```bash
 docker compose up --build
 ```
 
-If repository configuration differs, follow the repository and report the actual commands used.
+The CI container job builds the image directly and verifies the public endpoints under a read-only filesystem and a non-privileged runtime. Follow `.github/workflows/ci.yml` when reproducing that validation.
+
+Run only commands relevant to the Issue, but do not omit configured required checks from the pull request evidence. If repository configuration changes, follow the current repository and report the actual commands used.
 
 Never claim that a command passed if it was not executed successfully.
 
@@ -182,7 +263,7 @@ After modifying code:
 2. add regression tests for corrected defects;
 3. test relevant boundary and failure cases;
 4. run the full test suite when feasible;
-5. run configured linting and formatting checks;
+5. run configured linting and release-readiness checks;
 6. verify documentation against actual behavior.
 
 When relevant, verify individual and batch prediction consistency, artifact loading, manifest and hash consistency, invalid inputs, internal failures, and absence of information leakage.
@@ -209,29 +290,32 @@ If a command cannot be executed, state which command, why, and what remains unve
 - Never commit secrets, credentials, tokens, local absolute paths, caches, logs, or temporary files.
 - Do not disable tests or weaken validation merely to make checks pass.
 - Do not change GitHub Actions permissions without an explicit requirement.
+- Do not merge dependency or tooling upgrades into an unrelated product or review change.
 
 ## Pull requests
 
-Changes must be delivered through a pull request and must not be pushed directly to `main`.
-
 Keep each pull request focused, professional, impersonal, and reviewable.
 
-The pull request description must include:
+Follow `.github/pull_request_template.md`. The description must include:
 
-- **Context:** why the change is necessary;
-- **Problem:** the current behavior or limitation;
-- **Objective:** the intended result;
-- **Implementation:** what was changed and how;
-- **Technical decisions:** relevant choices and their rationale;
-- **Files and components changed:** affected areas of the repository;
-- **Backward compatibility:** impact on existing contracts and consumers;
-- **Testing:** commands executed, scenarios tested, and results;
-- **Risks and limitations:** known constraints or remaining concerns;
-- **Out of scope:** related items intentionally not implemented;
-- **Unverified points:** anything that could not be confirmed.
+- classification: primary nature, affected areas, cycle or milestone, and priority;
+- context;
+- current problem or evidence;
+- objective;
+- implementation;
+- technical decisions;
+- changed files and components;
+- exactly one applicable backward-compatibility option with justification;
+- validations executed, with commands or evidence and results;
+- validations not executed, with reasons;
+- observed results;
+- risks and limitations;
+- out-of-scope items;
+- requested review focus;
+- correct Issue linkage.
 
 Do not use vague descriptions such as "minor fixes", "improvements", or "various changes".
 
-Do not claim that a pull request is complete while acceptance criteria, tests, or relevant validations remain unverified.
+Do not claim that a pull request is complete while acceptance criteria, tests, required checks, review conversations, or relevant validations remain unresolved.
 
-Before declaring completion, confirm that the Issue requirements were addressed, tests pass, documentation matches behavior, artifacts remain consistent, and no unrelated changes or sensitive files were introduced.
+Before declaring completion, confirm that the Issue requirements were addressed, tests pass, documentation matches behavior, artifacts remain consistent, required checks are successful, and no unrelated changes or sensitive files were introduced.
