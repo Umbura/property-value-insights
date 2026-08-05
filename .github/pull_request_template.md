@@ -10,20 +10,19 @@
 
 <!-- Liste as principais mudanças realizadas. -->
 
-- 
+- ...
 
 ## Decisões técnicas
 
 <!-- Registre escolhas relevantes, alternativas consideradas e justificativas. -->
 
-- 
+- ...
 
 ## Arquivos e componentes alterados
 
 <!-- Indique as áreas afetadas do repositório. -->
 
-- 
-
+- ...
 ## Backward compatibility
 
 - [ ] A alteração preserva endpoints, schemas, campos, versões e comportamento documentado existentes.
