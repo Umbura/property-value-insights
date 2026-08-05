@@ -1,0 +1,122 @@
+name: Melhoria de documentação
+description: Corrigir, completar ou tornar mais clara a documentação técnica e de uso.
+title: ""
+labels:
+  - documentation
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use este formulário para documentação, OpenAPI, README, contratos, relatórios e materiais de avaliação. A documentação deve refletir o comportamento real e preservar a terminologia técnica do projeto.
+
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objetivo
+      description: Descreva qual compreensão, uso ou rastreabilidade deve ser melhorada.
+      placeholder: Qual resultado documental esta Issue deve produzir?
+    validations:
+      required: true
+
+  - type: textarea
+    id: current-problem
+    attributes:
+      label: Problema atual
+      description: Explique o que está ausente, incorreto, ambíguo, desatualizado ou difícil de interpretar.
+      placeholder: Qual informação atual pode induzir erro ou exige conhecimento prévio excessivo?
+    validations:
+      required: true
+
+  - type: textarea
+    id: affected-documents
+    attributes:
+      label: Documentos e superfícies afetados
+      description: Liste arquivos, seções, endpoints, schemas ou páginas de documentação envolvidos.
+      placeholder: |
+        - README.md
+        - docs/API_CONTRACT.md
+        - OpenAPI /docs
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Escopo
+      description: Liste as alterações documentais necessárias.
+      placeholder: |
+        - adicionar ...
+        - corrigir ...
+        - explicar ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: terminology
+    attributes:
+      label: Terminologia e fontes de verdade
+      description: Registre termos que devem ser preservados e quais arquivos, contratos ou implementações sustentam o conteúdo.
+      placeholder: |
+        - usar português para explicações e termos técnicos em inglês;
+        - confirmar valores e comportamento no código e nos testes;
+        - não apresentar o período diagnóstico como test set intocado.
+    validations:
+      required: false
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Critérios de aceite
+      description: Defina condições observáveis para considerar a documentação concluída.
+      placeholder: |
+        - [ ] exemplos válidos e reproduzíveis;
+        - [ ] unidades e limitações explícitas;
+        - [ ] links e referências verificados;
+        - [ ] nenhum contrato existente alterado sem aprovação.
+    validations:
+      required: true
+
+  - type: textarea
+    id: validation
+    attributes:
+      label: Validação esperada
+      description: Indique como verificar consistência, renderização, links, OpenAPI ou comandos documentados.
+      placeholder: |
+        - executar exemplos documentados;
+        - validar /openapi.json;
+        - conferir links e referências;
+        - executar testes relacionados.
+    validations:
+      required: true
+
+  - type: textarea
+    id: out-of-scope
+    attributes:
+      label: Fora do escopo
+      description: Liste mudanças de runtime, schema, modelo ou arquitetura que não devem ser introduzidas por esta Issue.
+      placeholder: |
+        - não alterar o contrato JSON;
+        - não criar nova versão da API;
+        - não regenerar modelo ou artefatos.
+    validations:
+      required: true
+
+  - type: textarea
+    id: references
+    attributes:
+      label: Referências
+      description: Informe Issues, PRs, relatórios, testes ou seções que fundamentam a alteração.
+      placeholder: Links ou caminhos relevantes.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: confirmation
+    attributes:
+      label: Confirmação
+      options:
+        - label: O conteúdo proposto será confirmado no código, nos testes ou em outra fonte versionada antes da publicação.
+          required: true
+        - label: Arquivos textuais serão preservados em UTF-8 e sem corrupção de caracteres.
+          required: true
