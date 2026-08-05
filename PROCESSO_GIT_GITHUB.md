@@ -9,6 +9,17 @@ O repositorio tambem sera tratado como parte da avaliacao tecnica. A historia
 deve tornar visiveis as decisoes, os testes, os problemas encontrados e as
 correcoes realizadas.
 
+## Nota de contexto após a v1.0.0
+
+Este documento registra o planejamento e a execução histórica das Fases 0–7,
+concluídas com a primeira release estável integrada, `v1.0.0`. Nesse contexto
+histórico, a expressão "entrega final revisada" marca o encerramento do ciclo de
+construção da release; ela não significa que o desafio técnico já foi submetido.
+
+O processo atual de revisão pré-entrega, correções, validação e preparação da
+submissão está em
+[`docs/REVIEW_AND_DELIVERY_PROCESS.md`](docs/REVIEW_AND_DELIVERY_PROCESS.md).
+
 ## 1. Principios
 
 - `main` deve permanecer executavel e representar uma versao revisada.
