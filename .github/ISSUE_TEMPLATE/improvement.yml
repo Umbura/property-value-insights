@@ -1,0 +1,169 @@
+name: Melhoria aprovada
+description: Registrar uma melhoria aditiva já aprovada para qualidade, clareza, robustez ou experiência de uso.
+title: ""
+labels:
+  - enhancement
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Natureza: **Improvement**. Use este formulário somente quando a mudança estiver aprovada. Possibilidades futuras e hipóteses devem permanecer separadas do escopo.
+
+  - type: checkboxes
+    id: area
+    attributes:
+      label: Área afetada
+      description: Selecione todas as áreas envolvidas.
+      options:
+        - label: API
+        - label: Model
+        - label: Data
+        - label: Testing
+        - label: Docker
+        - label: CI
+        - label: Documentation
+        - label: Governance
+        - label: Repository
+        - label: Automation
+    validations:
+      required: true
+
+  - type: dropdown
+    id: cycle
+    attributes:
+      label: Ciclo esperado
+      options:
+        - Ciclo 1 — Revisão e diagnóstico
+        - Ciclo 2 — Correções e estabilização
+        - Ciclo 3 — Validação final e entrega
+        - Manutenção fora dos ciclos técnicos
+        - A definir
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Prioridade proposta
+      options:
+        - High — bloqueia entrega, confiabilidade, segurança ou reprodutibilidade
+        - Medium — impacto relevante sem bloqueio imediato
+        - Low — refinamento não bloqueante
+    validations:
+      required: true
+
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objetivo
+      description: Descreva o resultado esperado de forma objetiva e verificável.
+      placeholder: Qual melhoria aprovada esta Issue deve entregar?
+    validations:
+      required: true
+
+  - type: textarea
+    id: decision_basis
+    attributes:
+      label: Evidência e decisão de aprovação
+      description: Informe a review, bug, relatório, decisão ou limitação que sustenta a melhoria.
+      placeholder: Por que esta mudança foi aprovada e qual evidência a justifica?
+    validations:
+      required: true
+
+  - type: textarea
+    id: current_state
+    attributes:
+      label: Estado atual
+      description: Explique o comportamento ou limitação existente sem apresentar hipóteses como fatos.
+      placeholder: O que existe hoje e qual benefício verificável é esperado?
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Escopo
+      description: Liste somente as entregas necessárias para cumprir o objetivo.
+      placeholder: |
+        - implementar ...
+        - atualizar ...
+        - adicionar testes para ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: compatibility
+    attributes:
+      label: Compatibilidade e reversibilidade
+      description: Registre impacto em contratos, consumidores, dados, modelo, artefatos ou automações e indique alternativa compatível.
+      placeholder: |
+        - preservar backward compatibility;
+        - descrever custo de migração, quando houver;
+        - informar como reverter a mudança.
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Critérios de aceite
+      description: Defina condições observáveis para considerar a melhoria concluída.
+      placeholder: |
+        - [ ] comportamento implementado;
+        - [ ] benefício esperado verificável;
+        - [ ] testes relacionados aprovados;
+        - [ ] documentação alinhada ao comportamento real.
+    validations:
+      required: true
+
+  - type: textarea
+    id: validation
+    attributes:
+      label: Validação esperada
+      description: Indique testes, comandos, inspeções ou evidências que devem ser produzidos.
+      placeholder: |
+        - testes direcionados;
+        - suíte completa;
+        - Ruff;
+        - validação manual do fluxo afetado.
+    validations:
+      required: true
+
+  - type: textarea
+    id: risks
+    attributes:
+      label: Riscos e limitações
+      description: Registre riscos residuais e condições não cobertas.
+      placeholder: Quais riscos permanecem após a implementação?
+    validations:
+      required: false
+
+  - type: textarea
+    id: out_of_scope
+    attributes:
+      label: Fora do escopo
+      description: Liste alternativas, refactors ou possibilidades futuras não aprovadas nesta Issue.
+      placeholder: |
+        - não alterar ...
+        - não implementar ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependências e referências
+      placeholder: Issues, PRs, reviews, relatórios ou decisões relacionadas.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: confirmation
+    attributes:
+      label: Confirmação
+      options:
+        - label: A melhoria foi explicitamente aprovada e está sustentada por evidência ou decisão registrada.
+          required: true
+        - label: O escopo foi separado de alternativas e possibilidades futuras ainda não aprovadas.
+          required: true
