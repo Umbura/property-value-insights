@@ -230,7 +230,7 @@ The pull request description must include:
 - **Out of scope:** related items intentionally not implemented;
 - **Unverified points:** anything that could not be confirmed.
 
-Do not use vague descriptions such as “minor fixes”, “improvements”, or “various changes”.
+Do not use vague descriptions such as "minor fixes", "improvements", or "various changes".
 
 Do not claim that a pull request is complete while acceptance criteria, tests, or relevant validations remain unverified.
 
