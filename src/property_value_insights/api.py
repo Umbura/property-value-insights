@@ -87,6 +87,16 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         title="Property Value Insights API",
         version=API_VERSION,
         lifespan=lifespan,
+        openapi_tags=[
+            {
+                "name": "Service Operations",
+                "description": "Operações de serviço para verificar disponibilidade e consultar metadados do modelo servido.",
+            },
+            {
+                "name": "Model Inference",
+                "description": "Operações de inferência para previsão de valor de imóveis em modo único ou em lote.",
+            },
+        ],
     )
     app.state.settings = runtime_settings
     app.state.metrics = metrics
@@ -139,7 +149,13 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             headers={"X-Request-ID": request_id},
         )
 
-    @app.get("/health", response_model=HealthResponse, tags=["operations"])
+    @app.get(
+        "/health",
+        response_model=HealthResponse,
+        tags=["Service Operations"],
+        summary="Check service readiness",
+        description="Verifica se a API está pronta para atender solicitações, retornando status do serviço, versão da API e versão do modelo carregado.",
+    )
     def health(request: Request) -> HealthResponse:
         return HealthResponse(
             status="healthy",
@@ -147,7 +163,13 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             model_version=request.app.state.bundle["model_version"],
         )
 
-    @app.get("/model-info", response_model=ModelInfoResponse, tags=["operations"])
+    @app.get(
+        "/model-info",
+        response_model=ModelInfoResponse,
+        tags=["Service Operations"],
+        summary="View served model metadata and performance",
+        description="Exibe metadados e métricas do modelo atualmente servido, conforme manifesto versionado, sem alterar artefatos ou estado do serviço.",
+    )
     def model_info(request: Request) -> ModelInfoResponse:
         return request.app.state.model_info
 
@@ -155,7 +177,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         "/predict",
         response_model=PredictionResponse,
         responses={500: {"model": InternalErrorResponse}},
-        tags=["inference"],
+        tags=["Model Inference"],
+        summary="Predict one property value",
+        description="Calcula a previsão de valor para um único imóvel com base nas features informadas e retorna preço previsto, versão do modelo e request_id.",
     )
     def predict(payload: PropertyFeatures, request: Request) -> PredictionResponse:
         result = predict_future(request.app.state.bundle, _prediction_frame([payload])).iloc[0]
@@ -170,7 +194,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         "/predict/batch",
         response_model=BatchPredictionResponse,
         responses={500: {"model": InternalErrorResponse}},
-        tags=["inference"],
+        tags=["Model Inference"],
+        summary="Predict multiple property values",
+        description="Processa múltiplos imóveis em uma única requisição, preserva a ordem de entrada e aplica o limite máximo de itens por lote configurado no serviço.",
     )
     def predict_batch(
         payload: BatchPredictionRequest,
