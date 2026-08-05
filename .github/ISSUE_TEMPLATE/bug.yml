@@ -1,4 +1,4 @@
-name: Relato de bug
+name: Bug ou regressão
 description: Registrar um comportamento incorreto, regressão ou falha reproduzível.
 title: ""
 labels:
@@ -8,7 +8,51 @@ body:
   - type: markdown
     attributes:
       value: |
-        Registre somente comportamentos observados. Não inclua segredos, dados pessoais, payloads sensíveis ou credenciais nas evidências.
+        Natureza: **Bug**. Registre somente comportamentos observados. Não inclua segredos, dados pessoais, payloads sensíveis ou credenciais nas evidências.
+
+  - type: checkboxes
+    id: area
+    attributes:
+      label: Área afetada
+      description: Selecione todas as áreas envolvidas.
+      options:
+        - label: API
+        - label: Model
+        - label: Data
+        - label: Testing
+        - label: Docker
+        - label: CI
+        - label: Documentation
+        - label: Governance
+        - label: Repository
+        - label: Automation
+    validations:
+      required: true
+
+  - type: dropdown
+    id: cycle
+    attributes:
+      label: Ciclo esperado
+      description: Bugs confirmados normalmente são corrigidos no Ciclo 2, salvo bloqueios de validação final.
+      options:
+        - Ciclo 1 — Revisão e diagnóstico
+        - Ciclo 2 — Correções e estabilização
+        - Ciclo 3 — Validação final e entrega
+        - Manutenção fora dos ciclos técnicos
+        - A definir
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Prioridade proposta
+      options:
+        - High — bloqueia entrega, confiabilidade, segurança ou reprodutibilidade
+        - Medium — impacto relevante sem bloqueio imediato
+        - Low — defeito não bloqueante ou de alcance limitado
+    validations:
+      required: true
 
   - type: textarea
     id: summary
@@ -32,7 +76,7 @@ body:
       required: true
 
   - type: textarea
-    id: current-behavior
+    id: current_behavior
     attributes:
       label: Comportamento atual
       description: Explique exatamente o que ocorreu, incluindo status, mensagem ou resultado observado.
@@ -41,7 +85,7 @@ body:
       required: true
 
   - type: textarea
-    id: expected-behavior
+    id: expected_behavior
     attributes:
       label: Comportamento esperado
       description: Explique o resultado correto conforme contrato, teste ou documentação existente.
@@ -68,33 +112,29 @@ body:
       description: Inclua logs sanitizados, respostas, screenshots, testes falhos ou referências, sem expor informações sensíveis.
       placeholder: Cole apenas evidências necessárias e sanitizadas.
     validations:
-      required: false
+      required: true
 
   - type: dropdown
     id: impact
     attributes:
-      label: Impacto
+      label: Impacto observado
       description: Classifique o efeito prático do problema atual.
       options:
-        - Baixo - inconveniente sem comprometer o fluxo principal
-        - Médio - comportamento incorreto com alternativa disponível
-        - Alto - fluxo principal comprometido ou resultado não confiável
-        - Crítico - risco de segurança, corrupção, perda de dados ou serving inseguro
+        - Baixo — inconveniente sem comprometer o fluxo principal
+        - Médio — comportamento incorreto com alternativa disponível
+        - Alto — fluxo principal comprometido ou resultado não confiável
+        - Crítico — risco de segurança, corrupção, perda de dados ou serving inseguro
     validations:
       required: true
 
-  - type: checkboxes
-    id: affected-area
+  - type: textarea
+    id: suspected_scope
     attributes:
-      label: Área afetada
-      options:
-        - label: API ou schemas
-        - label: Modelo, artefato ou manifesto
-        - label: Dados ou validação
-        - label: Testes ou CI
-        - label: Docker ou operação
-        - label: Documentação
-        - label: Outro componente
+      label: Escopo provável da correção
+      description: Registre componentes possivelmente envolvidos sem transformar hipótese em diagnóstico confirmado.
+      placeholder: Quais arquivos, contratos ou testes provavelmente precisam ser avaliados?
+    validations:
+      required: false
 
   - type: textarea
     id: acceptance
@@ -104,7 +144,8 @@ body:
       placeholder: |
         - [ ] o caso reproduzido passa;
         - [ ] teste de regressão adicionado;
-        - [ ] comportamento existente compatível preservado.
+        - [ ] comportamento existente compatível preservado;
+        - [ ] documentação alinhada quando aplicável.
     validations:
       required: true
 
@@ -122,7 +163,16 @@ body:
       required: true
 
   - type: textarea
-    id: out-of-scope
+    id: risks
+    attributes:
+      label: Riscos e compatibilidade
+      description: Registre riscos de regressão, contratos afetados e requisitos de rollback.
+      placeholder: Quais comportamentos existentes precisam ser preservados?
+    validations:
+      required: false
+
+  - type: textarea
+    id: out_of_scope
     attributes:
       label: Fora do escopo
       description: Liste refatorações, melhorias ou alterações de contrato que não fazem parte desta correção.
@@ -130,10 +180,20 @@ body:
     validations:
       required: true
 
-  - type: checkboxes
-    id: security-confirmation
+  - type: textarea
+    id: dependencies
     attributes:
-      label: Confirmação de segurança
+      label: Dependências e referências
+      placeholder: Review de origem, Issue relacionada, contrato, teste ou relatório.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: confirmation
+    attributes:
+      label: Confirmação
       options:
+        - label: O problema foi observado ou reproduzido; hipóteses ainda não confirmadas foram identificadas como tais.
+          required: true
         - label: As evidências foram revisadas e não contêm segredos, credenciais ou dados pessoais.
           required: true

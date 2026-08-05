@@ -1,0 +1,162 @@
+name: Manutenção técnica e automação
+description: Propor manutenção de engenharia sem criar funcionalidade nova do sistema de predição.
+title: ""
+labels: []
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Natureza: **Maintenance**. Use este formulário para Copilot, integrações com IA, templates, automações, CI, dependências, rulesets e organização do repositório.
+
+  - type: checkboxes
+    id: area
+    attributes:
+      label: Área afetada
+      description: Selecione todas as áreas de manutenção envolvidas.
+      options:
+        - label: Repository
+        - label: Automation
+        - label: CI
+        - label: Docker
+        - label: Testing
+        - label: Documentation
+        - label: Governance
+        - label: API
+        - label: Model
+        - label: Data
+    validations:
+      required: true
+
+  - type: dropdown
+    id: cycle
+    attributes:
+      label: Ciclo esperado
+      description: Manutenções de engenharia normalmente ficam fora dos ciclos técnicos do produto.
+      options:
+        - Manutenção fora dos ciclos técnicos
+        - Ciclo 1 — Revisão e diagnóstico
+        - Ciclo 2 — Correções e estabilização
+        - Ciclo 3 — Validação final e entrega
+        - A definir
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Prioridade proposta
+      options:
+        - High — bloqueia entrega, segurança, CI ou fluxo principal de engenharia
+        - Medium — impacto relevante sem bloqueio imediato
+        - Low — limpeza, refinamento ou automação não bloqueante
+    validations:
+      required: true
+
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objetivo
+      description: Descreva o resultado de manutenção esperado.
+      placeholder: Qual processo, configuração ou ferramenta deve ser melhorado?
+    validations:
+      required: true
+
+  - type: textarea
+    id: current_state
+    attributes:
+      label: Contexto e estado atual
+      description: Explique a limitação atual, o risco ou o trabalho manual existente.
+      placeholder: O que existe hoje e por que precisa ser ajustado?
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Escopo
+      description: Liste somente as mudanças de engenharia necessárias.
+      placeholder: |
+        - configurar ...
+        - atualizar ...
+        - automatizar ...
+        - documentar ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: product_boundary
+    attributes:
+      label: Limite em relação ao produto
+      description: Explique por que a mudança não representa funcionalidade nova do sistema e quais áreas de runtime devem permanecer inalteradas.
+      placeholder: |
+        - não alterar API, modelo ou dados;
+        - não modificar comportamento de serving;
+        - limitar mudanças a .github/ e documentação de processo.
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Critérios de aceite
+      description: Defina condições observáveis para concluir a manutenção.
+      placeholder: |
+        - [ ] configuração versionada;
+        - [ ] comportamento da automação verificado;
+        - [ ] documentação atualizada;
+        - [ ] nenhum impacto de runtime introduzido.
+    validations:
+      required: true
+
+  - type: textarea
+    id: validation
+    attributes:
+      label: Validação esperada
+      description: Indique checks, inspeções ou evidências necessários.
+      placeholder: |
+        - validar YAML ou Markdown;
+        - conferir execução do workflow;
+        - inspecionar diff;
+        - verificar permissões e ausência de secrets.
+    validations:
+      required: true
+
+  - type: textarea
+    id: risks
+    attributes:
+      label: Riscos e compatibilidade
+      description: Registre riscos para CI, revisão, permissões, segurança ou fluxo de trabalho.
+      placeholder: Quais regressões de processo precisam ser evitadas?
+    validations:
+      required: false
+
+  - type: textarea
+    id: out_of_scope
+    attributes:
+      label: Fora do escopo
+      description: Liste mudanças de produto ou manutenção adicional que não pertencem a esta Issue.
+      placeholder: |
+        - não alterar runtime;
+        - não criar funcionalidade nova;
+        - não expandir a automação além do necessário.
+    validations:
+      required: true
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependências e referências
+      placeholder: Issues, PRs, arquivos, documentação ou decisões relacionadas.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: confirmation
+    attributes:
+      label: Confirmação
+      options:
+        - label: A mudança foi separada de desenvolvimento funcional do produto.
+          required: true
+        - label: Nenhuma ferramenta de IA será tratada como fonte autônoma de verdade ou aprovação.
+          required: true
