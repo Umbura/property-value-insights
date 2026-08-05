@@ -141,6 +141,12 @@ API examples must be plausible and valid for the model domain.
 ## Code quality
 
 - Follow the existing architecture and style.
+- Write code in a professional, impersonal, and objective style.
+- Avoid colloquial language, jokes, personal remarks, emojis, and conversational comments in code.
+- Use clear and descriptive names for variables, functions, classes, modules, and tests.
+- Comments and docstrings must explain intent, constraints, non-obvious decisions, and relevant risks.
+- Do not add comments that merely restate what the code already expresses.
+- Error messages and logs must be clear, neutral, and appropriate for a professional system.
 - Prefer clear, explicit code over unnecessary abstraction.
 - Use type hints consistently.
 - Reuse existing utilities before creating new ones.
@@ -183,6 +189,16 @@ When relevant, verify individual and batch prediction consistency, artifact load
 
 If a command cannot be executed, state which command, why, and what remains unverified.
 
+## Language and encoding
+
+- Save and edit text files using UTF-8 encoding.
+- Preserve accented characters and verify that changes do not introduce encoding corruption or mojibake.
+- Use Portuguese for communication, explanations, Issue responses, and pull request descriptions.
+- Keep established technical terms in English when they are clearer or conventional.
+- Use English for code identifiers, API fields, commands, class names, function names, and technical keywords.
+- Preserve the existing language of each document unless the Issue explicitly requests a translation.
+- Do not translate library names, protocol names, metrics, HTTP concepts, or established software terminology unnecessarily.
+
 ## Documentation and repository hygiene
 
 - Keep documentation consistent with implementation.
@@ -198,15 +214,24 @@ If a command cannot be executed, state which command, why, and what remains unve
 
 Changes must be delivered through a pull request and must not be pushed directly to `main`.
 
-Keep the pull request focused and include:
+Keep each pull request focused, professional, impersonal, and reviewable.
 
-- problem addressed;
-- implementation summary;
-- reason for the chosen approach;
-- compatibility impact;
-- tests and commands executed;
-- results and remaining limitations;
-- assumptions and unverified points;
-- relevant out-of-scope observations.
+The pull request description must include:
+
+- **Context:** why the change is necessary;
+- **Problem:** the current behavior or limitation;
+- **Objective:** the intended result;
+- **Implementation:** what was changed and how;
+- **Technical decisions:** relevant choices and their rationale;
+- **Files and components changed:** affected areas of the repository;
+- **Backward compatibility:** impact on existing contracts and consumers;
+- **Testing:** commands executed, scenarios tested, and results;
+- **Risks and limitations:** known constraints or remaining concerns;
+- **Out of scope:** related items intentionally not implemented;
+- **Unverified points:** anything that could not be confirmed.
+
+Do not use vague descriptions such as “minor fixes”, “improvements”, or “various changes”.
+
+Do not claim that a pull request is complete while acceptance criteria, tests, or relevant validations remain unverified.
 
 Before declaring completion, confirm that the Issue requirements were addressed, tests pass, documentation matches behavior, artifacts remain consistent, and no unrelated changes or sensitive files were introduced.
