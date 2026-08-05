@@ -1,0 +1,107 @@
+name: Tarefa técnica ou melhoria
+description: Propor uma alteração planejada, melhoria de engenharia ou nova entrega técnica.
+title: ""
+labels:
+  - enhancement
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use este formulário para tarefas técnicas com escopo definido. Preserve backward compatibility por padrão e não transforme possibilidades futuras em requisitos aprovados.
+
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objetivo
+      description: Descreva o resultado esperado de forma objetiva e verificável.
+      placeholder: Qual resultado esta Issue deve produzir?
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Contexto e estado atual
+      description: Explique o comportamento atual, a motivação e as evidências disponíveis.
+      placeholder: O que existe hoje e por que precisa ser alterado?
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Escopo
+      description: Liste somente as entregas necessárias para cumprir o objetivo.
+      placeholder: |
+        - implementar ...
+        - documentar ...
+        - adicionar testes para ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: decisions
+    attributes:
+      label: Decisões e restrições técnicas
+      description: Registre requisitos de compatibilidade, governança, segurança, dados, modelo ou arquitetura.
+      placeholder: |
+        - preservar o contrato atual da API;
+        - não regenerar artefatos;
+        - confirmar o comportamento no código antes de documentá-lo.
+    validations:
+      required: false
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Critérios de aceite
+      description: Defina condições observáveis para considerar a tarefa concluída.
+      placeholder: |
+        - [ ] comportamento esperado implementado;
+        - [ ] testes relacionados aprovados;
+        - [ ] documentação alinhada ao comportamento real.
+    validations:
+      required: true
+
+  - type: textarea
+    id: validation
+    attributes:
+      label: Validação esperada
+      description: Indique testes, comandos, inspeções ou evidências que devem ser produzidos.
+      placeholder: |
+        - uv run --locked pytest -q
+        - uv run --locked ruff check .
+        - validação manual de ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: out-of-scope
+    attributes:
+      label: Fora do escopo
+      description: Liste mudanças relacionadas que não devem ser implementadas nesta Issue.
+      placeholder: |
+        - não alterar ...
+        - não criar ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependências e pontos pendentes
+      description: Informe Issues, PRs, decisões ou dados dos quais esta tarefa depende.
+      placeholder: Nenhuma dependência conhecida.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: confirmation
+    attributes:
+      label: Confirmação
+      options:
+        - label: O escopo foi separado de possibilidades futuras ou alternativas ainda não aprovadas.
+          required: true
+        - label: Os critérios de aceite são verificáveis e não dependem de afirmações sem evidência.
+          required: true
