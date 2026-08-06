@@ -71,11 +71,17 @@ def test_openapi_has_expected_tags_summaries_and_descriptions() -> None:
     assert spec["tags"] == [
         {
             "name": "Service Operations",
-            "description": "Operações de serviço para verificar disponibilidade e consultar metadados do modelo servido.",
+            "description": (
+                "Operações de serviço para verificar disponibilidade e consultar "
+                "metadados do modelo servido."
+            ),
         },
         {
             "name": "Model Inference",
-            "description": "Operações de inferência para previsão de valor de imóveis em modo único ou em lote.",
+            "description": (
+                "Operações de inferência para previsão de valor de imóveis em modo "
+                "único ou em lote."
+            ),
         },
     ]
 
@@ -84,7 +90,8 @@ def test_openapi_has_expected_tags_summaries_and_descriptions() -> None:
     assert health_operation["summary"] == "Check service readiness"
     assert (
         health_operation["description"]
-        == "Verifica se a API está pronta para atender solicitações, retornando status do serviço, versão da API e versão do modelo carregado."
+        == "Verifica se a API está pronta para atender solicitações, retornando status "
+        "do serviço, versão da API e versão do modelo carregado."
     )
 
     model_info_operation = spec["paths"]["/model-info"]["get"]
@@ -92,7 +99,8 @@ def test_openapi_has_expected_tags_summaries_and_descriptions() -> None:
     assert model_info_operation["summary"] == "View served model metadata and performance"
     assert (
         model_info_operation["description"]
-        == "Exibe metadados e métricas do modelo atualmente servido, conforme manifesto versionado, sem alterar artefatos ou estado do serviço."
+        == "Exibe metadados e métricas do modelo atualmente servido, conforme manifesto "
+        "versionado, sem alterar artefatos ou estado do serviço."
     )
 
     predict_operation = spec["paths"]["/predict"]["post"]
@@ -100,7 +108,8 @@ def test_openapi_has_expected_tags_summaries_and_descriptions() -> None:
     assert predict_operation["summary"] == "Predict one property value"
     assert (
         predict_operation["description"]
-        == "Calcula a previsão de valor para um único imóvel com base nas features informadas e retorna preço previsto, versão do modelo e request_id."
+        == "Calcula a previsão de valor para um único imóvel com base nas features "
+        "informadas e retorna preço previsto, versão do modelo e request_id."
     )
 
     predict_batch_operation = spec["paths"]["/predict/batch"]["post"]
@@ -108,7 +117,8 @@ def test_openapi_has_expected_tags_summaries_and_descriptions() -> None:
     assert predict_batch_operation["summary"] == "Predict multiple property values"
     assert (
         predict_batch_operation["description"]
-        == "Processa múltiplos imóveis em uma única requisição, preserva a ordem de entrada e aplica o limite máximo de itens por lote configurado no serviço."
+        == "Processa múltiplos imóveis em uma única requisição, preserva a ordem de "
+        "entrada e aplica o limite máximo de itens por lote configurado no serviço."
     )
     assert "/metrics" not in spec["paths"]
 
