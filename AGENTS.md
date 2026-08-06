@@ -132,6 +132,53 @@ branch protection, permissions, or external repository settings, or unrelated
 changes. The user performs merges unless they explicitly authorize Terra to
 merge that specific pull request.
 
+## Multi-agent delegation and A2A
+
+Terra may act as the task orchestrator and delegate focused work to configured
+agents when delegation materially improves cost, speed, specialization, or
+independent verification.
+
+Approved default routing:
+
+- Terra with medium reasoning: scope analysis, planning, ticket creation,
+  coordination, architectural decisions, and result consolidation;
+- OpenCode with DeepSeek V4 Flash at High: focused implementation of approved,
+  well-specified tickets and relevant test execution;
+- a fresh Terra reviewer with High reasoning: independent diff review,
+  compatibility analysis, regression review, and final verification.
+
+Do not add or switch to an unapproved provider automatically.
+
+Delegated tickets must define:
+
+- objective;
+- allowed files or components;
+- required behavior;
+- constraints and preserved behavior;
+- validation;
+- completion evidence; and
+- stop conditions.
+
+Only one agent may write in a worktree at a time. Read-only investigation and
+review agents may operate concurrently. Parallel implementation requires
+isolated worktrees and non-overlapping tickets.
+
+A delegated agent must return:
+
+- work performed;
+- files changed or inspected;
+- tests and commands actually executed;
+- exact outcomes;
+- blockers, risks, limitations, and unresolved decisions; and
+- deviations from the ticket.
+
+The orchestrator must not silently broaden a ticket, accept unsupported claims,
+or treat a child-agent response as verified evidence. A reviewer must not
+approve its own implementation; use a fresh reviewer session or child agent
+that did not write the diff. After two failed attempts for the same unresolved
+cause, stop and return the blocker to the user instead of creating an agent
+loop.
+
 ## Required task workflow
 
 Work on one Issue at a time.
@@ -139,17 +186,19 @@ Work on one Issue at a time.
 1. Create one Traycer Task and one isolated worktree for the Issue.
 2. Confirm the worktree starts from the intended current base.
 3. The Planner Reviewer investigates and produces a small plan.
-4. The user approves or corrects the plan.
+4. Confirm the plan is authorized by the active Issue and user instructions.
 5. The Executor implements only the approved plan.
 6. The Executor runs focused tests during implementation.
 7. Run the full suite and all applicable repository checks before a pull request.
 8. The Planner Reviewer independently reviews the diff.
-9. The user approves confirmed review findings.
+9. The Planner Reviewer classifies confirmed review findings.
 10. The Executor corrects only the approved findings.
 11. Record final validations with exact outcomes.
-12. Perform Git or GitHub write actions only after explicit user authorization.
+12. Perform Git and GitHub write actions within the permanent authorization and
+    the active Issue; merge still requires explicit PR-specific authorization.
 
-Do not run agents in parallel on the same worktree.
+Do not run parallel writers in the same worktree. Read-only investigation and
+review may run concurrently when it does not interfere with the active writer.
 
 Dependent Issues that modify overlapping files should be executed sequentially.
 Start the next dependent worktree from an updated base after the predecessor is
