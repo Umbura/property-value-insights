@@ -67,3 +67,9 @@ returned `Ready`; no second correction cycle was required.
 - The branch was pushed to `origin/chore/traycer-multi-agent-orchestration`.
 - Pull request #54 is open against `main` and is linked to Issue #53.
 - Merge was not performed and remains an explicit user-controlled action.
+
+## Post-delivery amendment
+
+The legacy `.github/pull_request_template.md` was removed after confirmation
+that `AGENTS.md` is the repository source of truth for pull request
+descriptions. Issue forms and Copilot instructions were not changed.
