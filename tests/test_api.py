@@ -116,11 +116,13 @@ def test_openapi_has_expected_tags_summaries_and_descriptions() -> None:
 
     model_info_operation = spec["paths"]["/model-info"]["get"]
     assert model_info_operation["tags"] == ["Service Operations"]
-    assert model_info_operation["summary"] == "View served model metadata and performance"
-    assert (
-        model_info_operation["description"]
-        == "Exibe metadados e métricas do modelo atualmente servido, conforme manifesto "
-        "versionado, sem alterar artefatos ou estado do serviço."
+    assert model_info_operation["summary"] == (
+        "View project, API, model, and artifact identity"
+    )
+    assert model_info_operation["description"] == (
+        "Expõe os campos históricos de metadados e adiciona blocos estruturados para "
+        "distinguir a release do projeto, a versão da API, a identidade do modelo "
+        "aprovado para serving e a identidade do artefato verificado."
     )
 
     predict_operation = spec["paths"]["/predict"]["post"]
