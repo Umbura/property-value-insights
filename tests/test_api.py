@@ -15,6 +15,12 @@ from property_value_insights.api import create_app
 from property_value_insights.artifact import ArtifactIntegrityError
 from property_value_insights.config import Settings
 from property_value_insights.observability import JsonFormatter
+from property_value_insights.schemas import (
+    BatchPredictionRequest,
+    BatchPredictionResponse,
+    PredictionResponse,
+    PropertyFeatures,
+)
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 ARTIFACT_PATH = PROJECT_ROOT / "artifacts" / "property_value_model.joblib"
@@ -121,6 +127,119 @@ def test_openapi_has_expected_tags_summaries_and_descriptions() -> None:
         "entrada e aplica o limite máximo de itens por lote configurado no serviço."
     )
     assert "/metrics" not in spec["paths"]
+
+
+def test_openapi_describes_all_features_with_units_and_scales() -> None:
+    with TestClient(create_app(_settings())) as client:
+        spec = client.get("/openapi.json").json()
+
+    features = spec["components"]["schemas"]["PropertyFeatures"]["properties"]
+    assert list(features) == [
+        "bedrooms",
+        "bathrooms",
+        "sqft_living",
+        "sqft_lot",
+        "floors",
+        "waterfront",
+        "view",
+        "condition",
+        "grade",
+        "sqft_above",
+        "sqft_basement",
+        "yr_built",
+        "yr_renovated",
+        "zipcode",
+        "lat",
+        "long",
+        "sqft_living15",
+        "sqft_lot15",
+    ]
+
+    for name, metadata in features.items():
+        assert "description" in metadata
+        assert "examples" in metadata
+
+    assert "square feet" in features["sqft_living"]["description"]
+    assert "square feet" in features["sqft_lot"]["description"]
+    assert "square feet" in features["sqft_above"]["description"]
+    assert "square feet" in features["sqft_basement"]["description"]
+    assert "square feet" in features["sqft_living15"]["description"]
+    assert "square feet" in features["sqft_lot15"]["description"]
+
+    assert "0 não" in features["waterfront"]["description"]
+    assert "1 sim" in features["waterfront"]["description"]
+    assert "0 a 4" in features["view"]["description"]
+    assert "1 a 5" in features["condition"]["description"]
+    assert "1 a 13" in features["grade"]["description"]
+    assert "não há reforma registrada" in features["yr_renovated"]["description"]
+    assert "vizinhança" in features["sqft_living15"]["description"]
+    assert "vizinhança" in features["sqft_lot15"]["description"]
+    assert "CEP" in features["zipcode"]["description"]
+    assert "cobertura universal" in features["lat"]["description"]
+    assert "cobertura universal" in features["long"]["description"]
+    assert "cobertura" in features["zipcode"]["description"]
+
+
+def test_openapi_examples_validate_and_predict_successfully() -> None:
+    with TestClient(create_app(_settings())) as client:
+        spec = client.get("/openapi.json").json()
+
+    features_schema = spec["components"]["schemas"]["PropertyFeatures"]
+    example = features_schema["example"]
+    assert example == {
+        "bedrooms": 4,
+        "bathrooms": 1.0,
+        "sqft_living": 1680,
+        "sqft_lot": 5043,
+        "floors": 1.5,
+        "waterfront": 0,
+        "view": 0,
+        "condition": 4,
+        "grade": 6,
+        "sqft_above": 1680,
+        "sqft_basement": 0,
+        "yr_built": 1911,
+        "yr_renovated": 0,
+        "zipcode": "98118",
+        "lat": 47.5354,
+        "long": -122.273,
+        "sqft_living15": 1560,
+        "sqft_lot15": 5765,
+    }
+    PropertyFeatures.model_validate(example)
+
+    batch_example = spec["components"]["schemas"]["BatchPredictionRequest"]["example"]
+    assert batch_example["items"][0] == example
+    assert BatchPredictionRequest.model_validate(batch_example)
+
+    prediction_example = spec["components"]["schemas"]["PredictionResponse"]["example"]
+    assert prediction_example == {
+        "predicted_price": 372953.43,
+        "currency": "USD",
+        "model_version": "0.4.0-rc1",
+        "request_id": "b55ae80b6ad24ffb97a06e4963781637",
+    }
+    assert PredictionResponse.model_validate(prediction_example)
+
+    batch_response_example = spec["components"]["schemas"]["BatchPredictionResponse"]["example"]
+    assert batch_response_example["predictions"] == [{"item_id": 1, "predicted_price": 372953.43}]
+    assert batch_response_example["currency"] == "USD"
+    assert BatchPredictionResponse.model_validate(batch_response_example)
+
+
+def test_openapi_main_example_returns_http_200_on_predict() -> None:
+    with TestClient(create_app(_settings())) as client:
+        spec = client.get("/openapi.json").json()
+        example = spec["components"]["schemas"]["PropertyFeatures"]["example"]
+        single = client.post("/predict", json=example)
+        batch = client.post("/predict/batch", json={"items": [example]})
+
+    assert single.status_code == 200
+    assert single.json()["currency"] == "USD"
+    assert single.json()["predicted_price"] == pytest.approx(372953.43)
+    assert batch.status_code == 200
+    assert batch.json()["predictions"][0]["item_id"] == 1
+    assert batch.json()["predictions"][0]["predicted_price"] == pytest.approx(372953.43)
 
 
 def test_single_prediction_matches_the_versioned_batch_output(

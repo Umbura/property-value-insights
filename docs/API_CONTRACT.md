@@ -54,6 +54,23 @@ não são expostos.
 Recebe as 18 features físicas e espaciais esperadas pelo modelo. Campos
 desconhecidos são rejeitados. O CEP deve ser uma string com cinco dígitos.
 
+O Swagger expõe descrições, unidades e exemplos para cada feature no schema
+`PropertyFeatures`. As áreas são informadas em `square feet`. A localização
+(latitude, longitude e CEP) é aceita com validação formal de formato e limites,
+sem garantia de cobertura do modelo para qualquer ponto ou CEP. O exemplo
+principal do contrato corresponde à primeira linha de
+`data/raw/future_unseen_examples.csv` e retorna `200` em `/predict`.
+
+Convenções das features:
+
+- `waterfront` indica frente para água: `0` não, `1` sim;
+- `view` é um índice de vista de `0` a `4`;
+- `condition` é um índice de condição de `1` a `5`;
+- `grade` é um índice de qualidade construtiva de `1` a `13`;
+- `yr_renovated` igual a `0` significa que não há reforma registrada;
+- `sqft_living15` e `sqft_lot15` são referências da vizinhança, não
+  características do próprio imóvel.
+
 ```powershell
 $body = @{
   bedrooms = 4
@@ -99,6 +116,11 @@ Recebe `{"items": [...]}` e preserva a ordem de entrada com valores de
 `item_id` iniciados em um. A resposta declara `currency` uma vez para todo o
 lote. Lotes vazios retornam `422`. Lotes acima de `MAX_BATCH_SIZE` retornam
 `413`; o limite padrão é 100.
+
+Os schemas `BatchPredictionRequest`, `PredictionResponse` e
+`BatchPredictionResponse` expõem exemplos no Swagger para ilustrar o formato de
+requisição e resposta. Os exemplos são metadados OpenAPI e não alteram o JSON
+aceito nem o JSON retornado pelo serviço.
 
 ### `GET /metrics`
 
