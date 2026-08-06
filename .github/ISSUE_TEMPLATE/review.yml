@@ -1,143 +1,47 @@
-name: Review e investigação
-description: Planejar testes, auditorias ou investigações destinadas a produzir evidências e achados.
+name: Revisão ou investigação
+description: Registrar uma investigação com evidências verificáveis.
 title: ""
-labels: []
+labels:
+  - review
 assignees: []
 body:
-  - type: markdown
-    attributes:
-      value: |
-        Natureza: **Review**. Use este formulário para observar e registrar o comportamento real do projeto. Uma review não autoriza automaticamente correções ou melhorias.
-
-  - type: checkboxes
-    id: area
-    attributes:
-      label: Área afetada
-      description: Selecione todas as áreas que fazem parte da investigação.
-      options:
-        - label: API
-        - label: Model
-        - label: Data
-        - label: Testing
-        - label: Docker
-        - label: CI
-        - label: Documentation
-        - label: Governance
-        - label: Repository
-        - label: Automation
-    validations:
-      required: true
-
-  - type: dropdown
-    id: cycle
-    attributes:
-      label: Ciclo esperado
-      description: Indique em qual ciclo o trabalho deve ser acompanhado.
-      options:
-        - Ciclo 1 — Revisão e diagnóstico
-        - Ciclo 2 — Correções e estabilização
-        - Ciclo 3 — Validação final e entrega
-        - Manutenção fora dos ciclos técnicos
-        - A definir
-    validations:
-      required: true
-
-  - type: dropdown
-    id: priority
-    attributes:
-      label: Prioridade proposta
-      description: A prioridade poderá ser revisada após análise das evidências.
-      options:
-        - High — bloqueia entrega, confiabilidade, segurança ou reprodutibilidade
-        - Medium — impacto relevante sem bloqueio imediato
-        - Low — refinamento ou investigação não bloqueante
-    validations:
-      required: true
-
   - type: textarea
     id: objective
     attributes:
       label: Objetivo
-      description: Defina o que a review deve confirmar, medir ou esclarecer.
-      placeholder: Qual pergunta técnica esta investigação deve responder?
+      description: O que a investigação deve esclarecer?
     validations:
       required: true
-
-  - type: textarea
-    id: current_state
-    attributes:
-      label: Contexto e estado atual
-      description: Descreva a release, branch, componente, contrato ou evidência que motivou a review.
-      placeholder: O que sabemos hoje e por que a revisão é necessária?
-    validations:
-      required: true
-
   - type: textarea
     id: scope
     attributes:
       label: Escopo da investigação
-      description: Liste cenários, endpoints, dados, documentos ou comportamentos que serão examinados.
-      placeholder: |
-        - verificar ...
-        - comparar ...
-        - registrar ...
+      description: Componentes, comportamentos ou limites a analisar.
     validations:
       required: true
-
   - type: textarea
     id: method
     attributes:
-      label: Método e evidências esperadas
-      description: Indique comandos, testes, inspeções, métricas ou artefatos que deverão sustentar as conclusões.
-      placeholder: |
-        - comandos ou endpoints;
-        - entradas e saídas esperadas;
-        - logs sanitizados;
-        - screenshots ou relatórios;
-        - critérios de comparação.
+      label: Método ou evidências esperadas
+      description: Testes, inspeções, métricas ou referências a obter.
     validations:
       required: true
-
   - type: textarea
     id: acceptance
     attributes:
       label: Critérios de aceite
-      description: Defina quando a investigação poderá ser considerada concluída.
-      placeholder: |
-        - [ ] cenários planejados executados;
-        - [ ] resultados e limitações registrados;
-        - [ ] achados classificados;
-        - [ ] Issues derivadas abertas quando necessárias.
+      description: Como saber que a investigação está concluída?
     validations:
       required: true
-
   - type: textarea
     id: out_of_scope
     attributes:
       label: Fora do escopo
-      description: Deixe explícito o que não será corrigido ou implementado nesta review.
-      placeholder: |
-        - não corrigir comportamentos durante a investigação;
-        - não alterar contratos;
-        - não regenerar artefatos.
     validations:
       required: true
-
   - type: textarea
-    id: dependencies
+    id: references
     attributes:
-      label: Dependências e referências
-      description: Informe Issues, PRs, relatórios, contratos ou decisões relacionadas.
-      placeholder: Links, números de Issues ou caminhos relevantes.
+      label: Referências
     validations:
       required: false
-
-  - type: checkboxes
-    id: confirmation
-    attributes:
-      label: Confirmação
-      options:
-        - label: A review produzirá evidências antes de propor ou implementar mudanças.
-          required: true
-        - label: Bugs, melhorias e divergências documentais encontrados serão separados em Issues próprias quando necessário.
-          required: true
