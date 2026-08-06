@@ -116,6 +116,75 @@ completa de `feature_columns`:
 }
 ```
 
+#### Interpretação humana da avaliação e do serving
+
+Quatro blocos adicionais traduzem os dados já presentes no manifesto sem
+substituir `evaluation`, `limitations` ou os blocos de identidade:
+
+- `performance_summary`: replica MAE e RMSE diagnósticos em USD, preserva MAPE e
+  taxa de subestimação como frações e também apresenta os percentuais derivados;
+- `evaluation_status`: traduz `diagnostic_only_previously_inspected` e declara
+  `is_untouched_test_set=false`;
+- `serving_decision`: registra a aprovação por governança, preserva literalmente
+  `model.selection_reason` e não afirma vencedor estatístico automático;
+- `structured_limitations`: mantém cada texto original e acrescenta código
+  estável, severidade, escopo afetado e ação recomendada.
+
+Os percentuais são calculados sem arredondamento adicional:
+
+- `mape_percent = evaluation.latest_period_diagnostic.mape × 100`;
+- `underprediction_rate_percent =
+  evaluation.latest_period_diagnostic.underprediction_rate × 100`.
+
+Para o manifesto atual, isso corresponde a MAE de `67105.708262 USD`, RMSE de
+`116547.248993 USD`, MAPE de `0.120651` ou `12.0651%`, R² de `0.899781` e taxa
+de subestimação de `0.587716` ou `58.7716%`. Esses números descrevem um período
+diagnóstico previamente inspecionado, não um holdout final intocado.
+
+O principal risco conhecido permanece o viés negativo e o erro absoluto mais
+elevado em imóveis de maior valor. Por isso, a resposta recomenda revisão humana
+para imóveis de alto valor e para usos consequenciais. Essa recomendação não
+transforma a previsão em avaliação imobiliária formal nem oferece garantia de
+fairness, causalidade ou desempenho fora do domínio observado.
+
+Exemplo abreviado dos blocos humanos:
+
+```json
+{
+  "performance_summary": {
+    "evaluation_scope": "latest_period_diagnostic",
+    "currency": "USD",
+    "mae_usd": 67105.708262,
+    "rmse_usd": 116547.248993,
+    "mape_fraction": 0.120651,
+    "mape_percent": 12.0651,
+    "r2": 0.899781,
+    "underprediction_rate_fraction": 0.587716,
+    "underprediction_rate_percent": 58.7716,
+    "underprediction_tendency": "A subestimação ocorreu em mais da metade das observações do período diagnóstico.",
+    "principal_known_risk": "Imóveis de maior valor mantêm erro absoluto e viés negativo mais elevados."
+  },
+  "evaluation_status": {
+    "technical_status": "diagnostic_only_previously_inspected",
+    "label": "Período diagnóstico previamente inspecionado",
+    "explanation": "O período temporal mais recente foi usado para diagnóstico e já foi consultado; não é um teste final intocado.",
+    "is_untouched_test_set": false
+  },
+  "serving_decision": {
+    "status": "approved",
+    "decision_basis": "governance",
+    "feature_set": "physical",
+    "selection_reason": "Modelo somente físico selecionado após avaliação de governança porque a alternativa demográfica apresentou ganho marginal de MAE e introduziu risco de proxies socioeconômicas.",
+    "is_statistical_winner_claim": false,
+    "human_review_recommended": true,
+    "human_review_contexts": ["usos consequenciais", "imóveis de alto valor"]
+  }
+}
+```
+
+Não são adicionadas métricas de baseline ou reduções relativas porque esses
+valores não fazem parte do manifesto runtime-safe carregado pelo serviço.
+
 A mudança é aditiva. Clientes que leem somente os campos históricos continuam
 compatíveis. Existe risco residual apenas para consumidores que rejeitam
 propriedades JSON adicionais, comportamento não recomendado para esse endpoint.
