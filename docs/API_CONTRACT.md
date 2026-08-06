@@ -143,11 +143,25 @@ Exemplo de resposta:
 
 ### `POST /predict/batch`
 
-Recebe `{"items": [...]}` e preserva a ordem de entrada com valores de
-`item_id` iniciados em um. Cada elemento de `items` usa os mesmos 18 campos e
-convenções documentados em `/predict`. A resposta declara `currency` uma vez
-para todo o lote. Lotes vazios retornam `422`. Lotes acima de
-`MAX_BATCH_SIZE` retornam `413`; o limite padrão é 100.
+Recebe um objeto `{"items": [...]}` com pelo menos um imóvel. Cada item usa os
+mesmos 18 campos e convenções documentados em `/predict`. O limite máximo é o
+valor atual de `MAX_BATCH_SIZE`; o padrão é 100 e a configuração aceita valores
+de 1 a 1000.
+
+A validação é `all-or-nothing` e ocorre antes da inferência. Um lote vazio ou
+qualquer item inválido retorna `422` e impede o processamento do lote inteiro;
+não existem resultados parciais. Um lote que ultrapassa o limite configurado
+retorna `413` com uma mensagem controlada.
+
+A resposta preserva a ordem de entrada. `item_id` é somente a posição 1-based do
+item no lote, não um identificador único do imóvel. O campo `zipcode` continua
+sendo um atributo geográfico e não é usado como chave de identidade. O
+`request_id` no corpo e no cabeçalho `X-Request-ID` identifica a requisição
+completa, não cada item.
+
+A moeda e a versão do modelo são comuns a todo o lote. Para o mesmo imóvel e a
+mesma versão do modelo, `/predict` e `/predict/batch` devem produzir o mesmo
+preço previsto.
 
 ### `GET /metrics`
 
@@ -159,7 +173,7 @@ operacional não integra o schema OpenAPI público.
 
 - `413`: o lote contém mais itens do que o limite configurado;
 - `422`: um campo está ausente, desconhecido, com tipo inválido ou fora do
-  domínio permitido;
+  domínio permitido; no batch, um único item inválido rejeita o lote inteiro;
 - `500`: ocorreu uma falha inesperada de processamento. A resposta contém
   `detail` e `request_id`, sem expor detalhes internos.
 

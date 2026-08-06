@@ -182,7 +182,7 @@ class PropertyFeatures(BaseModel):
 
 
 class BatchPredictionRequest(BaseModel):
-    """A bounded collection of properties for one inference request."""
+    """Ordered, all-or-nothing collection of properties for one inference request."""
 
     model_config = ConfigDict(
         extra="forbid",
@@ -201,7 +201,11 @@ class BatchPredictionRequest(BaseModel):
 
     items: list[PropertyFeatures] = Field(
         min_length=1,
-        description="Imóveis a processar, preservados na ordem recebida.",
+        description=(
+            "Lista ordenada com pelo menos um imóvel. Qualquer item inválido rejeita o "
+            "lote inteiro antes da inferência. O limite máximo é definido por "
+            "MAX_BATCH_SIZE, com padrão 100 e faixa operacional de 1 a 1000."
+        ),
     )
 
 
@@ -228,14 +232,19 @@ class PredictionResponse(BaseModel):
 
 
 class BatchPredictionItem(BaseModel):
-    """One ordered prediction inside a batch response."""
+    """One positional result in the same order as the batch input."""
 
-    item_id: int
-    predicted_price: float
+    item_id: int = Field(
+        description=(
+            "Posição 1-based do item no lote de entrada; não é identificador único do "
+            "imóvel e não deriva do zipcode."
+        )
+    )
+    predicted_price: float = Field(description="Preço previsto para o item, em USD.")
 
 
 class BatchPredictionResponse(BaseModel):
-    """Predictions returned for a batch."""
+    """Ordered predictions and traceability metadata for one complete batch request."""
 
     model_config = ConfigDict(
         json_schema_extra={
@@ -253,10 +262,20 @@ class BatchPredictionResponse(BaseModel):
         }
     )
 
-    predictions: list[BatchPredictionItem]
-    currency: Literal["USD"] = "USD"
-    model_version: str
-    request_id: str
+    predictions: list[BatchPredictionItem] = Field(
+        description="Resultados preservados na mesma ordem dos itens recebidos."
+    )
+    currency: Literal["USD"] = Field(
+        default="USD",
+        description="Moeda comum a todas as previsões do lote.",
+    )
+    model_version: str = Field(description="Versão do modelo usada para todo o lote.")
+    request_id: str = Field(
+        description=(
+            "Identificador da requisição completa, também retornado no cabeçalho "
+            "X-Request-ID; não identifica itens individualmente."
+        )
+    )
 
 
 class HealthResponse(BaseModel):

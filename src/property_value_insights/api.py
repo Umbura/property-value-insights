@@ -211,7 +211,47 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @app.post(
         "/predict/batch",
         response_model=BatchPredictionResponse,
-        responses={500: {"model": InternalErrorResponse}},
+        responses={
+            413: {
+                "description": (
+                    "O lote excede o limite atual de "
+                    f"{runtime_settings.max_batch_size} itens. O padrão é 100 e "
+                    "MAX_BATCH_SIZE pode ser configurado entre 1 e 1000."
+                ),
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "required": ["detail"],
+                            "properties": {"detail": {"type": "string"}},
+                        },
+                        "example": {
+                            "detail": (
+                                "Batch exceeds the limit of "
+                                f"{runtime_settings.max_batch_size} items"
+                            )
+                        },
+                    }
+                },
+            },
+            500: {
+                "model": InternalErrorResponse,
+                "description": (
+                    "Falha inesperada de processamento, correlacionada pelo request_id."
+                ),
+            },
+        },
+        openapi_extra={
+            "responses": {
+                "422": {
+                    "description": (
+                        "Falha de validação antes da inferência. O lote usa política "
+                        "all-or-nothing: qualquer item inválido rejeita a requisição "
+                        "inteira, sem resultados parciais."
+                    )
+                }
+            }
+        },
         tags=["Model Inference"],
         summary="Predict multiple property values",
         description=(
