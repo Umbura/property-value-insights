@@ -52,7 +52,42 @@ não são expostos.
 ### `POST /predict`
 
 Recebe as 18 features físicas e espaciais esperadas pelo modelo. Campos
-desconhecidos são rejeitados. O CEP deve ser uma string com cinco dígitos.
+desconhecidos são rejeitados. O código postal deve ser enviado como uma string
+com cinco dígitos.
+
+#### Campos de entrada
+
+Todas as áreas identificadas por `sqft` usam pés quadrados. Os códigos de
+`view`, `condition` e `grade` são escalas ordinais; devem ser enviados como os
+números definidos na tabela, não como rótulos de texto.
+
+| Campo | Domínio aceito | Significado |
+| --- | --- | --- |
+| `bedrooms` | inteiro maior ou igual a 0 | Quantidade de quartos do imóvel. |
+| `bathrooms` | número maior ou igual a 0 | Quantidade de banheiros; valores fracionários representam banheiros parciais. |
+| `sqft_living` | inteiro maior ou igual a 0 | Área interna habitável, em pés quadrados. |
+| `sqft_lot` | inteiro maior ou igual a 0 | Área total do terreno, em pés quadrados. |
+| `floors` | número maior ou igual a 0 | Quantidade de pavimentos; aceita configurações com meio pavimento. |
+| `waterfront` | `0` ou `1` | Indicador de frente para água: `0` = não; `1` = sim. |
+| `view` | inteiro de 0 a 4 | Código ordinal da avaliação da vista. |
+| `condition` | inteiro de 1 a 5 | Código ordinal da condição geral do imóvel. |
+| `grade` | inteiro de 1 a 13 | Código ordinal da qualidade de construção e projeto. |
+| `sqft_above` | inteiro maior ou igual a 0 | Área habitável acima do nível do solo, em pés quadrados. |
+| `sqft_basement` | inteiro maior ou igual a 0 | Área do porão, em pés quadrados; `0` indica ausência de área registrada. |
+| `yr_built` | inteiro maior ou igual a 0 | Ano de construção do imóvel. |
+| `yr_renovated` | inteiro maior ou igual a 0 | Ano da última reforma; `0` indica que não há reforma registrada. |
+| `zipcode` | string de cinco dígitos | Código postal dos Estados Unidos, preservado como texto. |
+| `lat` | número de -90 a 90 | Latitude da localização, em graus decimais. |
+| `long` | número de -180 a 180 | Longitude da localização, em graus decimais. |
+| `sqft_living15` | inteiro maior ou igual a 0 | Área habitável de referência da vizinhança, em pés quadrados; não é a área do imóvel consultado. |
+| `sqft_lot15` | inteiro maior ou igual a 0 | Área de terreno de referência da vizinhança, em pés quadrados; não é a área do imóvel consultado. |
+
+As validações de formato do código postal e dos limites formais de latitude e
+longitude não confirmam, por si só, que a localização esteja dentro da cobertura
+geográfica representada pelos dados do modelo.
+
+O exemplo abaixo corresponde a uma linha real do conjunto de exemplos futuros
+versionado e é aceito pelo schema atual.
 
 ```powershell
 $body = @{
@@ -96,9 +131,10 @@ Exemplo de resposta:
 ### `POST /predict/batch`
 
 Recebe `{"items": [...]}` e preserva a ordem de entrada com valores de
-`item_id` iniciados em um. A resposta declara `currency` uma vez para todo o
-lote. Lotes vazios retornam `422`. Lotes acima de `MAX_BATCH_SIZE` retornam
-`413`; o limite padrão é 100.
+`item_id` iniciados em um. Cada elemento de `items` usa os mesmos 18 campos e
+convenções documentados em `/predict`. A resposta declara `currency` uma vez
+para todo o lote. Lotes vazios retornam `422`. Lotes acima de
+`MAX_BATCH_SIZE` retornam `413`; o limite padrão é 100.
 
 ### `GET /metrics`
 
