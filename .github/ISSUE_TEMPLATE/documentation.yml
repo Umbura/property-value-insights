@@ -1,199 +1,43 @@
 name: Documentação e contratos
-description: Corrigir, completar ou tornar mais clara a documentação técnica, OpenAPI, contratos e materiais de avaliação.
+description: Corrigir, completar ou tornar mais clara a documentação técnica.
 title: ""
 labels:
   - documentation
 assignees: []
 body:
-  - type: markdown
-    attributes:
-      value: |
-        Natureza: **Documentation**. A documentação deve refletir o comportamento real e não introduzir mudanças de runtime silenciosamente.
-
-  - type: checkboxes
-    id: area
-    attributes:
-      label: Área afetada
-      description: Selecione todas as áreas documentais ou técnicas relacionadas.
-      options:
-        - label: Documentation
-        - label: API
-        - label: Model
-        - label: Data
-        - label: Testing
-        - label: Docker
-        - label: CI
-        - label: Governance
-        - label: Repository
-        - label: Automation
-    validations:
-      required: true
-
-  - type: dropdown
-    id: cycle
-    attributes:
-      label: Ciclo esperado
-      options:
-        - Ciclo 1 — Revisão e diagnóstico
-        - Ciclo 2 — Correções e estabilização
-        - Ciclo 3 — Validação final e entrega
-        - Manutenção fora dos ciclos técnicos
-        - A definir
-    validations:
-      required: true
-
-  - type: dropdown
-    id: priority
-    attributes:
-      label: Prioridade proposta
-      options:
-        - High — informação incorreta bloqueia entrega, uso ou avaliação confiável
-        - Medium — ambiguidade relevante sem bloqueio imediato
-        - Low — refinamento documental não bloqueante
-    validations:
-      required: true
-
   - type: textarea
     id: objective
     attributes:
       label: Objetivo
-      description: Descreva qual compreensão, uso ou rastreabilidade deve ser melhorada.
-      placeholder: Qual resultado documental esta Issue deve produzir?
     validations:
       required: true
-
   - type: textarea
-    id: current_problem
+    id: affected_area
     attributes:
-      label: Problema atual
-      description: Explique o que está ausente, incorreto, ambíguo, desatualizado ou difícil de interpretar.
-      placeholder: Qual informação atual pode induzir erro ou exige conhecimento prévio excessivo?
+      label: Documento ou área afetada
     validations:
       required: true
-
   - type: textarea
-    id: affected_documents
+    id: content
     attributes:
-      label: Documentos e superfícies afetados
-      description: Liste arquivos, seções, endpoints, schemas ou páginas de documentação envolvidos.
-      placeholder: |
-        - README.md
-        - docs/API_CONTRACT.md
-        - OpenAPI /docs
+      label: Correção ou conteúdo necessário
     validations:
       required: true
-
-  - type: textarea
-    id: sources_of_truth
-    attributes:
-      label: Fontes de verdade
-      description: Informe quais implementações, testes, contratos, relatórios ou decisões sustentam o conteúdo.
-      placeholder: |
-        - arquivo ou módulo;
-        - teste automatizado;
-        - contrato versionado;
-        - Issue ou PR aprovada.
-    validations:
-      required: true
-
-  - type: textarea
-    id: scope
-    attributes:
-      label: Escopo
-      description: Liste as alterações documentais necessárias.
-      placeholder: |
-        - adicionar ...
-        - corrigir ...
-        - explicar ...
-    validations:
-      required: true
-
-  - type: textarea
-    id: terminology
-    attributes:
-      label: Terminologia e restrições
-      description: Registre termos que devem ser preservados, distinções importantes e limites de interpretação.
-      placeholder: |
-        - usar português para explicações e termos técnicos estabelecidos em inglês;
-        - confirmar valores e comportamento no código e nos testes;
-        - não apresentar o período diagnóstico como test set intocado.
-    validations:
-      required: false
-
-  - type: textarea
-    id: runtime_impact
-    attributes:
-      label: Impacto de runtime
-      description: Confirme se a alteração é exclusivamente documental ou identifique a Issue separada que aprova qualquer mudança de comportamento.
-      placeholder: Exclusivamente documental; nenhum contrato ou comportamento será alterado.
-    validations:
-      required: true
-
   - type: textarea
     id: acceptance
     attributes:
       label: Critérios de aceite
-      description: Defina condições observáveis para considerar a documentação concluída.
-      placeholder: |
-        - [ ] conteúdo confirmado em fontes versionadas;
-        - [ ] exemplos válidos e reproduzíveis;
-        - [ ] unidades e limitações explícitas;
-        - [ ] links e referências verificados;
-        - [ ] nenhum contrato alterado sem aprovação.
     validations:
       required: true
-
-  - type: textarea
-    id: validation
-    attributes:
-      label: Validação esperada
-      description: Indique como verificar consistência, renderização, links, OpenAPI ou comandos documentados.
-      placeholder: |
-        - executar exemplos documentados;
-        - validar /openapi.json;
-        - conferir links e referências;
-        - executar testes relacionados.
-    validations:
-      required: true
-
-  - type: textarea
-    id: risks
-    attributes:
-      label: Riscos e limitações
-      description: Registre possíveis interpretações incorretas, conteúdo histórico ou pontos ainda não confirmados.
-      placeholder: Quais limitações devem permanecer explícitas?
-    validations:
-      required: false
-
   - type: textarea
     id: out_of_scope
     attributes:
       label: Fora do escopo
-      description: Liste mudanças de runtime, schema, modelo ou arquitetura que não devem ser introduzidas por esta Issue.
-      placeholder: |
-        - não alterar o contrato JSON;
-        - não criar nova versão da API;
-        - não regenerar modelo ou artefatos.
     validations:
-      required: true
-
+      required: false
   - type: textarea
     id: references
     attributes:
-      label: Dependências e referências
-      description: Informe Issues, PRs, reviews, relatórios, testes ou seções relacionadas.
-      placeholder: Links ou caminhos relevantes.
+      label: Referências
     validations:
       required: false
-
-  - type: checkboxes
-    id: confirmation
-    attributes:
-      label: Confirmação
-      options:
-        - label: O conteúdo será confirmado no código, nos testes ou em outra fonte versionada antes da publicação.
-          required: true
-        - label: Mudanças de comportamento serão tratadas em Issue própria, e não introduzidas silenciosamente por documentação.
-          required: true
-        - label: Arquivos textuais serão preservados em UTF-8 e sem corrupção de caracteres.
-          required: true
