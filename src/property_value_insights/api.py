@@ -12,21 +12,17 @@ from uuid import uuid4
 import pandas as pd
 from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.responses import JSONResponse
-from pydantic import ValidationError
 
 from .artifact import ArtifactIntegrityError, load_model_bundle_with_manifest, predict_future
 from .config import Settings
+from .model_info import ModelInfoResponse, build_model_info
 from .observability import OperationalMetrics, configure_logging
 from .schemas import (
-    ApiIdentity,
-    ArtifactIdentity,
     BatchPredictionItem,
     BatchPredictionRequest,
     BatchPredictionResponse,
     HealthResponse,
     InternalErrorResponse,
-    ModelInfoResponse,
-    ModelServingIdentity,
     PredictionResponse,
     ProjectIdentity,
     PropertyFeatures,
@@ -60,39 +56,11 @@ def _project_identity() -> ProjectIdentity:
 
 
 def _model_info_from_manifest(manifest: Mapping[str, Any]) -> ModelInfoResponse:
-    try:
-        model = manifest["model"]
-        artifact = manifest["artifact"]
-        return ModelInfoResponse(
-            name=model["name"],
-            model_version=model["version"],
-            algorithm=model["algorithm"],
-            feature_set=model["feature_set"],
-            feature_columns=model["feature_columns"],
-            created_at_utc=manifest["created_at_utc"],
-            artifact_sha256=artifact["sha256"],
-            evaluation=manifest["evaluation"],
-            limitations=manifest["limitations"],
-            project=_project_identity(),
-            api=ApiIdentity(version=API_VERSION),
-            model=ModelServingIdentity(
-                display_name=f"{model['algorithm']} ({model['feature_set']} feature set)",
-                technical_name=model["name"],
-                version=model["version"],
-                algorithm=model["algorithm"],
-                feature_set=model["feature_set"],
-                serving_status="approved",
-            ),
-            artifact=ArtifactIdentity(
-                sha256=artifact["sha256"],
-                created_at_utc=manifest["created_at_utc"],
-                schema_version=manifest["schema_version"],
-            ),
-        )
-    except (KeyError, TypeError, ValidationError) as error:
-        raise ArtifactIntegrityError(
-            "Model manifest contains invalid serving metadata"
-        ) from error
+    return build_model_info(
+        manifest,
+        project=_project_identity(),
+        api_version=API_VERSION,
+    )
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
