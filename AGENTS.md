@@ -110,6 +110,28 @@ It must not:
 If the configured executor is unavailable or insufficient, stop and report the
 limitation. Do not select an unconfigured fallback automatically.
 
+## Permanent repository authorization
+
+For an approved task, the PVI Planner Reviewer is authorized without requesting
+confirmation at every step to:
+
+- read, create, edit, move, and delete task-related files;
+- run commands, tests, linting, validation, and inspection;
+- plan, implement, review, and correct changes;
+- create and update Issues;
+- create, switch, and publish working branches;
+- create commits;
+- push only to branches other than `main`;
+- open and update pull requests;
+- respond to reviews and correct findings within the approved scope; and
+- make related adjustments required to complete the approved task correctly.
+
+This authorization does not permit a merge, direct push to `main`, force push,
+history rewriting, destructive reset or clean operations, changes to secrets,
+branch protection, permissions, or external repository settings, or unrelated
+changes. The user performs merges unless they explicitly authorize Terra to
+merge that specific pull request.
+
 ## Required task workflow
 
 Work on one Issue at a time.
@@ -439,52 +461,54 @@ Never include keys, tokens, passwords, credentials, private environment files,
 sensitive payloads, absolute local paths, caches, logs, or temporary files in
 tracked files, commits, pull requests, or agent responses.
 
-## Pull request evidence
+## Pull request descriptions
 
-When the user authorizes a pull request, follow
-`.github/pull_request_template.md`.
+When the user authorizes a pull request, keep its description proportional to
+the size, risk, and purpose of the change.
 
-The description must accurately include:
+A pull request should normally communicate:
 
-- classification;
-- context and evidence;
-- objective and implemented scope;
-- technical decisions;
-- changed files and components;
-- exactly one backward-compatibility option;
-- validations executed and their real results;
-- validations not executed and reasons;
-- observed results;
-- risks and limitations;
-- out-of-scope items;
-- requested review focus;
-- correct Issue linkage.
+- **Resumo:** what changed and why;
+- **Mudanças:** the relevant implementation or documentation changes, when this
+  is not already clear from the summary;
+- **Validação:** only checks, tests, commands, or evidence actually executed;
+- **Impacto e limitações:** compatibility impact, residual risks, limitations,
+  or intentionally preserved behavior when relevant;
+- **Issue relacionada:** correct linkage to the Issue, when one exists.
 
-Do not use vague summaries such as “minor fixes”, “various changes”, or
-“improvements”.
+Omit sections that do not add useful information. Do not copy empty template
+sections, placeholder comments, tables without data, or generic final
+checklists into the pull request body.
 
-Do not declare the work complete while acceptance criteria, confirmed review
-findings, required checks, review conversations, or relevant validations remain
-unresolved.
+Classification, affected area, cycle, milestone, and priority should normally
+be recorded in the Issue and/or labels. Repeat them in the pull request only
+when they materially help the review.
 
-## Completion report
+Use `Closes #<number>` only when the pull request fully completes the Issue.
+Otherwise use a non-closing reference such as `Relacionado a #<number>`.
 
-The Executor's final report must include:
+Complex or high-risk changes may require additional evidence, decisions,
+migration details, rollback information, security notes, model or artifact
+impact, or review focus. Add those details only when they are relevant.
 
-1. Issue and approved plan addressed;
-2. files changed;
-3. behavior changed and behavior intentionally preserved;
-4. focused tests added or updated;
-5. validations grouped as Passed, Failed, Blocked, and Not run;
-6. backward-compatibility assessment;
-7. artifact, data, security, and documentation impact;
-8. deviations from the approved plan;
-9. unresolved risks or decisions;
-10. Git or GitHub actions performed, or an explicit statement that none were
-    performed.
+Never use vague summaries such as “minor fixes”, “various changes”, or
+“improvements”, and never claim that a validation passed unless it was
+executed successfully.
 
-The Planner Reviewer's final report must separate confirmed findings from optional
-suggestions and state whether the diff is ready for user approval.
+## Completion reports
+
+The Executor's final report should be proportional to the task and include:
+
+- what was changed and intentionally preserved;
+- the relevant files or components;
+- validations grouped by real outcome: Passed, Failed, Blocked, or Not run;
+- compatibility impact, risks, limitations, and unresolved decisions;
+- Git or GitHub actions performed, or a statement that none were performed.
+
+Do not force empty fields or repeat information already stated clearly.
+
+The Planner Reviewer's final report must separate confirmed findings from
+optional suggestions and state whether the diff is ready for user approval.
 
 No agent may approve its own work or treat automated checks as a substitute for
 supervised review.
