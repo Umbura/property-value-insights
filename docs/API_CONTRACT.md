@@ -58,9 +58,68 @@ versões evoluem de forma independente.
 
 ### `GET /model-info`
 
-Retorna identidade, algoritmo, contrato de features, hash do artefato, resumo da
-avaliação e limitações documentadas. O binário do modelo e os dados de treino
-não são expostos.
+Retorna identidade, algoritmo, contrato de features, hash do artefato, avaliação
+e limitações documentadas. Todos os campos top-level históricos permanecem
+presentes com os mesmos valores. Quatro blocos aditivos tornam as identidades e
+versões visualmente distintas:
+
+- `project`: nome e release da distribuição instalada;
+- `api`: versão do contrato HTTP/OpenAPI;
+- `model`: nome legível, nome técnico, versão, algoritmo, feature set e status de
+  serving;
+- `artifact`: SHA-256, data de criação e versão do schema do artefato/manifesto.
+
+A release do projeto, a versão da API e a versão do modelo evoluem de forma
+independente. O valor `model.serving_status="approved"` registra a decisão de
+governança para disponibilização do modelo físico; ele não declara vitória
+estatística automática sobre todas as variantes avaliadas.
+
+O nome e a release do projeto vêm do metadata do pacote instalado. A versão da
+API vem do contrato versionado da aplicação. A identidade do modelo, o hash, a
+data e a versão do schema vêm do manifesto já aceito durante o startup. Caminhos
+internos do artefato e do manifesto não são expostos.
+
+Exemplo abreviado, omitindo apenas detalhes internos de `evaluation` e a lista
+completa de `feature_columns`:
+
+```json
+{
+  "name": "property_value_hist_gradient_boosting_physical",
+  "model_version": "0.4.0-rc1",
+  "algorithm": "HistGradientBoostingRegressor",
+  "feature_set": "physical",
+  "feature_columns": ["bedrooms", "bathrooms", "sqft_living"],
+  "created_at_utc": "2026-08-03T23:24:44.139717Z",
+  "artifact_sha256": "90ffbab62970c805b7fd65a5488fa727026bdc59b81d56726318374cdce8c439",
+  "evaluation": {"protocol": "five expanding temporal folds on the development period"},
+  "limitations": ["Os dados cobrem uma região e um intervalo temporal limitado."],
+  "project": {
+    "name": "property-value-insights",
+    "release": "1.0.0"
+  },
+  "api": {
+    "version": "0.5.0-rc1"
+  },
+  "model": {
+    "display_name": "HistGradientBoostingRegressor (physical feature set)",
+    "technical_name": "property_value_hist_gradient_boosting_physical",
+    "version": "0.4.0-rc1",
+    "algorithm": "HistGradientBoostingRegressor",
+    "feature_set": "physical",
+    "serving_status": "approved"
+  },
+  "artifact": {
+    "sha256": "90ffbab62970c805b7fd65a5488fa727026bdc59b81d56726318374cdce8c439",
+    "created_at_utc": "2026-08-03T23:24:44.139717Z",
+    "schema_version": "1.0"
+  }
+}
+```
+
+A mudança é aditiva. Clientes que leem somente os campos históricos continuam
+compatíveis. Existe risco residual apenas para consumidores que rejeitam
+propriedades JSON adicionais, comportamento não recomendado para esse endpoint.
+O binário do modelo, dados de treino e paths internos não são expostos.
 
 ### `POST /predict`
 

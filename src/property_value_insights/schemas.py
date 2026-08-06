@@ -309,16 +309,174 @@ class HealthResponse(BaseModel):
     )
 
 
+class ProjectIdentity(BaseModel):
+    """Installed project package identity."""
+
+    name: str = Field(
+        min_length=1,
+        description="Nome da distribuição instalada do projeto.",
+    )
+    release: str = Field(
+        min_length=1,
+        description="Release do projeto obtida do metadata do pacote instalado.",
+    )
+
+
+class ApiIdentity(BaseModel):
+    """Public HTTP/OpenAPI contract identity."""
+
+    version: str = Field(
+        min_length=1,
+        description="Versão do contrato HTTP/OpenAPI exposto pela aplicação.",
+    )
+
+
+class ModelServingIdentity(BaseModel):
+    """Identity of the model approved and loaded for serving."""
+
+    display_name: str = Field(
+        min_length=1,
+        description="Nome legível derivado do algoritmo e do conjunto de features.",
+    )
+    technical_name: str = Field(
+        min_length=1,
+        description="Nome técnico versionado no manifesto e no bundle do modelo.",
+    )
+    version: str = Field(
+        min_length=1,
+        description="Versão do modelo servido, distinta da release e da API.",
+    )
+    algorithm: str = Field(
+        min_length=1,
+        description="Algoritmo do modelo aprovado para serving.",
+    )
+    feature_set: str = Field(
+        min_length=1,
+        description="Conjunto de features usado pelo modelo servido.",
+    )
+    serving_status: Literal["approved"] = Field(
+        default="approved",
+        description=(
+            "Decisão de governança para serving; não significa vencedor estatístico "
+            "automático entre todas as variantes."
+        ),
+    )
+
+
+class ArtifactIdentity(BaseModel):
+    """Identity of the verified artifact and its manifest."""
+
+    sha256: str = Field(
+        pattern=r"^[a-f0-9]{64}$",
+        description="SHA-256 do artefato verificado durante o startup.",
+    )
+    created_at_utc: datetime = Field(
+        description="Data de criação registrada no manifesto, em UTC.",
+    )
+    schema_version: str = Field(
+        min_length=1,
+        description="Versão do schema do artefato e do manifesto.",
+    )
+
+
 class ModelInfoResponse(BaseModel):
-    name: str = Field(min_length=1)
-    model_version: str = Field(min_length=1)
-    algorithm: str = Field(min_length=1)
-    feature_set: str = Field(min_length=1)
-    feature_columns: list[str] = Field(min_length=1)
-    created_at_utc: datetime
-    artifact_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
-    evaluation: dict[str, Any] = Field(min_length=1)
-    limitations: list[str] = Field(min_length=1)
+    """Backward-compatible metadata plus structured technical identity blocks."""
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "examples": [
+                {
+                    "name": "property_value_hist_gradient_boosting_physical",
+                    "model_version": "0.4.0-rc1",
+                    "algorithm": "HistGradientBoostingRegressor",
+                    "feature_set": "physical",
+                    "feature_columns": ["bedrooms", "bathrooms", "sqft_living"],
+                    "created_at_utc": "2026-08-03T23:24:44.139717+00:00",
+                    "artifact_sha256": (
+                        "90ffbab62970c805b7fd65a5488fa727026bdc59b81d56726318374cdce8c439"
+                    ),
+                    "evaluation": {
+                        "protocol": "five expanding temporal folds on the development period"
+                    },
+                    "limitations": [
+                        "Os dados cobrem uma região e um intervalo temporal limitado."
+                    ],
+                    "project": {
+                        "name": "property-value-insights",
+                        "release": "1.0.0",
+                    },
+                    "api": {"version": "0.5.0-rc1"},
+                    "model": {
+                        "display_name": (
+                            "HistGradientBoostingRegressor (physical feature set)"
+                        ),
+                        "technical_name": (
+                            "property_value_hist_gradient_boosting_physical"
+                        ),
+                        "version": "0.4.0-rc1",
+                        "algorithm": "HistGradientBoostingRegressor",
+                        "feature_set": "physical",
+                        "serving_status": "approved",
+                    },
+                    "artifact": {
+                        "sha256": (
+                            "90ffbab62970c805b7fd65a5488fa727026bdc59b81d56726318374cdce8c439"
+                        ),
+                        "created_at_utc": "2026-08-03T23:24:44.139717+00:00",
+                        "schema_version": "1.0",
+                    },
+                }
+            ]
+        }
+    )
+
+    name: str = Field(
+        min_length=1,
+        description="Nome técnico histórico do modelo, preservado por compatibilidade.",
+    )
+    model_version: str = Field(
+        min_length=1,
+        description="Versão histórica top-level do modelo servido.",
+    )
+    algorithm: str = Field(
+        min_length=1,
+        description="Algoritmo histórico top-level do modelo servido.",
+    )
+    feature_set: str = Field(
+        min_length=1,
+        description="Conjunto histórico top-level de features do modelo.",
+    )
+    feature_columns: list[str] = Field(
+        min_length=1,
+        description="Colunas de entrada esperadas pelo modelo servido.",
+    )
+    created_at_utc: datetime = Field(
+        description="Data de criação histórica registrada no manifesto.",
+    )
+    artifact_sha256: str = Field(
+        pattern=r"^[a-f0-9]{64}$",
+        description="SHA-256 histórico top-level, preservado por compatibilidade.",
+    )
+    evaluation: dict[str, Any] = Field(
+        min_length=1,
+        description="Avaliação original do manifesto, preservada sem reformatação.",
+    )
+    limitations: list[str] = Field(
+        min_length=1,
+        description="Limitações originais do manifesto, preservadas sem reformatação.",
+    )
+    project: ProjectIdentity = Field(
+        description="Identidade e release do projeto instalado.",
+    )
+    api: ApiIdentity = Field(
+        description="Identidade versionada do contrato da API.",
+    )
+    model: ModelServingIdentity = Field(
+        description="Identidade estruturada do modelo aprovado para serving.",
+    )
+    artifact: ArtifactIdentity = Field(
+        description="Identidade estruturada do artefato e do manifesto verificados.",
+    )
 
 
 class InternalErrorResponse(BaseModel):
