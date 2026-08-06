@@ -33,7 +33,16 @@ de predição também incluem o valor no corpo JSON.
 
 ### `GET /health`
 
-Confirma que a aplicação iniciou e que o artefato verificado está carregado.
+Retorna `healthy` somente depois que o processo da API conclui o startup, o
+bundle do modelo é carregado e o artefato e o manifesto são aceitos pelas
+verificações executadas durante a inicialização. Essas verificações incluem a
+leitura do manifesto, a compatibilidade do schema, a correspondência do
+SHA-256 do artefato e a coerência entre os metadados do manifesto e do bundle.
+
+A chamada de `/health` não executa uma inferência de teste, não verifica
+conectividade com serviços externos e não relê nem recalcula o hash do artefato
+a cada requisição. Portanto, o endpoint descreve o estado resultante do startup
+do processo atual, e não uma revalidação completa em tempo real.
 
 ```json
 {
@@ -42,6 +51,10 @@ Confirma que a aplicação iniciou e que o artefato verificado está carregado.
   "model_version": "0.4.0-rc1"
 }
 ```
+
+`api_version` identifica o contrato HTTP/OpenAPI da aplicação, enquanto
+`model_version` identifica o modelo carregado e servido pelo processo. As duas
+versões evoluem de forma independente.
 
 ### `GET /model-info`
 
