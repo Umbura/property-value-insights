@@ -159,10 +159,13 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         "/health",
         response_model=HealthResponse,
         tags=["Service Operations"],
-        summary="Check service readiness",
+        summary="Check service startup readiness",
         description=(
-            "Verifica se a API está pronta para atender solicitações, retornando status "
-            "do serviço, versão da API e versão do modelo carregado."
+            "Confirma que o processo da API concluiu a inicialização e que o bundle do "
+            "modelo está carregado após o artefato e o manifesto terem sido aceitos pelas "
+            "verificações executadas no startup. A chamada não executa inferência, não "
+            "testa conectividade com serviços externos e não relê nem recalcula o hash do "
+            "artefato a cada requisição."
         ),
     )
     def health(request: Request) -> HealthResponse:

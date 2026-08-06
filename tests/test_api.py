@@ -87,12 +87,32 @@ def test_openapi_has_expected_tags_summaries_and_descriptions() -> None:
 
     health_operation = spec["paths"]["/health"]["get"]
     assert health_operation["tags"] == ["Service Operations"]
-    assert health_operation["summary"] == "Check service readiness"
-    assert (
-        health_operation["description"]
-        == "Verifica se a API está pronta para atender solicitações, retornando status "
-        "do serviço, versão da API e versão do modelo carregado."
+    assert health_operation["summary"] == "Check service startup readiness"
+    assert health_operation["description"] == (
+        "Confirma que o processo da API concluiu a inicialização e que o bundle do "
+        "modelo está carregado após o artefato e o manifesto terem sido aceitos pelas "
+        "verificações executadas no startup. A chamada não executa inferência, não "
+        "testa conectividade com serviços externos e não relê nem recalcula o hash do "
+        "artefato a cada requisição."
     )
+
+    health_schema = spec["components"]["schemas"]["HealthResponse"]
+    assert health_schema["examples"] == [
+        {
+            "status": "healthy",
+            "api_version": "0.5.0-rc1",
+            "model_version": "0.4.0-rc1",
+        }
+    ]
+    assert health_schema["properties"]["status"]["description"].startswith(
+        "Indica que o processo concluiu o startup"
+    )
+    assert "contrato HTTP/OpenAPI" in health_schema["properties"]["api_version"][
+        "description"
+    ]
+    assert "modelo carregado" in health_schema["properties"]["model_version"][
+        "description"
+    ]
 
     model_info_operation = spec["paths"]["/model-info"]["get"]
     assert model_info_operation["tags"] == ["Service Operations"]

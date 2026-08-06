@@ -260,9 +260,34 @@ class BatchPredictionResponse(BaseModel):
 
 
 class HealthResponse(BaseModel):
-    status: str
-    api_version: str
-    model_version: str
+    """Startup readiness information for the loaded API process."""
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "examples": [
+                {
+                    "status": "healthy",
+                    "api_version": "0.5.0-rc1",
+                    "model_version": "0.4.0-rc1",
+                }
+            ]
+        }
+    )
+
+    status: str = Field(
+        description=(
+            "Indica que o processo concluiu o startup e mantém o bundle do modelo "
+            "carregado após as verificações de inicialização."
+        )
+    )
+    api_version: str = Field(
+        min_length=1,
+        description="Versão do contrato HTTP/OpenAPI exposto pela aplicação.",
+    )
+    model_version: str = Field(
+        min_length=1,
+        description="Versão do modelo carregado e atualmente servido pelo processo.",
+    )
 
 
 class ModelInfoResponse(BaseModel):
