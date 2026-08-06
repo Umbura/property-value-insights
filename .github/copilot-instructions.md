@@ -31,7 +31,7 @@ Use `docs/REVIEW_AND_DELIVERY_PROCESS.md` as the source of truth for the current
 
 ## Work classification
 
-Each Issue and pull request must record:
+Each Issue should record, or be labeled with:
 
 - one primary nature;
 - one or more affected areas;
@@ -70,6 +70,9 @@ Use one or more of:
 
 Copilot, ChatGPT, AI integrations, templates, automations, dependency maintenance, CI configuration, rulesets, and repository organization must be classified as **Maintenance**, normally in **Repository**, **Automation**, **CI**, or **Governance**, unless they also change product behavior.
 
+Pull requests do not need to repeat classification metadata unless it materially
+helps the review.
+
 ## Sources of truth
 
 Before making changes, inspect the relevant:
@@ -91,11 +94,12 @@ Do not treat review notes, historical reports, recommendations, Copilot comments
 
 Every repository change must follow this flow:
 
-1. read or create an Issue with classification, objective, scope, acceptance criteria, validation, risks, and out-of-scope items;
+1. read or create an Issue with objective, scope, acceptance criteria, and
+   out-of-scope items;
 2. create a short branch from `main`;
 3. implement only the approved scope;
 4. open a pull request linked to the Issue;
-5. record executed and unexecuted validations separately;
+5. record validations actually executed and any relevant limitations;
 6. address review findings;
 7. merge only after explicit supervised approval and required checks.
 
@@ -108,7 +112,8 @@ Do not push changes directly to `main`.
 Before changing files:
 
 1. read the complete Issue;
-2. confirm its primary nature, areas, cycle, priority, and acceptance criteria;
+2. confirm its scope and acceptance criteria, plus any relevant classification
+   or labels;
 3. inspect the affected code, tests, documentation, and current branch state;
 4. confirm whether the requested behavior already exists;
 5. identify the smallest change that satisfies the Issue;
@@ -298,21 +303,16 @@ Keep each pull request focused, professional, impersonal, and reviewable.
 
 Follow `.github/pull_request_template.md`. The description must include:
 
-- classification: primary nature, affected areas, cycle or milestone, and priority;
-- context;
-- current problem or evidence;
-- objective;
-- implementation;
-- technical decisions;
-- changed files and components;
-- exactly one applicable backward-compatibility option with justification;
-- validations executed, with commands or evidence and results;
-- validations not executed, with reasons;
-- observed results;
-- risks and limitations;
-- out-of-scope items;
-- requested review focus;
-- correct Issue linkage.
+- a concise summary of what changed and why;
+- relevant changes, when the summary is not sufficient;
+- only validation actually executed;
+- compatibility impact, risks, limitations, or preserved behavior when relevant;
+- correct Issue linkage, when one exists.
+
+Omit irrelevant sections. Complex, risky, breaking, model, data, security,
+dependency, CI, or release changes require proportionally more evidence and
+detail. Classification, areas, cycle, and priority normally belong in the Issue
+or labels rather than being repeated in the pull request.
 
 Do not use vague descriptions such as "minor fixes", "improvements", or "various changes".
 

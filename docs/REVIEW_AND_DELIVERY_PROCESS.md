@@ -34,9 +34,9 @@ Ciclo 3
 
 ## 2. Dimensões de classificação
 
-Cada demanda deve ser classificada por natureza, área afetada, ciclo e
-prioridade. A classificação descreve o trabalho sem substituir o objetivo, as
-evidências ou os critérios de aceite da Issue.
+Cada demanda pode ser classificada por natureza, área afetada, ciclo e
+prioridade. Essa informação deve ficar na Issue ou em labels quando ajudar o
+acompanhamento, sem substituir objetivo, evidências ou critérios de aceite.
 
 ### Natureza
 
@@ -81,9 +81,8 @@ Uma Issue pode afetar uma ou mais áreas:
   bloqueia imediatamente a entrega.
 - **Low:** melhoria não bloqueante, limpeza ou refinamento de menor impacto.
 
-Enquanto as labels correspondentes não estiverem configuradas no GitHub, a
-classificação deve ser registrada explicitamente no corpo da Issue e da pull
-request.
+A classificação não precisa ser repetida no corpo da pull request, salvo quando
+for relevante para a revisão.
 
 ## 3. Ciclos de trabalho
 
@@ -183,18 +182,23 @@ nem ser apresentadas como novas funcionalidades do sistema de predição.
 
 Cada mudança deve seguir o fluxo:
 
-1. abrir uma Issue com objetivo, classificação, escopo, critérios de aceite,
-   validação e fora do escopo;
+1. abrir uma Issue com objetivo, escopo, critérios de aceite e fora do escopo;
 2. criar uma branch curta a partir de `main`;
 3. implementar somente o escopo aprovado;
 4. abrir uma pull request vinculada à Issue;
-5. registrar comandos executados, resultados, riscos e pontos não verificados;
+5. registrar validações realmente executadas e riscos ou limitações relevantes;
 6. tratar observações de revisão;
 7. realizar merge somente após aprovação explícita.
 
 A pull request deve usar `Closes #<número>` apenas quando concluir integralmente
 a Issue relacionada. Referências sem fechamento automático devem usar uma
 formulação descritiva, como `Relacionado a #<número>`.
+
+Sua descrição deve ser proporcional ao tamanho, risco e propósito da mudança:
+um resumo, mudanças relevantes, validações executadas, impacto ou limitações e
+o vínculo com a Issue quando existir. Seções sem informação útil podem ser
+omitidas. Alterações complexas ou de alto risco exigem evidências e decisões
+adicionais na medida necessária.
 
 ## 7. Relação com milestones e acompanhamento
 
