@@ -105,4 +105,8 @@ def test_deployment_configuration_keeps_api_url_externalized() -> None:
     assert "property_value_insights.cors_app:app" in render
     assert "healthCheckPath: /health" in render
     assert 'key: PORT\n        value: "8000"' in render
-    assert "${PORT:-8000}" in render
+    assert (
+        "dockerCommand: uvicorn property_value_insights.cors_app:app "
+        "--host 0.0.0.0 --port 8000"
+    ) in render
+    assert "/bin/sh -c" not in render
