@@ -211,8 +211,35 @@ async function submitPrediction(event) {
   }
 }
 
+function setupRevealAnimations() {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  const targets = [...document.querySelectorAll("[data-reveal]")];
+  if (!targets.length || !("IntersectionObserver" in window)) return;
+
+  document.documentElement.classList.add("motion-ready");
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add("is-visible");
+      observer.unobserve(entry.target);
+    });
+  }, {threshold: 0.12, rootMargin: "0px 0px -8% 0px"});
+
+  requestAnimationFrame(() => {
+    targets.forEach((target) => {
+      if (target.getBoundingClientRect().top < window.innerHeight * 0.92) {
+        target.classList.add("is-visible");
+      } else {
+        observer.observe(target);
+      }
+    });
+  });
+}
+
 renderFields();
 configureLinks();
+setupRevealAnimations();
 document.getElementById("load-example").addEventListener("click", loadExample);
 document.getElementById("prediction-form").addEventListener("submit", submitPrediction);
 checkHealth();
