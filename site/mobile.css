@@ -1,25 +1,68 @@
 /* Mobile refinements layered on top of the desktop-first visual system. */
 
 @media (max-width: 580px) {
+  html,
+  body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: clip;
+  }
+
   body {
     line-height: 1.52;
   }
 
+  /* Keep decorative layers and layout children from enlarging the scroll area. */
+  body::before,
+  body::after,
+  main,
+  .topbar,
   .section-shell {
-    width: min(100% - 20px, 1160px);
+    max-width: 100%;
+  }
+
+  body::after {
+    right: -7rem;
+    width: 22rem;
+    height: 22rem;
+  }
+
+  .hero,
+  .hero-copy,
+  .hero-card,
+  .metrics-grid,
+  .diagnostic-card,
+  .diagnostic-frame,
+  .demo-layout,
+  .prediction-form,
+  .field-grid,
+  .form-field,
+  .result-panel,
+  .limits-grid,
+  .flow,
+  .footer {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .section-shell {
+    width: calc(100% - 20px);
   }
 
   .topbar {
+    width: 100%;
     padding: 11px 10px;
   }
 
   .brand {
     min-width: 0;
+    max-width: 100%;
     gap: 9px;
     font-size: 0.86rem;
   }
 
   .brand > span:last-child {
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -35,30 +78,41 @@
   }
 
   h1 {
+    max-width: 100%;
     margin-bottom: 20px;
     font-size: clamp(2.15rem, 11vw, 3.2rem);
     line-height: 1.01;
     letter-spacing: -0.048em;
+    overflow-wrap: anywhere;
   }
 
   h2 {
+    max-width: 100%;
     font-size: clamp(1.8rem, 9vw, 2.55rem);
     line-height: 1.08;
+    overflow-wrap: anywhere;
   }
 
   .lead {
+    max-width: 100%;
     font-size: 1rem;
+    overflow-wrap: anywhere;
   }
 
   .hero-actions {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 10px;
+    width: 100%;
+    max-width: 100%;
     margin-top: 26px;
   }
 
   .hero-actions .button {
     width: 100%;
+    max-width: 100%;
+    white-space: normal;
+    text-align: center;
   }
 
   .api-state {
@@ -68,6 +122,7 @@
     align-items: flex-start;
     border-radius: 14px;
     line-height: 1.35;
+    overflow-wrap: anywhere;
   }
 
   .api-state .status-dot {
@@ -78,15 +133,29 @@
   .hero-card,
   .prediction-form,
   .result-panel {
+    width: 100%;
     border-radius: 18px;
     padding: 18px;
   }
 
   .hero-card-head {
+    min-width: 0;
     align-items: flex-start;
   }
 
+  .hero-card dl div,
+  .result-meta div {
+    min-width: 0;
+  }
+
+  .hero-card dd,
+  .result-meta dd {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
   .live-pill {
+    flex: 0 0 auto;
     white-space: nowrap;
     font-size: 0.72rem;
   }
@@ -97,24 +166,55 @@
 
   .metrics-grid,
   .field-grid {
+    grid-template-columns: minmax(0, 1fr);
     gap: 12px;
   }
 
   .metric,
   .limits-grid article {
+    min-width: 0;
     min-height: 0;
   }
 
+  .diagnostic-card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .diagnostic-frame,
+  .diagnostic-frame img {
+    width: 100%;
+  }
+
   .form-toolbar {
+    min-width: 0;
     gap: 10px;
   }
 
+  .form-toolbar > * {
+    min-width: 0;
+    max-width: 100%;
+  }
+
   .text-button {
+    max-width: 100%;
     align-self: flex-start;
+    white-space: normal;
+  }
+
+  .form-field input,
+  .form-field select {
+    min-width: 0;
+    max-width: 100%;
   }
 
   .advanced-fields {
+    min-width: 0;
+    max-width: 100%;
     margin-block: 20px;
+  }
+
+  .advanced-fields summary {
+    overflow-wrap: anywhere;
   }
 
   .result-panel {
@@ -122,6 +222,7 @@
   }
 
   .estimated-price {
+    max-width: 100%;
     margin-bottom: 24px;
     font-size: clamp(2rem, 10vw, 3rem);
     overflow-wrap: anywhere;
@@ -137,26 +238,33 @@
   }
 
   .flow {
+    grid-template-columns: minmax(0, 1fr);
     gap: 10px;
   }
 
   .flow div {
+    min-width: 0;
+    max-width: 100%;
     padding: 17px 12px;
+    overflow-wrap: anywhere;
   }
 
   .footer {
+    width: calc(100% - 20px);
     min-height: 96px;
     padding-block: 20px;
   }
 
   .footer div {
+    max-width: 100%;
     flex-wrap: wrap;
   }
 }
 
 @media (max-width: 380px) {
-  .section-shell {
-    width: min(100% - 16px, 1160px);
+  .section-shell,
+  .footer {
+    width: calc(100% - 16px);
   }
 
   .brand {
