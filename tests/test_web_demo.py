@@ -100,8 +100,9 @@ def test_stakeholder_site_contains_all_required_prediction_features() -> None:
     assert "prefers-reduced-motion: reduce" in styles
     assert "@media (max-width: 580px)" in mobile
     assert "@media (max-width: 380px)" in mobile
-    assert ".hero-actions .button" in mobile
-    assert ".api-state" in mobile
+    assert "overflow-x: clip" in mobile
+    assert "grid-template-columns: minmax(0, 1fr)" in mobile
+    assert "max-width: 100%" in mobile
     assert "setupRevealAnimations" in app_js
 
 
