@@ -90,6 +90,7 @@ def test_stakeholder_site_contains_all_required_prediction_features() -> None:
     assert "Teste o modelo diretamente no navegador" in index
     assert 'id="prediction-form"' in index
     assert "assets/approved_model_diagnostic.png" in index
+    assert "FastAPI · contrato 0.5.0-rc1" in index
 
 
 def test_deployment_configuration_keeps_api_url_externalized() -> None:
@@ -103,3 +104,5 @@ def test_deployment_configuration_keeps_api_url_externalized() -> None:
     assert "vars.PVI_API_BASE_URL" in pages
     assert "property_value_insights.cors_app:app" in render
     assert "healthCheckPath: /health" in render
+    assert 'key: PORT\n        value: "8000"' in render
+    assert "${PORT:-8000}" in render
