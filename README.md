@@ -1,11 +1,30 @@
 # Property Value Insights
 
-Sistema reprodutível de estimativa de preços residenciais com Machine Learning e
-práticas de MLOps. O projeto foi desenvolvido para o desafio técnico de previsão
-de preços de imóveis e trata os dados como uma solução de cliente real.
+Sistema de estimativa de preços residenciais com Machine Learning, disponibilizado
+como API reproduzível e imagem Docker pública.
 
-Status atual: entrega final `v1.0.1`, com modelo, API, evidências de revisão e
-imagem Docker reproduzível preparadas para avaliação técnica.
+A entrega atual é a release `v1.0.1`. O projeto foi desenvolvido a partir de um
+desafio técnico de previsão de preços de imóveis, mas estruturado como uma solução
+que pudesse ser revisada, reproduzida e utilizada por diferentes públicos.
+
+## Visão geral
+
+### O problema
+
+Estimar o valor de um imóvel a partir de suas características físicas e espaciais,
+com uma resposta rápida e rastreável para apoiar análises preliminares.
+
+### O que este projeto entrega
+
+- uma estimativa de preço em USD para um imóvel informado;
+- uma API REST documentada com FastAPI/OpenAPI;
+- um modelo versionado e verificado por SHA-256 antes de entrar em serviço;
+- uma imagem Docker pública pronta para execução;
+- documentação de resultados, limitações, dados e decisões de modelagem;
+- treinamento e avaliação reproduzíveis para revisão técnica.
+
+O sistema é uma ferramenta de apoio quantitativo. Ele não substitui avaliação
+imobiliária formal nem deve ser usado como decisão autônoma de crédito.
 
 ## Resultados principais
 
@@ -20,14 +39,157 @@ imagem Docker reproduzível preparadas para avaliação técnica.
 | Acima de US$ 1 milhão | MAE US$ 201.930,60; 69,55% de subestimação |
 | Acima de US$ 2 milhões | 46 casos; MAE US$ 544.527,87; 82,61% de subestimação |
 
-O modelo aprovado utiliza somente características físicas e espaciais. A
-variante demográfica obteve ganho médio marginal na validação, mas ficou fora
-do serving por risco de proxy socioeconômica, origem e vintage não documentados.
+O modelo aprovado utiliza somente características físicas e espaciais. Uma
+variante com dados demográficos foi avaliada, mas ficou fora do serving porque o
+ganho médio foi marginal e os dados introduziam risco de proxies socioeconômicas,
+além de origem e vintage não documentados.
 
 ![Diagnóstico do modelo físico aprovado](reports/figures/approved_model_diagnostic.png)
 
 O gráfico pertence ao modelo físico servido. O período mais recente foi usado
-como diagnóstico e já havia sido consultado; não é um teste final intocado.
+como diagnóstico e já havia sido consultado; portanto, não representa um teste
+final intocado.
+
+## Teste a aplicação em 2 minutos
+
+Para apenas experimentar a API, **não é necessário instalar Python, `uv`, clonar
+o repositório ou baixar os dados do projeto**. A forma recomendada é usar a imagem
+Docker pública da release.
+
+### Pré-requisito: Docker
+
+É necessário ter o Docker instalado e em execução:
+
+- Windows e macOS: Docker Desktop;
+- Linux: Docker Engine ou Docker Desktop.
+
+A instalação oficial está disponível em <https://docs.docker.com/get-started/get-docker/>.
+
+### 1. Baixe a aplicação
+
+No PowerShell, Bash ou terminal equivalente:
+
+```powershell
+docker pull ghcr.io/umbura/property-value-insights:1.0.1
+```
+
+`docker pull` baixa a imagem da aplicação para a máquina. Essa imagem já contém o
+runtime Python, as dependências, o pacote `property_value_insights`, o modelo
+aprovado e seu manifesto. **Não é necessário baixar o repositório para executar
+este caminho.**
+
+### 2. Execute a API
+
+```powershell
+docker run --rm --name property-value-insights -p 8000:8000 --read-only --tmpfs /tmp --security-opt no-new-privileges:true ghcr.io/umbura/property-value-insights:1.0.1
+```
+
+Quando o serviço estiver pronto, abra no navegador:
+
+**<http://127.0.0.1:8000/docs>**
+
+A página apresenta a documentação interativa da API. Nela é possível abrir
+`POST /predict`, selecionar **Try it out**, preencher um imóvel e executar uma
+previsão sem escrever código adicional.
+
+Para encerrar, pressione `Ctrl+C` no terminal. Como o comando usa `--rm`, o
+contêiner é removido automaticamente quando termina.
+
+## Exemplo de previsão
+
+O exemplo abaixo corresponde a um imóvel do conjunto de exemplos futuros
+versionado no projeto.
+
+### Entrada
+
+```json
+{
+  "bedrooms": 4,
+  "bathrooms": 1.0,
+  "sqft_living": 1680,
+  "sqft_lot": 5043,
+  "floors": 1.5,
+  "waterfront": 0,
+  "view": 0,
+  "condition": 4,
+  "grade": 6,
+  "sqft_above": 1680,
+  "sqft_basement": 0,
+  "yr_built": 1911,
+  "yr_renovated": 0,
+  "zipcode": "98118",
+  "lat": 47.5354,
+  "long": -122.273,
+  "sqft_living15": 1560,
+  "sqft_lot15": 5765
+}
+```
+
+### Resposta
+
+```json
+{
+  "predicted_price": 372953.43,
+  "currency": "USD",
+  "model_version": "0.4.0-rc1",
+  "request_id": "b55ae80b6ad24ffb97a06e4963781637"
+}
+```
+
+Nesse exemplo, o modelo estima um valor de aproximadamente **US$ 373 mil**. O
+`request_id` permite rastrear a requisição e `model_version` identifica exatamente
+qual versão do modelo produziu a estimativa.
+
+## Como interpretar a previsão
+
+### Onde há melhor evidência
+
+O modelo foi desenvolvido e avaliado sobre os dados históricos disponíveis para
+a região e o intervalo temporal representados no conjunto fornecido. Sua melhor
+evidência de desempenho está, portanto, em imóveis semelhantes aos observados
+nessa distribuição.
+
+### Onde é necessário maior cuidado
+
+- imóveis de alto valor apresentam erro absoluto e tendência de subestimação mais
+  elevados;
+- imóveis acima de US$ 1 milhão devem receber revisão humana;
+- acima de US$ 2 milhões, a evidência disponível é muito mais limitada e a
+  avaliação especializada é recomendada;
+- ZIPs desconhecidos, coordenadas fora da região, anos futuros e combinações muito
+  raras podem estar fora da cobertura prática observada;
+- a previsão é uma estimativa estatística, não uma explicação causal do preço.
+
+As evidências completas estão nas reviews
+[`C1.3`](docs/reviews/c1-3-model-review.md) e
+[`C1.4`](docs/reviews/c1-4-data-quality-review.md), além do
+[model card](docs/MODEL_CARD.md).
+
+## Arquitetura
+
+```mermaid
+flowchart LR
+    U[Usuário ou sistema] --> A[FastAPI]
+    A --> V[Validação Pydantic]
+    V --> M[Modelo físico verificado por SHA-256]
+    M --> P[Preço estimado + versão + request ID]
+    A --> H[/health e /model-info/]
+    A --> O[/logs JSON e /metrics/]
+    D[Dados versionados] --> T[Treinamento e avaliação offline]
+    T --> G[Manifesto + Joblib + relatórios]
+    G --> M
+```
+
+O runtime entregue é uma API containerizada. Registro de modelos, staging,
+canary e rollback são apresentados na documentação de arquitetura como evolução
+recomendada, não como infraestrutura externa já implantada.
+
+---
+
+# Documentação técnica
+
+As seções abaixo são destinadas a desenvolvedores, revisores e avaliadores que
+desejam reproduzir o ambiente, inspecionar os dados ou executar o pipeline.
 
 ## Identidade versionada
 
@@ -40,63 +202,9 @@ como diagnóstico e já havia sido consultado; não é um teste final intocado.
 | SHA-256 do artefato | `90ffbab62970c805b7fd65a5488fa727026bdc59b81d56726318374cdce8c439` |
 
 As versões evoluem de forma independente. O valor
-`property_value_insights=0.1.0.dev0` preservado no manifesto é
-metadata histórica do ambiente que gerou o artefato imutável; ele não substitui
-a release atual do projeto.
-
-## Arquitetura executável
-
-```mermaid
-flowchart LR
-    C[Cliente] --> A[FastAPI]
-    A --> V[Validação Pydantic]
-    V --> M[Pipeline físico verificado por SHA-256]
-    M --> P[Preço previsto + versão + request ID]
-    A --> H[/health e /model-info/]
-    A --> O[/logs JSON e /metrics/]
-    D[CSV versionado] --> T[Treinamento e avaliação offline]
-    T --> G[Manifesto + Joblib + relatórios]
-    G --> M
-```
-
-O runtime implementado é uma API local/containerizada. Registro de modelos,
-staging, canary e rollback aparecem nos diagramas como arquitetura recomendada,
-não como infraestrutura externa já implantada.
-
-## Limites de uso
-
-- segunda opinião quantitativa, não laudo ou decisão autônoma de crédito;
-- as faixas observadas acima de US$ 1 milhão exigem revisão humana e, acima
-  de US$ 2 milhões, avaliação especializada;
-- no runtime, o gatilho não pode depender do preço real desconhecido nem somente
-  da previsão pontual; a Issue #64 definirá sinais com previsão, intervalo,
-  raridade e cobertura;
-- ZIP desconhecido, coordenadas fora da região e anos futuros ainda não recebem
-  warning estruturado no contrato atual; essa melhoria está registrada na Issue #64;
-- a cobertura comprovada é regional, temporal e principalmente tabular.
-
-As evidências completas estão nas reviews
-[`C1.3`](docs/reviews/c1-3-model-review.md) e
-[`C1.4`](docs/reviews/c1-4-data-quality-review.md).
-
-## Ciclo de vida do projeto
-
-As Fases 0–7 registram a construção da primeira versão estável. O Ciclo 1 de
-revisão pré-entrega foi concluído com evidências independentes de API, modelo,
-dados, documentação e operação. A versão `v1.0.1` consolida essa revisão e a
-lapidação final sem alterar o modelo `0.4.0-rc1`, seu artefato, manifesto, hashes
-ou previsões.
-
-As Issues #62, #64, #65 e #70 permanecem como melhorias ou pesquisas futuras e
-não representam funcionalidades incluídas nesta entrega. A consolidação completa
-está em [`docs/reviews/cycle-1-consolidation.md`](docs/reviews/cycle-1-consolidation.md).
-
-## Objetivo
-
-Estimar o preço de imóveis a partir de características físicas e espaciais,
-preservando rastreabilidade dos dados, validação, avaliação do modelo e
-documentação das decisões técnicas. Informações demográficas agregadas por CEP
-foram avaliadas por ablação, mas não integram o artefato aprovado.
+`property_value_insights=0.1.0.dev0` preservado no manifesto é metadata histórica
+do ambiente que gerou o artefato imutável; ele não substitui a release atual do
+projeto.
 
 ## Dados
 
@@ -106,40 +214,30 @@ Os arquivos fornecidos estão versionados em `data/raw/`:
 - `zipcode_demographics.csv`: dados demográficos agregados por CEP;
 - `future_unseen_examples.csv`: exemplos sem preço para a inferência final.
 
-O contrato, a auditoria inicial e os hashes dos arquivos estão documentados em
-[`docs/DATA_CONTRACT.md`](docs/DATA_CONTRACT.md) e no [`dicionário canônico`](docs/DATA_DICTIONARY.md). A especificação original do
+O contrato, a auditoria inicial e os hashes estão documentados em
+[`docs/DATA_CONTRACT.md`](docs/DATA_CONTRACT.md) e no
+[`dicionário canônico`](docs/DATA_DICTIONARY.md). A especificação original do
 desafio está preservada em [`docs/CHALLENGE_README.md`](docs/CHALLENGE_README.md).
 
-## Início rápido para avaliadores
+## Instalação pelo código-fonte
 
-Há dois caminhos independentes. Para avaliar apenas a API, a imagem publicada é
-o caminho recomendado e não exige Python, `uv` ou acesso aos dados brutos.
+Este caminho é destinado à reprodução técnica completa. **Não copie apenas o
+`pyproject.toml` ou arquivos isolados. Clone o repositório inteiro e execute os
+comandos na raiz do projeto**, onde devem existir pelo menos `pyproject.toml`,
+`README.md`, `uv.lock`, `src/`, `tests/` e `artifacts/`.
 
-### Opção A — imagem Docker publicada
+### Windows
 
-Pré-requisito: Docker em execução. No PowerShell, Bash ou terminal equivalente:
+Pré-requisitos: Git e PowerShell. O ambiente de referência usa Python 3.13 e
+exatamente `uv 0.12.1`.
 
-```powershell
-docker pull ghcr.io/umbura/property-value-insights:1.0.1
-docker run --detach --name property-value-insights -p 8000:8000 --read-only --tmpfs /tmp --security-opt no-new-privileges:true ghcr.io/umbura/property-value-insights:1.0.1
-```
-
-Aguarde o healthcheck e abra `http://127.0.0.1:8000/docs`. Para encerrar:
-
-```powershell
-docker rm --force property-value-insights
-```
-
-### Opção B — instalação pelo código-fonte no Windows
-
-Pré-requisitos: Git e PowerShell. O projeto exige exatamente `uv 0.12.1`; instale
-essa versão com o instalador oficial e reabra o terminal para atualizar o `PATH`:
+Instale o `uv`:
 
 ```powershell
 powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/0.12.1/install.ps1 | iex"
 ```
 
-Em um novo PowerShell:
+Reabra o PowerShell e execute:
 
 ```powershell
 git clone https://github.com/Umbura/property-value-insights.git
@@ -150,23 +248,20 @@ uv sync --locked --extra dev
 uv run --locked verify-property-release --project-root .
 ```
 
-O comando `uv --version` deve informar `0.12.1`. Para iniciar a API diretamente
-do ambiente instalado, execute:
+O comando `uv --version` deve informar `0.12.1`.
+
+Para iniciar a API diretamente do ambiente instalado:
 
 ```powershell
 uv run --locked uvicorn property_value_insights.api:app --host 127.0.0.1 --port 8000
 ```
 
-Aguarde a inicialização e abra `http://127.0.0.1:8000/docs`; `Ctrl+C` encerra o
-serviço. Como alternativa, quem também possuir Docker pode executar
-`docker compose up --build`. Os comandos de testes, notebooks, treinamento e
-relatórios aparecem na seção seguinte e não são necessários para apenas testar
-a API.
+Abra <http://127.0.0.1:8000/docs>. `Ctrl+C` encerra o serviço.
 
-## Execução local
+## Execução completa para desenvolvimento
 
-O ambiente de referência usa Python 3.13 e `uv 0.12.1`. O arquivo `uv.lock`
-fixa as dependências diretas e transitivas. No PowerShell:
+O arquivo `uv.lock` fixa as dependências diretas e transitivas. Depois de clonar
+o repositório e entrar em sua raiz:
 
 ```powershell
 uv sync --locked --extra dev
@@ -184,15 +279,15 @@ uv run --locked python -m property_value_insights.explainability --project-root 
 docker compose up --build
 ```
 
-O extra `dev` inclui as dependências de teste, notebooks e geração dos
-relatórios. Para instalar somente o projeto e a explicabilidade, use
+O extra `dev` inclui dependências de testes, notebooks e geração de relatórios.
+Para instalar somente o projeto e a explicabilidade, use
 `uv sync --locked --extra explainability`. O extra `reporting` mantém apenas a
 geração dos relatórios de negócio. A imagem de serving não inclui Matplotlib,
 SHAP nem os dados brutos e executa somente a API de inferência.
 
 ## Imagem Docker da entrega
 
-A release `v1.0.1` publica a imagem no GitHub Container Registry:
+A release `v1.0.1` está disponível no GitHub Container Registry:
 
 ```bash
 docker pull ghcr.io/umbura/property-value-insights:1.0.1
@@ -212,9 +307,9 @@ HistGradientBoostingRegressor e calibração temporal. A alternativa com dados
 demográficos permanece documentada como experimento, mas não integra o modelo
 empacotado devido ao ganho marginal e ao risco de proxies socioeconômicas.
 
-O comando de treinamento valida a integridade temporal, exclui 18 registros
-com eventos posteriores à venda, treina com 21.595 registros, verifica o
-artefato por hash e gera as 100 previsões futuras. O contrato completo está em
+O treinamento valida a integridade temporal, exclui 18 registros com eventos
+posteriores à venda, treina com 21.595 registros, verifica o artefato por hash e
+gera as 100 previsões futuras. O contrato completo está em
 [`docs/ARTIFACT_CONTRACT.md`](docs/ARTIFACT_CONTRACT.md).
 
 ## API de inferência
@@ -226,7 +321,7 @@ de requisição e os limites operacionais estão em
 [`docs/API_CONTRACT.md`](docs/API_CONTRACT.md).
 
 Após `docker compose up --build`, a documentação OpenAPI fica disponível em
-`http://127.0.0.1:8000/docs`. O contêiner executa como usuário sem privilégios e
+<http://127.0.0.1:8000/docs>. O contêiner executa como usuário sem privilégios e
 é compatível com sistema de arquivos raiz somente leitura.
 
 ## Arquitetura e ciclo de vida
@@ -239,55 +334,65 @@ por validação, treinamento, gates, staging, aprovação e monitoramento.
 
 A estratégia de reentreinamento está em
 [`docs/CONTINUOUS_LEARNING.md`](docs/CONTINUOUS_LEARNING.md). Ela não promove
-modelos automaticamente: a automação prepara evidências, e a mudança do
-champion exige critérios temporais e aprovação humana.
+modelos automaticamente: a automação prepara evidências, e a mudança do champion
+exige critérios temporais e aprovação humana.
 
 ## Comunicação e governança
 
 O [model card](docs/MODEL_CARD.md) registra uso pretendido, dados, métricas,
-importância por permutação, desempenho por faixa, limitações e considerações éticas. O
-[resumo para stakeholders](reports/stakeholder_summary.md) traduz as métricas
-para decisão de negócio e utiliza um gráfico reproduzido especificamente para o
-modelo físico aprovado.
+importância por permutação, desempenho por faixa, limitações e considerações
+éticas. O [resumo para stakeholders](reports/stakeholder_summary.md) traduz as
+métricas para decisão de negócio e utiliza um gráfico reproduzido
+especificamente para o modelo físico aprovado.
 
 ## Análises opcionais
 
 O diagnóstico opcional calibra um intervalo empírico com previsões fora de
 amostra das cinco janelas de desenvolvimento e mede cobertura e largura no
 período mais recente. Também gera explicações SHAP globais e locais diretamente
-do Joblib verificado.
-Os resultados e as ressalvas estão no
+do Joblib verificado. Os resultados e as ressalvas estão no
 [`relatório de incerteza e explicabilidade`](reports/optional_analysis.md).
 
 Essas rotinas são offline: não modificam o modelo promovido, as 100 previsões,
 o contrato da API ou a imagem de serving. O intervalo não é apresentado como
 garantia conformal, e as contribuições SHAP não são efeitos causais.
 
-## Estrutura
+## Ciclo de vida da entrega
+
+As Fases 0–7 registram a construção da primeira versão estável. O Ciclo 1 de
+revisão pré-entrega foi concluído com evidências independentes de API, modelo,
+dados, documentação e operação. A versão `v1.0.1` consolidou essa revisão e a
+lapidação final sem alterar o modelo `0.4.0-rc1`, seu artefato, manifesto, hashes
+ou previsões.
+
+As Issues #62, #64, #65 e #70 permanecem como melhorias ou pesquisas futuras e
+não representam funcionalidades incluídas nesta entrega. A consolidação completa
+está em [`docs/reviews/cycle-1-consolidation.md`](docs/reviews/cycle-1-consolidation.md).
+
+## Estrutura do repositório
 
 ```text
 data/raw/       arquivos de entrada fornecidos
 src/            código reutilizável do projeto
 tests/          testes automatizados
-docs/           contratos, releases, processo, arquivo e revisoes
+docs/           contratos, releases, processo, arquivo e revisões
 artifacts/      artefato e manifesto versionados do modelo
-reports/        relatorios e resultados gerados
-notebooks/      analises exploratorias reproduziveis
+reports/        relatórios e resultados gerados
+notebooks/      análises exploratórias reproduzíveis
 diagrams/       diagramas de arquitetura e deploy
 ```
 
-## Processo
+## Processo e documentação adicional
 
 As Fases 0–7 foram desenvolvidas por branches, commits atômicos, revisão
-supervisionada e pull requests. O histórico completo dessa construção está em
+supervisionada e pull requests. O histórico está em
 [`PROCESSO_GIT_GITHUB.md`](docs/process/PROCESSO_GIT_GITHUB.md).
 
-A revisão pré-entrega, a classificação das demandas e os ciclos atuais estão em
+A revisão pré-entrega e os ciclos de entrega estão em
 [`docs/REVIEW_AND_DELIVERY_PROCESS.md`](docs/REVIEW_AND_DELIVERY_PROCESS.md).
 
-A estratégia de dependências, a verificação em ambiente limpo e as ações
-manuais de publicação estão em
-[`docs/RELEASE_READINESS.md`](docs/RELEASE_READINESS.md).
+A estratégia de dependências, a verificação em ambiente limpo e as ações de
+publicação estão em [`docs/RELEASE_READINESS.md`](docs/RELEASE_READINESS.md).
 
 ## Licença e dados
 
