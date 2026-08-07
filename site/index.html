@@ -4,12 +4,31 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Property Value Insights — demonstração interativa de estimativa de preços residenciais com Machine Learning.">
+  <meta name="theme-color" content="#050706">
   <title>Property Value Insights</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <div class="assembly-intro" aria-hidden="true">
+    <div class="assembly-stage">
+      <span class="assembly-piece piece-1"></span>
+      <span class="assembly-piece piece-2"></span>
+      <span class="assembly-piece piece-3"></span>
+      <span class="assembly-piece piece-4"></span>
+      <span class="assembly-piece piece-5"></span>
+      <span class="assembly-piece piece-6"></span>
+      <span class="assembly-piece piece-7"></span>
+      <span class="assembly-piece piece-8"></span>
+      <span class="assembly-piece piece-9"></span>
+      <div class="assembly-name">Property Value Insights</div>
+    </div>
+  </div>
+
   <header class="topbar">
-    <a class="brand" href="#top">Property Value Insights</a>
+    <a class="brand" href="#top">
+      <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      <span>Property Value Insights</span>
+    </a>
     <nav aria-label="Navegação principal">
       <a href="#resultados">Resultados</a>
       <a href="#demo">Testar modelo</a>
@@ -20,7 +39,7 @@
 
   <main id="top">
     <section class="hero section-shell">
-      <div class="hero-copy">
+      <div class="hero-copy hero-enter">
         <p class="eyebrow">Machine Learning · API · MLOps</p>
         <h1>Estimativa residencial com uma API pronta para avaliação.</h1>
         <p class="lead">O projeto transforma características físicas e espaciais de um imóvel em uma estimativa de valor em USD, com modelo versionado, rastreabilidade e limitações documentadas.</p>
@@ -33,8 +52,11 @@
           <span id="api-status">Verificando disponibilidade da API…</span>
         </div>
       </div>
-      <aside class="hero-card" aria-label="Resumo do projeto">
-        <span class="card-kicker">Release atual</span>
+      <aside class="hero-card hero-enter hero-enter-late" aria-label="Resumo do projeto">
+        <div class="hero-card-head">
+          <span class="card-kicker">Release atual</span>
+          <span class="live-pill"><i aria-hidden="true"></i> Demo pública</span>
+        </div>
         <strong>v1.0.1</strong>
         <dl>
           <div><dt>Modelo</dt><dd>HistGradientBoosting</dd></div>
@@ -45,7 +67,7 @@
       </aside>
     </section>
 
-    <section class="section section-shell" id="resultados">
+    <section class="section section-shell" id="resultados" data-reveal>
       <div class="section-heading">
         <p class="eyebrow">Resultados principais</p>
         <h2>Desempenho com contexto, não apenas uma métrica isolada.</h2>
@@ -61,11 +83,13 @@
           <h3>Modelo físico aprovado para serving</h3>
           <p>Uma variante demográfica foi avaliada, mas ficou fora do serving porque o ganho médio foi marginal e havia risco de proxies socioeconômicas. O modelo publicado usa somente características físicas e espaciais.</p>
         </div>
-        <img src="assets/approved_model_diagnostic.png" alt="Diagnóstico do modelo físico aprovado">
+        <div class="diagnostic-frame">
+          <img src="assets/approved_model_diagnostic.png" alt="Diagnóstico do modelo físico aprovado">
+        </div>
       </div>
     </section>
 
-    <section class="section section-shell demo-section" id="demo">
+    <section class="section section-shell demo-section" id="demo" data-reveal>
       <div class="section-heading">
         <p class="eyebrow">Demonstração interativa</p>
         <h2>Teste o modelo diretamente no navegador.</h2>
@@ -122,7 +146,7 @@
       </div>
     </section>
 
-    <section class="section section-shell" id="limites">
+    <section class="section section-shell" id="limites" data-reveal>
       <div class="section-heading">
         <p class="eyebrow">Uso responsável</p>
         <h2>Onde a previsão exige mais cautela.</h2>
@@ -134,7 +158,7 @@
       </div>
     </section>
 
-    <section class="section section-shell architecture-section">
+    <section class="section section-shell architecture-section" data-reveal>
       <div class="section-heading">
         <p class="eyebrow">Arquitetura</p>
         <h2>Do formulário à estimativa.</h2>
