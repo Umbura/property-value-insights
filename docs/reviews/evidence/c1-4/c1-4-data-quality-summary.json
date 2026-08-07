@@ -20,7 +20,8 @@
     "future_unique_zipcodes": 45,
     "repeated_id_keys": 176,
     "rows_with_repeated_id": 353,
-    "max_sales_per_id": 3
+    "max_sales_per_id": 3,
+    "repeated_id_semantics_documented": false
   },
   "temporal_consistency": {
     "construction_after_sale": 12,
@@ -57,7 +58,8 @@
     "development_rows_for_cross_ids": 99,
     "diagnostic_rows_for_cross_ids": 98,
     "diagnostic_share_pct": 2.1121,
-    "all_repeated_id_feature_profiles_identical": true
+    "all_repeated_id_feature_profiles_identical": true,
+    "interpretation": "repeated entity/resale pattern inferred from identical physical profiles; id semantics not formally documented"
   },
   "demographic_proxy": {
     "hous_val_amt_row_level_price_correlation": 0.579733,
@@ -73,6 +75,13 @@
     "all_zipcodes_have_demographics": true,
     "all_numeric_features_within_historical_min_max": true,
     "living_identity_violations": 0,
-    "renovation_before_construction": 0
+    "renovation_before_construction": 0,
+    "coverage_method": "known_zipcodes_plus_cross_field_checks_plus_univariate_historical_min_max",
+    "multivariate_ood_assessed": false,
+    "accuracy_assessed": false
+  },
+  "evidence_inventory": {
+    "feature_governance_rows": 48,
+    "cross_partition_id_rows": 98
   }
 }
