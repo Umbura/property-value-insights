@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Property Value Insights — demonstração interativa de estimativa de preços residenciais com Machine Learning.">
+  <title>Property Value Insights</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#top">Property Value Insights</a>
+    <nav aria-label="Navegação principal">
+      <a href="#resultados">Resultados</a>
+      <a href="#demo">Testar modelo</a>
+      <a href="#limites">Limitações</a>
+      <a href="https://github.com/Umbura/property-value-insights" target="_blank" rel="noreferrer">GitHub</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero section-shell">
+      <div class="hero-copy">
+        <p class="eyebrow">Machine Learning · API · MLOps</p>
+        <h1>Estimativa residencial com uma API pronta para avaliação.</h1>
+        <p class="lead">O projeto transforma características físicas e espaciais de um imóvel em uma estimativa de valor em USD, com modelo versionado, rastreabilidade e limitações documentadas.</p>
+        <div class="hero-actions">
+          <a class="button primary" href="#demo">Testar uma previsão</a>
+          <a class="button secondary" id="swagger-link" href="#demo">Abrir documentação da API</a>
+        </div>
+        <div class="api-state" aria-live="polite">
+          <span class="status-dot" id="status-dot"></span>
+          <span id="api-status">Verificando disponibilidade da API…</span>
+        </div>
+      </div>
+      <aside class="hero-card" aria-label="Resumo do projeto">
+        <span class="card-kicker">Release atual</span>
+        <strong>v1.0.1</strong>
+        <dl>
+          <div><dt>Modelo</dt><dd>HistGradientBoosting</dd></div>
+          <div><dt>API</dt><dd>FastAPI · contrato 0.5.0-rc1</dd></div>
+          <div><dt>Serving</dt><dd>Docker</dd></div>
+          <div><dt>Saída</dt><dd>Preço estimado em USD</dd></div>
+        </dl>
+      </aside>
+    </section>
+
+    <section class="section section-shell" id="resultados">
+      <div class="section-heading">
+        <p class="eyebrow">Resultados principais</p>
+        <h2>Desempenho com contexto, não apenas uma métrica isolada.</h2>
+      </div>
+      <div class="metrics-grid">
+        <article class="metric"><span>R² diagnóstico</span><strong>0,8998</strong><small>Período mais recente já inspecionado</small></article>
+        <article class="metric"><span>MAPE diagnóstico</span><strong>12,07%</strong><small>Erro percentual médio absoluto</small></article>
+        <article class="metric"><span>MAE diagnóstico</span><strong>US$ 67,1 mil</strong><small>Erro absoluto médio</small></article>
+        <article class="metric"><span>Dados elegíveis</span><strong>21.595</strong><small>Vendas após filtro temporal</small></article>
+      </div>
+      <div class="diagnostic-card">
+        <div>
+          <h3>Modelo físico aprovado para serving</h3>
+          <p>Uma variante demográfica foi avaliada, mas ficou fora do serving porque o ganho médio foi marginal e havia risco de proxies socioeconômicas. O modelo publicado usa somente características físicas e espaciais.</p>
+        </div>
+        <img src="assets/approved_model_diagnostic.png" alt="Diagnóstico do modelo físico aprovado">
+      </div>
+    </section>
+
+    <section class="section section-shell demo-section" id="demo">
+      <div class="section-heading">
+        <p class="eyebrow">Demonstração interativa</p>
+        <h2>Teste o modelo diretamente no navegador.</h2>
+        <p>Os 18 campos exigidos pela API já vêm preenchidos com um exemplo real do conjunto de exemplos futuros. Altere o que desejar e envie a previsão.</p>
+      </div>
+
+      <div class="demo-layout">
+        <form id="prediction-form" class="prediction-form">
+          <div class="form-toolbar">
+            <div>
+              <strong>Características do imóvel</strong>
+              <span>Campos com valores do exemplo versionado.</span>
+            </div>
+            <button type="button" class="text-button" id="load-example">Restaurar exemplo</button>
+          </div>
+
+          <div class="field-grid" id="core-fields"></div>
+
+          <details class="advanced-fields">
+            <summary>Ver características avançadas</summary>
+            <p>Esses valores também influenciam a estimativa. Eles permanecem preenchidos com o exemplo até que você os altere.</p>
+            <div class="field-grid" id="advanced-fields"></div>
+          </details>
+
+          <button class="button primary submit-button" id="submit-prediction" type="submit">Estimar valor</button>
+          <p class="form-note">A primeira chamada pode demorar mais caso o serviço de demonstração esteja reiniciando.</p>
+        </form>
+
+        <aside class="result-panel" aria-live="polite">
+          <p class="eyebrow">Resultado</p>
+          <div id="result-empty">
+            <h3>Pronto para testar</h3>
+            <p>Envie os dados ao modelo para receber uma estimativa real da API.</p>
+          </div>
+          <div id="result-loading" class="hidden">
+            <div class="spinner" aria-hidden="true"></div>
+            <h3>Consultando o modelo…</h3>
+            <p>Estamos aguardando a resposta da API.</p>
+          </div>
+          <div id="result-success" class="hidden">
+            <span class="result-label">Valor estimado</span>
+            <strong class="estimated-price" id="estimated-price">—</strong>
+            <dl class="result-meta">
+              <div><dt>Modelo</dt><dd id="result-model">—</dd></div>
+              <div><dt>Request ID</dt><dd id="result-request">—</dd></div>
+            </dl>
+            <p class="result-warning">Estimativa estatística para apoio analítico. Não é um laudo de avaliação imobiliária.</p>
+          </div>
+          <div id="result-error" class="hidden error-state">
+            <h3>Não foi possível concluir a previsão</h3>
+            <p id="error-message">Verifique os dados e tente novamente.</p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section section-shell" id="limites">
+      <div class="section-heading">
+        <p class="eyebrow">Uso responsável</p>
+        <h2>Onde a previsão exige mais cautela.</h2>
+      </div>
+      <div class="limits-grid">
+        <article><strong>Imóveis de alto valor</strong><p>O erro absoluto e a tendência de subestimação aumentam nas faixas superiores. Acima de US$ 1 milhão, revisão humana é recomendada.</p></article>
+        <article><strong>Cobertura geográfica</strong><p>ZIPs, coordenadas e combinações muito diferentes da distribuição histórica podem estar fora da cobertura prática observada.</p></article>
+        <article><strong>Uso consequencial</strong><p>A previsão não deve ser usada isoladamente como laudo, decisão autônoma de crédito ou explicação causal do preço.</p></article>
+      </div>
+    </section>
+
+    <section class="section section-shell architecture-section">
+      <div class="section-heading">
+        <p class="eyebrow">Arquitetura</p>
+        <h2>Do formulário à estimativa.</h2>
+      </div>
+      <div class="flow" aria-label="Fluxo da aplicação">
+        <div>Stakeholder<br><small>navegador</small></div><span>→</span>
+        <div>Site estático<br><small>GitHub Pages</small></div><span>→</span>
+        <div>FastAPI<br><small>serviço web</small></div><span>→</span>
+        <div>Modelo validado<br><small>artefato + manifesto</small></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer section-shell">
+    <span>Property Value Insights · v1.0.1</span>
+    <div>
+      <a href="https://github.com/Umbura/property-value-insights" target="_blank" rel="noreferrer">Código-fonte</a>
+      <a id="footer-api-link" href="#demo">API</a>
+    </div>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="app.js" defer></script>
+</body>
+</html>

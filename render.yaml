@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: property-value-insights-api
+    runtime: docker
+    plan: free
+    region: oregon
+    healthCheckPath: /health
+    dockerCommand: >-
+      /bin/sh -c 'uvicorn property_value_insights.cors_app:app --host 0.0.0.0 --port ${PORT:-8000}'
+    envVars:
+      - key: PORT
+        value: "8000"
+      - key: PVI_CORS_ORIGINS
+        value: https://umbura.github.io
+      - key: LOG_LEVEL
+        value: INFO
+      - key: MAX_BATCH_SIZE
+        value: "100"
