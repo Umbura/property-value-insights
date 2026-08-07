@@ -1,0 +1,99 @@
+name: Publish release image
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: umbura/property-value-insights
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out release commit
+        uses: actions/checkout@v7
+
+      - name: Set up uv and Python
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          version: "0.12.1"
+          python-version: "3.13"
+
+      - name: Verify release tag and repository state
+        shell: bash
+        run: |
+          expected="v$(python -c 'import tomllib; print(tomllib.load(open("pyproject.toml", "rb"))["project"]["version"])')"
+          test "${{ github.event.release.tag_name }}" = "$expected"
+          uv sync --locked --extra dev
+          uv run --locked verify-property-release --project-root .
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v4
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract image metadata
+        id: meta
+        uses: docker/metadata-action@v6
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=raw,value=latest
+          labels: |
+            org.opencontainers.image.title=Property Value Insights
+            org.opencontainers.image.description=Reproducible residential property price inference API
+            org.opencontainers.image.source=https://github.com/Umbura/property-value-insights
+            org.opencontainers.image.licenses=MIT
+
+      - name: Build and publish image
+        id: push
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Validate published image by digest
+        shell: bash
+        env:
+          IMAGE: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.push.outputs.digest }}
+        run: |
+          docker pull "$IMAGE"
+          docker run --detach \
+            --name property-value-insights-release \
+            --publish 8000:8000 \
+            --read-only \
+            --tmpfs /tmp \
+            --security-opt no-new-privileges:true \
+            "$IMAGE"
+          for attempt in {1..30}; do
+            status="$(docker inspect --format='{{.State.Health.Status}}' property-value-insights-release)"
+            [ "$status" = healthy ] && break
+            [ "$status" = unhealthy ] && docker logs property-value-insights-release && exit 1
+            sleep 2
+          done
+          test "$(docker inspect --format='{{.State.Health.Status}}' property-value-insights-release)" = healthy
+          curl --fail --silent http://127.0.0.1:8000/health
+          curl --fail --silent http://127.0.0.1:8000/model-info
+          curl --fail --silent http://127.0.0.1:8000/metrics
+          curl --fail --silent --request POST --header 'Content-Type: application/json' \
+            --data '{"bedrooms":4,"bathrooms":1.0,"sqft_living":1680,"sqft_lot":5043,"floors":1.5,"waterfront":0,"view":0,"condition":4,"grade":6,"sqft_above":1680,"sqft_basement":0,"yr_built":1911,"yr_renovated":0,"zipcode":"98118","lat":47.5354,"long":-122.273,"sqft_living15":1560,"sqft_lot15":5765}' \
+            http://127.0.0.1:8000/predict
+          docker inspect --format='{{json .RepoDigests}}' "$IMAGE"
+
+      - name: Stop release container
+        if: always()
+        run: docker rm --force property-value-insights-release || true

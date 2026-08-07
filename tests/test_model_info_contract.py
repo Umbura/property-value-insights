@@ -66,7 +66,7 @@ def test_model_info_preserves_legacy_fields_and_adds_structured_identity() -> No
         "name": installed["Name"],
         "release": installed["Version"],
     }
-    assert body["project"]["release"] == "1.0.0"
+    assert body["project"]["release"] == "1.0.1"
     assert body["api"]["version"] == health["api_version"]
     assert body["api"]["version"] == openapi["info"]["version"]
 
@@ -118,7 +118,7 @@ def test_model_info_openapi_documents_additive_identity_blocks() -> None:
     assert "schema" in artifact_schema["properties"]["schema_version"]["description"]
 
     example = schema["examples"][0]
-    assert example["project"]["release"] == "1.0.0"
+    assert example["project"]["release"] == "1.0.1"
     assert example["api"]["version"] == "0.5.0-rc1"
     assert example["model"]["version"] == "0.4.0-rc1"
     assert example["model"]["serving_status"] == "approved"

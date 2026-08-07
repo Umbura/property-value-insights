@@ -95,7 +95,7 @@ completa de `feature_columns`:
   "limitations": ["Os dados cobrem uma região e um intervalo temporal limitado."],
   "project": {
     "name": "property-value-insights",
-    "release": "1.0.0"
+    "release": "1.0.1"
   },
   "api": {
     "version": "0.5.0-rc1"

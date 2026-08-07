@@ -18,7 +18,7 @@ construção da release; ela não significa que o desafio técnico já foi subme
 
 O processo atual de revisão pré-entrega, correções, validação e preparação da
 submissão está em
-[`docs/REVIEW_AND_DELIVERY_PROCESS.md`](docs/REVIEW_AND_DELIVERY_PROCESS.md).
+[`docs/REVIEW_AND_DELIVERY_PROCESS.md`](../REVIEW_AND_DELIVERY_PROCESS.md).
 
 ## 1. Principios
 

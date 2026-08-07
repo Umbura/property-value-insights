@@ -27,7 +27,7 @@ The historical Phases 0–7 record the construction of `v1.0.0`. Current work fo
 
 The final Docker image intended for submission belongs to Cycle 3. Reviews in Cycle 1 may build and inspect the current image, but must not publish or present it as the final delivery image.
 
-Use `docs/REVIEW_AND_DELIVERY_PROCESS.md` as the source of truth for the current lifecycle. Use `PROCESSO_GIT_GITHUB.md` as the historical record of Phases 0–7.
+Use `docs/REVIEW_AND_DELIVERY_PROCESS.md` as the source of truth for the current lifecycle. Use `docs/process/PROCESSO_GIT_GITHUB.md` as the historical record of Phases 0–7.
 
 ## Work classification
 
