@@ -1,7 +1,9 @@
 # Property Value Insights
 
-Sistema de estimativa de preços residenciais com Machine Learning, disponibilizado
-como API reproduzível e imagem Docker pública.
+Sistema de estimativa de preços residenciais com Machine Learning, com demonstração
+web pública, API reproduzível e imagem Docker pronta para execução.
+
+**[Abrir demonstração online](https://umbura.github.io/property-value-insights/) · [Abrir documentação interativa da API](https://property-value-insights-api.onrender.com/docs)**
 
 A entrega atual é a release `v1.0.1`. O projeto foi desenvolvido a partir de um
 desafio técnico de previsão de preços de imóveis, mas estruturado como uma solução
@@ -16,10 +18,11 @@ com uma resposta rápida e rastreável para apoiar análises preliminares.
 
 ### O que este projeto entrega
 
+- uma demonstração web pública para testar previsões diretamente no navegador;
 - uma estimativa de preço em USD para um imóvel informado;
 - uma API REST documentada com FastAPI/OpenAPI;
 - um modelo versionado e verificado por SHA-256 antes de entrar em serviço;
-- uma imagem Docker pública pronta para execução;
+- uma imagem Docker pública pronta para execução local;
 - documentação de resultados, limitações, dados e decisões de modelagem;
 - treinamento e avaliação reproduzíveis para revisão técnica.
 
@@ -50,11 +53,32 @@ O gráfico pertence ao modelo físico servido. O período mais recente foi usado
 como diagnóstico e já havia sido consultado; portanto, não representa um teste
 final intocado.
 
-## Teste a aplicação em 2 minutos
+## Demonstração online
 
-Para apenas experimentar a API, **não é necessário instalar Python, `uv`, clonar
-o repositório ou baixar os dados do projeto**. A forma recomendada é usar a imagem
-Docker pública da release.
+A forma mais simples de avaliar o projeto é pela demonstração pública:
+
+**<https://umbura.github.io/property-value-insights/>**
+
+Não é necessário instalar Docker, Python, `uv`, clonar o repositório ou baixar
+qualquer arquivo. O site permite alterar as características de um imóvel, enviar
+os 18 campos exigidos pelo contrato e receber a previsão real produzida pelo
+modelo publicado.
+
+O frontend é hospedado no GitHub Pages e se comunica com a API de demonstração
+executada no Render. A documentação OpenAPI/Swagger da instância pública está em:
+
+**<https://property-value-insights-api.onrender.com/docs>**
+
+Como a demonstração utiliza uma instância gratuita para serving, a primeira
+requisição após um período de inatividade pode levar mais tempo enquanto o
+serviço é reativado. Isso não afeta a imagem Docker nem a reprodução local do
+projeto.
+
+## Teste local via Docker
+
+Para uma avaliação técnica reproduzível sem instalar o ambiente Python, use a
+imagem Docker pública da release. **Não é necessário clonar o repositório para
+este caminho.**
 
 ### Pré-requisito: Docker
 
@@ -75,8 +99,7 @@ docker pull ghcr.io/umbura/property-value-insights:1.0.1
 
 `docker pull` baixa a imagem da aplicação para a máquina. Essa imagem já contém o
 runtime Python, as dependências, o pacote `property_value_insights`, o modelo
-aprovado e seu manifesto. **Não é necessário baixar o repositório para executar
-este caminho.**
+aprovado e seu manifesto.
 
 ### 2. Execute a API
 
@@ -169,7 +192,9 @@ As evidências completas estão nas reviews
 
 ```mermaid
 flowchart LR
-    U[Usuário ou sistema] --> A[FastAPI]
+    U[Stakeholder] --> S[Site público - GitHub Pages]
+    S --> A[FastAPI - Render]
+    C[Cliente técnico] --> A
     A --> V[Validação Pydantic]
     V --> M[Modelo físico verificado por SHA-256]
     M --> P[Preço estimado + versão + request ID]
@@ -180,7 +205,9 @@ flowchart LR
     G --> M
 ```
 
-O runtime entregue é uma API containerizada. Registro de modelos, staging,
+A demonstração pública combina um frontend estático no GitHub Pages com uma
+instância da API no Render. A imagem Docker permanece como unidade reproduzível de
+serving para execução local e outros ambientes. Registro de modelos, staging,
 canary e rollback são apresentados na documentação de arquitetura como evolução
 recomendada, não como infraestrutura externa já implantada.
 
@@ -196,6 +223,8 @@ desejam reproduzir o ambiente, inspecionar os dados ou executar o pipeline.
 | Componente | Identidade vigente |
 | --- | --- |
 | Projeto/pacote | `property-value-insights 1.0.1` |
+| Demonstração web | `https://umbura.github.io/property-value-insights/` |
+| API pública | `https://property-value-insights-api.onrender.com` |
 | Contrato da API | `0.5.0-rc1` |
 | Modelo servido | `property_value_hist_gradient_boosting_physical 0.4.0-rc1` |
 | Schema do manifesto | `1.0` |
@@ -320,7 +349,13 @@ de requisição, logs estruturados e métricas Prometheus. O contrato, os exempl
 de requisição e os limites operacionais estão em
 [`docs/API_CONTRACT.md`](docs/API_CONTRACT.md).
 
-Após `docker compose up --build`, a documentação OpenAPI fica disponível em
+A instância de demonstração está publicada em
+<https://property-value-insights-api.onrender.com/docs>. Ela existe para avaliação
+interativa e pode apresentar tempo de inicialização após períodos de inatividade;
+a imagem Docker e a execução local continuam sendo a referência para reprodução
+técnica.
+
+Após `docker compose up --build`, a documentação OpenAPI local fica disponível em
 <http://127.0.0.1:8000/docs>. O contêiner executa como usuário sem privilégios e
 é compatível com sistema de arquivos raiz somente leitura.
 
@@ -374,6 +409,7 @@ está em [`docs/reviews/cycle-1-consolidation.md`](docs/reviews/cycle-1-consolid
 ```text
 data/raw/       arquivos de entrada fornecidos
 src/            código reutilizável do projeto
+site/           frontend estático da demonstração pública
 tests/          testes automatizados
 docs/           contratos, releases, processo, arquivo e revisões
 artifacts/      artefato e manifesto versionados do modelo
