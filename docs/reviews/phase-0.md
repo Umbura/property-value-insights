@@ -1,5 +1,7 @@
 # Revisao da Fase 0
 
+> **Snapshot histórico:** este documento registra o estado observado durante uma fase anterior. Ele não substitui o manifesto, o model card, os contratos e as reviews C1 vigentes. Consulte [`docs/reviews/README.md`](README.md) para a hierarquia documental.
+
 Status: em andamento; aguardando revisao supervisionada.
 
 ## Objetivo

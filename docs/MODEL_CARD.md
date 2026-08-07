@@ -97,6 +97,25 @@ O quartil superior concentra o maior erro e a maior subestimação. A tabela é
 gerada por `python -m property_value_insights.stakeholder_reporting` e pode ser auditada em
 [`reports/approved_model_price_bands.csv`](../reports/approved_model_price_bands.csv).
 
+#### Cauda superior detalhada
+
+A Review C1.3 reproduziu o protocolo aprovado e subdividiu a cauda sem
+retreinar o modelo:
+
+| Preço observado | Linhas | MAE | Erro médio | Subestimação |
+| --- | ---: | ---: | ---: | ---: |
+| > US$ 655 mil até US$ 1 milhão | 823 | US$ 88.435,42 | -US$ 43.201,46 | 66,10% |
+| > US$ 1 milhão até US$ 2 milhões | 289 | US$ 201.930,60 | -US$ 103.431,31 | 69,55% |
+| > US$ 2 milhões | 46 | US$ 544.527,87 | -US$ 378.902,28 | 82,61% |
+
+A degradação é progressiva e compatível com compressão em direção ao centro da
+distribuição. Não foi classificada como bug funcional. Essas faixas foram
+definidas pelo preço observado na avaliação, indisponível durante uma nova
+inferência. A política de negócio é revisão humana para perfis com possibilidade
+material de pertencer à faixa acima de US$ 1 milhão e avaliação especializada
+para a faixa acima de US$ 2 milhões. O gatilho de runtime não deve depender
+somente da previsão pontual; sua definição estruturada permanece na Issue #64.
+
 ### Importância das variáveis
 
 A importância por permutação foi calculada no mesmo período diagnóstico com o
@@ -141,6 +160,22 @@ do modelo em relação ao baseline escolhido; não medem causalidade, acurácia
 futura nem efeito isolado de features correlacionadas. Os resultados completos estão no
 [`relatório opcional`](../reports/optional_analysis.md).
 
+### Cobertura, OOD e heterogeneidade
+
+Testes manuais confirmaram que o contrato atual aceita ZIP desconhecido,
+coordenadas `(0,0)`, ano futuro e combinações extremas que passam pelas faixas
+sintáticas. As respostas não incluem warning estruturado. Isso é limitação de
+comunicação e cobertura, não prova de falha numérica do modelo.
+
+A avaliação reproduzida também mostrou heterogeneidade por ZIP e piora mensal
+entre março e maio de 2015. O período é curto e previamente inspecionado, então
+o resultado não deve ser chamado de drift de produção. Warnings, classificação
+OOD e `review_required` estão separados na Issue #64.
+
+A Review C1.4 confirmou ainda que 98 chaves `id` aparecem em desenvolvimento e
+diagnóstico. `id` não é feature e não há leakage direto confirmado, mas as
+observações não são completamente independentes.
+
 ## Limitações
 
 - cobertura restrita a uma região e pouco mais de um ano;
@@ -171,7 +206,7 @@ indivíduos.
 - validação temporal com datas completas;
 - manifesto com dados, runtime, features, métricas e hashes;
 - artefato e imagem imutáveis;
-- API com validação estrita, moeda, versão e correlação;
+- API com validação sintática e faixas formais; sinais de cobertura/OOD permanecem pendentes na Issue #64;
 - revisão humana para promoção e rollback;
 - monitoramento geral e por segmentos após novos rótulos;
 - retenção do champion anterior;

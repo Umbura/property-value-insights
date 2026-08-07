@@ -38,6 +38,25 @@ O principal risco de negócio está no Q4: imóveis acima de US$ 655.100 exigem
 revisão reforçada, pois a diferença absoluta média dobra em relação ao resultado
 geral e há tendência de subestimação.
 
+### Regra operacional para alto valor
+
+| Faixa observada | Política recomendada |
+| --- | --- |
+| Até US$ 1 milhão | usar como segunda opinião, com contexto e faixa de erro |
+| Acima de US$ 1 milhão | revisão humana obrigatória |
+| Acima de US$ 2 milhões | avaliação especializada; modelo apenas como apoio |
+
+Entre US$ 1 milhão e US$ 2 milhões, a MAE foi US$ 201.930,60 e 69,55%
+dos casos foram subestimados. Acima de US$ 2 milhões, a MAE chegou a
+US$ 544.527,87 e 82,61% dos 46 casos foram subestimados.
+
+As faixas da tabela usam o preço observado e servem como evidência de risco; o
+valor real não está disponível durante uma nova inferência. A trava recomendada
+limita a automação da decisão, não o preço numérico. Não deve existir teto
+artificial, e o gatilho operacional não pode depender somente da previsão
+pontual, porque a própria cauda tende a ser subestimada. A combinação final de
+previsão, intervalo, raridade e cobertura será definida na Issue #64.
+
 ## O que entrou no modelo
 
 O treinamento final utilizou 21.595 vendas consistentes. O modelo considera 18
@@ -71,7 +90,7 @@ não devem ser interpretados como contribuições independentes.
 
 ## Recomendações de uso
 
-1. Exibir preço estimado, moeda, versão e aviso de incerteza ao analista.
+1. Exibir preço estimado, moeda, versão, cobertura e aviso de incerteza ao analista.
 2. Encaminhar imóveis de maior valor e casos raros para avaliação especializada.
 3. Registrar a decisão humana separadamente da previsão.
 4. Comparar estimativa com preço observado quando a venda for concluída.

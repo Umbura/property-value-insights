@@ -1,5 +1,7 @@
 # Revisão da Fase 3
 
+> **Snapshot histórico:** este documento registra o estado observado durante uma fase anterior. Ele não substitui o manifesto, o model card, os contratos e as reviews C1 vigentes. Consulte [`docs/reviews/README.md`](README.md) para a hierarquia documental.
+
 Status: aprovada após correção dos achados da revisão supervisionada.
 
 ## Objetivo

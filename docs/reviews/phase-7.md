@@ -1,5 +1,7 @@
 # Revisão da Fase 7
 
+> **Snapshot histórico:** este documento registra o estado observado durante uma fase anterior. Ele não substitui o manifesto, o model card, os contratos e as reviews C1 vigentes. Consulte [`docs/reviews/README.md`](README.md) para a hierarquia documental.
+
 Status: pronta para revisão supervisionada.
 
 ## Objetivo

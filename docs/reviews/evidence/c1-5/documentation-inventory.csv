@@ -1,0 +1,12 @@
+path,classification,decision,reason
+README.md,current_entrypoint,keep_root,primary evaluator entrypoint
+CHANGELOG.md,current_release_history,keep_root,release history
+DATA_NOTICE.md,current_legal_notice,keep_root,raw data rights notice
+CONTRIBUTING.md,current_repository_guide,keep_root,contribution guide
+CONTEXTO_DESAFIO.md,historical_context,move_later,candidate for docs/archive
+ESTRATEGIA_EXECUCAO.md,historical_process,move_later,candidate for docs/process
+PESQUISA_DIFERENCIAIS.md,historical_research,move_later,candidate for docs/archive
+PROCESSO_GIT_GITHUB.md,historical_process,move_later,candidate for docs/process
+AGENTS.md,automation_instruction,review_final_cleanup,keep only if still used by coding agents
+reports/data_dictionary.md,generated_historical_dictionary,retain_as_report,canonical replacement is docs/DATA_DICTIONARY.md
+reports/model_comparison.md,historical_experiment,retain_with_banner,"demographic experiment, not current serving"

@@ -1,0 +1,12 @@
+{
+  "project_release": "1.0.0",
+  "installed_package_version": "1.0.0",
+  "api_contract_version": "0.5.0-rc1",
+  "served_model_version": "0.4.0-rc1",
+  "served_model_name": "property_value_hist_gradient_boosting_physical",
+  "artifact_schema_version": "1.0",
+  "artifact_created_at_utc": "2026-08-03T23:24:44.139717+00:00",
+  "artifact_sha256": "90ffbab62970c805b7fd65a5488fa727026bdc59b81d56726318374cdce8c439",
+  "artifact_build_package_version": "0.1.0.dev0",
+  "artifact_build_version_interpretation": "historical runtime metadata captured when the immutable artifact was generated; it does not replace the current project release"
+}
