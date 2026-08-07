@@ -110,6 +110,59 @@ O contrato, a auditoria inicial e os hashes dos arquivos estão documentados em
 [`docs/DATA_CONTRACT.md`](docs/DATA_CONTRACT.md) e no [`dicionário canônico`](docs/DATA_DICTIONARY.md). A especificação original do
 desafio está preservada em [`docs/CHALLENGE_README.md`](docs/CHALLENGE_README.md).
 
+## Início rápido para avaliadores
+
+Há dois caminhos independentes. Para avaliar apenas a API, a imagem publicada é
+o caminho recomendado e não exige Python, `uv` ou acesso aos dados brutos.
+
+### Opção A — imagem Docker publicada
+
+Pré-requisito: Docker em execução. No PowerShell, Bash ou terminal equivalente:
+
+```powershell
+docker pull ghcr.io/umbura/property-value-insights:1.0.1
+docker run --detach --name property-value-insights -p 8000:8000 --read-only --tmpfs /tmp --security-opt no-new-privileges:true ghcr.io/umbura/property-value-insights:1.0.1
+```
+
+Aguarde o healthcheck e abra `http://127.0.0.1:8000/docs`. Para encerrar:
+
+```powershell
+docker rm --force property-value-insights
+```
+
+### Opção B — instalação pelo código-fonte no Windows
+
+Pré-requisitos: Git e PowerShell. O projeto exige exatamente `uv 0.12.1`; instale
+essa versão com o instalador oficial e reabra o terminal para atualizar o `PATH`:
+
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/0.12.1/install.ps1 | iex"
+```
+
+Em um novo PowerShell:
+
+```powershell
+git clone https://github.com/Umbura/property-value-insights.git
+cd property-value-insights
+uv --version
+uv python install 3.13
+uv sync --locked --extra dev
+uv run --locked verify-property-release --project-root .
+```
+
+O comando `uv --version` deve informar `0.12.1`. Para iniciar a API diretamente
+do ambiente instalado, execute:
+
+```powershell
+uv run --locked uvicorn property_value_insights.api:app --host 127.0.0.1 --port 8000
+```
+
+Aguarde a inicialização e abra `http://127.0.0.1:8000/docs`; `Ctrl+C` encerra o
+serviço. Como alternativa, quem também possuir Docker pode executar
+`docker compose up --build`. Os comandos de testes, notebooks, treinamento e
+relatórios aparecem na seção seguinte e não são necessários para apenas testar
+a API.
+
 ## Execução local
 
 O ambiente de referência usa Python 3.13 e `uv 0.12.1`. O arquivo `uv.lock`
