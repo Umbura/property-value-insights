@@ -88,14 +88,20 @@ def test_stakeholder_site_contains_all_required_prediction_features() -> None:
 
     index = (PROJECT_ROOT / "site" / "index.html").read_text(encoding="utf-8")
     styles = (PROJECT_ROOT / "site" / "styles.css").read_text(encoding="utf-8")
+    mobile = (PROJECT_ROOT / "site" / "mobile.css").read_text(encoding="utf-8")
     assert "Teste o modelo diretamente no navegador" in index
     assert 'id="prediction-form"' in index
     assert "assets/approved_model_diagnostic.png" in index
     assert "FastAPI · contrato 0.5.0-rc1" in index
     assert 'class="assembly-intro"' in index
+    assert 'href="mobile.css"' in index
     assert "piece-lock" in styles
     assert "--bg: #050706" in styles
     assert "prefers-reduced-motion: reduce" in styles
+    assert "@media (max-width: 580px)" in mobile
+    assert "@media (max-width: 380px)" in mobile
+    assert ".hero-actions .button" in mobile
+    assert ".api-state" in mobile
     assert "setupRevealAnimations" in app_js
 
 
