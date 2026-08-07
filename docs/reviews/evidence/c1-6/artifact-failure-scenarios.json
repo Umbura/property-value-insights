@@ -1,0 +1,51 @@
+{
+  "scenarios": [
+    {
+      "container_id": "ed2b6e38f419",
+      "elapsed_seconds": 1.682,
+      "exit_code": 3,
+      "full_traceback_present": true,
+      "internal_container_path_present": true,
+      "name": "missing-artifact",
+      "oom_killed": false,
+      "sanitized_log_excerpt": [
+        "ERROR:    Traceback (most recent call last):",
+        "FileNotFoundError: [Errno 2] No such file or directory: '/app/artifacts/missing.joblib'",
+        "ERROR:    Application startup failed. Exiting."
+      ],
+      "startup_succeeded": false
+    },
+    {
+      "container_id": "28adf437f06b",
+      "elapsed_seconds": 1.685,
+      "exit_code": 3,
+      "full_traceback_present": true,
+      "internal_container_path_present": false,
+      "name": "invalid-manifest",
+      "oom_killed": false,
+      "sanitized_log_excerpt": [
+        "ERROR:    Traceback (most recent call last):",
+        "    raise ArtifactIntegrityError(\"Model manifest could not be read\") from error",
+        "property_value_insights.artifact.ArtifactIntegrityError: Model manifest could not be read",
+        "ERROR:    Application startup failed. Exiting."
+      ],
+      "startup_succeeded": false
+    },
+    {
+      "container_id": "c2810066a275",
+      "elapsed_seconds": 1.682,
+      "exit_code": 3,
+      "full_traceback_present": true,
+      "internal_container_path_present": false,
+      "name": "hash-mismatch",
+      "oom_killed": false,
+      "sanitized_log_excerpt": [
+        "ERROR:    Traceback (most recent call last):",
+        "    raise ArtifactIntegrityError(\"Model artifact hash does not match the manifest\")",
+        "property_value_insights.artifact.ArtifactIntegrityError: Model artifact hash does not match the manifest",
+        "ERROR:    Application startup failed. Exiting."
+      ],
+      "startup_succeeded": false
+    }
+  ]
+}

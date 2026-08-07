@@ -1,0 +1,73 @@
+{
+  "compose_config_valid": true,
+  "container_exit_code": 0,
+  "container_oom_killed": false,
+  "development_tools_absent": {
+    "curl": true,
+    "gcc": true,
+    "git": true
+  },
+  "graceful_stop_command_succeeded": true,
+  "health_response": {
+    "body": {
+      "api_version": "0.5.0-rc1",
+      "model_version": "0.4.0-rc1",
+      "status": "healthy"
+    },
+    "duration_ms": 21.725,
+    "headers": {
+      "connection": "close",
+      "content-length": "74",
+      "content-type": "application/json",
+      "date": "Fri, 07 Aug 2026 02:15:31 GMT",
+      "server": "uvicorn",
+      "x-request-id": "ab5a7cbe1c9e48a3bb6dd67ad86903b3"
+    },
+    "status": 200
+  },
+  "health_status": "healthy",
+  "invalid_request_id_replaced": true,
+  "metrics_excerpt": [
+    "pvi_http_requests_total{method=\"GET\",route=\"/health\",status=\"200\"} 2.0",
+    "pvi_http_requests_total{method=\"GET\",route=\"/model-info\",status=\"200\"} 1.0",
+    "pvi_http_requests_total{method=\"GET\",route=\"/metrics\",status=\"200\"} 1.0",
+    "pvi_http_requests_total{method=\"POST\",route=\"/predict\",status=\"200\"} 153.0",
+    "pvi_http_requests_created{method=\"GET\",route=\"/health\",status=\"200\"} 1.7860689308854713e+09",
+    "pvi_http_requests_created{method=\"GET\",route=\"/model-info\",status=\"200\"} 1.786068932347401e+09",
+    "pvi_http_requests_created{method=\"GET\",route=\"/metrics\",status=\"200\"} 1.7860689323494337e+09",
+    "pvi_http_requests_created{method=\"POST\",route=\"/predict\",status=\"200\"} 1.7860689323830402e+09",
+    "pvi_http_request_duration_seconds_count{method=\"GET\",route=\"/health\"} 2.0",
+    "pvi_http_request_duration_seconds_sum{method=\"GET\",route=\"/health\"} 0.0019234669998695608",
+    "pvi_http_request_duration_seconds_count{method=\"GET\",route=\"/model-info\"} 1.0",
+    "pvi_http_request_duration_seconds_sum{method=\"GET\",route=\"/model-info\"} 0.0006397239999387239",
+    "pvi_http_request_duration_seconds_count{method=\"GET\",route=\"/metrics\"} 1.0",
+    "pvi_http_request_duration_seconds_sum{method=\"GET\",route=\"/metrics\"} 0.0009298410000155855",
+    "pvi_http_request_duration_seconds_count{method=\"POST\",route=\"/predict\"} 153.0",
+    "pvi_http_request_duration_seconds_sum{method=\"POST\",route=\"/predict\"} 9.344460932001766",
+    "pvi_http_request_duration_seconds_created{method=\"GET\",route=\"/health\"} 1.786068930885505e+09",
+    "pvi_http_request_duration_seconds_created{method=\"GET\",route=\"/model-info\"} 1.7860689323474252e+09",
+    "pvi_http_request_duration_seconds_created{method=\"GET\",route=\"/metrics\"} 1.7860689323494506e+09",
+    "pvi_http_request_duration_seconds_created{method=\"POST\",route=\"/predict\"} 1.7860689323830678e+09",
+    "pvi_predictions_total{mode=\"single\"} 153.0",
+    "pvi_predictions_created{mode=\"single\"} 1.786068932382657e+09"
+  ],
+  "metrics_status_after": 200,
+  "metrics_status_before": 200,
+  "model_info_status": 200,
+  "no_new_privileges": true,
+  "non_root": true,
+  "paths_absent_from_runtime_image": {
+    "/app/.git": true,
+    "/app/data": true,
+    "/app/notebooks": true,
+    "/app/tests": true
+  },
+  "request_id_generated": true,
+  "root_filesystem_write_rejected": true,
+  "runtime_gid": 999,
+  "runtime_uid": 999,
+  "startup_seconds": 6.099,
+  "stop_seconds": 0.54,
+  "tmpfs_write_succeeded": true,
+  "valid_request_id_preserved": true
+}

@@ -1,0 +1,19 @@
+{
+  "all_predictions_equal_baseline": true,
+  "all_status_200": true,
+  "baseline_predicted_price": 372953.43,
+  "concurrent_requests": 50,
+  "concurrent_throughput_requests_per_second": 56.82,
+  "concurrent_wall_ms": 879.974,
+  "concurrent_workers": 10,
+  "expected_unique_request_ids": 150,
+  "latency_ms": {
+    "maximum": 271.464,
+    "mean": 64.743,
+    "median": 11.655,
+    "minimum": 11.241,
+    "p95": 202.939
+  },
+  "sequential_requests": 100,
+  "unique_request_ids": 150
+}
