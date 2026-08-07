@@ -1,0 +1,49 @@
+{
+  "artifact_failures_rejected": [
+    "missing-artifact",
+    "invalid-manifest",
+    "hash-mismatch"
+  ],
+  "build_seconds": 20.186,
+  "executed_at_utc": "2026-08-07T02:15:40.222649+00:00",
+  "image_id_short": "e8e89798237e",
+  "image_size_mb": 490.39,
+  "load": {
+    "all_predictions_equal_baseline": true,
+    "all_status_200": true,
+    "baseline_predicted_price": 372953.43,
+    "concurrent_requests": 50,
+    "concurrent_throughput_requests_per_second": 56.82,
+    "concurrent_wall_ms": 879.974,
+    "concurrent_workers": 10,
+    "expected_unique_request_ids": 150,
+    "latency_ms": {
+      "maximum": 271.464,
+      "mean": 64.743,
+      "median": 11.655,
+      "minimum": 11.241,
+      "p95": 202.939
+    },
+    "sequential_requests": 100,
+    "unique_request_ids": 150
+  },
+  "logging": {
+    "mixed_stream": true,
+    "payload_field_names_detected": false,
+    "service_logs_json": true,
+    "value_only_payload_scan_discarded": true
+  },
+  "operational_findings": [
+    "The application logger is structured JSON, but the combined container stream also contains plaintext Uvicorn logs.",
+    "Startup failure scenarios include full Python tracebacks and can expose an internal container path.",
+    "The local image is 490.39 MB; this is functional but should be treated as a non-blocking optimization target.",
+    "The local image has no registry digest because it was not published.",
+    "The current Dockerfile does not define OCI labels."
+  ],
+  "overall_status": "passed_with_non_blocking_findings",
+  "reproduction_method": "METHOD.md",
+  "review": "C1.6",
+  "runtime_gid": 999,
+  "runtime_uid": 999,
+  "startup_seconds": 6.099
+}

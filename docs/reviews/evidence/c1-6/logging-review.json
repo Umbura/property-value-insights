@@ -1,0 +1,74 @@
+{
+  "json_lines": 159,
+  "mixed_json_and_plaintext_stream": true,
+  "payload_field_names_detected_in_service_json": false,
+  "payload_value_only_scan_discarded": true,
+  "payload_value_only_scan_reason": "Low-cardinality numeric values such as 0, 1 and 4 also occur in status codes, durations and version metadata; field-name inspection is the reliable control for this review.",
+  "plaintext_lines": 162,
+  "request_completed_records": 158,
+  "sample_plaintext_lines": [
+    "INFO:     127.0.0.1:57182 - \"GET /health HTTP/1.1\" 200 OK",
+    "INFO:     172.17.0.1:37892 - \"GET /health HTTP/1.1\" 200 OK",
+    "INFO:     172.17.0.1:37900 - \"GET /model-info HTTP/1.1\" 200 OK",
+    "INFO:     172.17.0.1:37902 - \"GET /metrics HTTP/1.1\" 200 OK",
+    "INFO:     172.17.0.1:37912 - \"POST /predict HTTP/1.1\" 200 OK",
+    "INFO:     172.17.0.1:37922 - \"POST /predict HTTP/1.1\" 200 OK",
+    "INFO:     172.17.0.1:37924 - \"POST /predict HTTP/1.1\" 200 OK",
+    "INFO:     172.17.0.1:37926 - \"POST /predict HTTP/1.1\" 200 OK"
+  ],
+  "sample_service_records": [
+    {
+      "level": "INFO",
+      "logger": "property_value_insights.api",
+      "message": "model_loaded",
+      "model_version": "0.4.0-rc1",
+      "timestamp": "2026-08-07T02:15:27.689585+00:00"
+    },
+    {
+      "duration_ms": 1.327,
+      "level": "INFO",
+      "logger": "property_value_insights.api",
+      "message": "request_completed",
+      "method": "GET",
+      "path": "/health",
+      "request_id": "ed8f587965d04ce7be6f4dac9637ec26",
+      "status_code": 200,
+      "timestamp": "2026-08-07T02:15:30.885595+00:00"
+    },
+    {
+      "duration_ms": 0.597,
+      "level": "INFO",
+      "logger": "property_value_insights.api",
+      "message": "request_completed",
+      "method": "GET",
+      "path": "/health",
+      "request_id": "ab5a7cbe1c9e48a3bb6dd67ad86903b3",
+      "status_code": 200,
+      "timestamp": "2026-08-07T02:15:32.345583+00:00"
+    },
+    {
+      "duration_ms": 0.64,
+      "level": "INFO",
+      "logger": "property_value_insights.api",
+      "message": "request_completed",
+      "method": "GET",
+      "path": "/model-info",
+      "request_id": "37a30ac509e546a5a9ede9adad8404c6",
+      "status_code": 200,
+      "timestamp": "2026-08-07T02:15:32.347482+00:00"
+    },
+    {
+      "duration_ms": 0.93,
+      "level": "INFO",
+      "logger": "property_value_insights.api",
+      "message": "request_completed",
+      "method": "GET",
+      "path": "/metrics",
+      "request_id": "d80f0347fc9e4e93b49760ea0b1126ad",
+      "status_code": 200,
+      "timestamp": "2026-08-07T02:15:32.349505+00:00"
+    }
+  ],
+  "service_json_records": 159,
+  "total_nonempty_lines": 321
+}

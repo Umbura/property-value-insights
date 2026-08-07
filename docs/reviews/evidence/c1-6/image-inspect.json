@@ -1,0 +1,36 @@
+{
+  "build_no_cache": true,
+  "build_seconds": 20.186,
+  "built_at_utc": "2026-08-07T02:15:25.434300+00:00",
+  "cmd": [
+    "uvicorn",
+    "property_value_insights.api:app",
+    "--host",
+    "0.0.0.0",
+    "--port",
+    "8000"
+  ],
+  "configured_user": "app",
+  "entrypoint": null,
+  "healthcheck": {
+    "Interval": 10000000000,
+    "Retries": 3,
+    "StartPeriod": 20000000000,
+    "Test": [
+      "CMD",
+      "python",
+      "-c",
+      "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=2)"
+    ],
+    "Timeout": 3000000000
+  },
+  "history_entry_count": 18,
+  "image_id": "sha256:e8e89798237e203d75ed0726ce788ea24186e1f6cb042585cc3f3e7d67f1811f",
+  "image_id_short": "e8e89798237e",
+  "oci_labels": {},
+  "repo_digests": [],
+  "rootfs_layer_count": 8,
+  "size_bytes": 490393489,
+  "size_megabytes_decimal": 490.39,
+  "working_directory": "/app"
+}
