@@ -1,0 +1,78 @@
+{
+  "dataset_hashes_normalized_lf": {
+    "kc_house_data.csv": "d0875baa0251b21d4bdc9d2ae940a4fe0bb6009824f23dd0e2a5b2bf04557b7e",
+    "zipcode_demographics.csv": "8d9be9398129f6a9dde49678524103548d02373715f57cf57121d0fcb33f02a5",
+    "future_unseen_examples.csv": "5a31ff0c888bef204776208fcd7360859f12cab5e5bff30a8252715928cdd517"
+  },
+  "structural": {
+    "historical_rows": 21613,
+    "historical_columns": 21,
+    "historical_missing_cells": 0,
+    "historical_exact_duplicate_rows": 0,
+    "historical_unique_zipcodes": 70,
+    "demographics_rows": 70,
+    "demographics_columns": 27,
+    "demographics_missing_cells": 0,
+    "demographics_duplicate_zipcodes": 0,
+    "future_rows": 100,
+    "future_columns": 18,
+    "future_missing_cells": 0,
+    "future_unique_zipcodes": 45,
+    "repeated_id_keys": 176,
+    "rows_with_repeated_id": 353,
+    "max_sales_per_id": 3
+  },
+  "temporal_consistency": {
+    "construction_after_sale": 12,
+    "renovation_after_sale": 6,
+    "renovation_before_construction": 0,
+    "excluded_union": 18,
+    "retained": 21595
+  },
+  "anomaly_counts": {
+    "bedrooms_33": 1,
+    "bedrooms_zero": 13,
+    "bathrooms_zero": 10,
+    "both_bedrooms_and_bathrooms_zero": 7,
+    "living_identity_violations": 0,
+    "renov_before_build": 0,
+    "bathroom_not_quarter_increment": 0,
+    "floors_not_half_increment": 0,
+    "approx_footprint_gt_lot": 4
+  },
+  "geographic_coverage": {
+    "historical_zips_missing_demographics": 0,
+    "future_zips_missing_demographics": 0,
+    "future_zips_unseen_historical": 0,
+    "historical_lat_min": 47.1559,
+    "historical_lat_max": 47.7776,
+    "historical_long_min": -122.519,
+    "historical_long_max": -121.315,
+    "future_outside_hist_lat": 0,
+    "future_outside_hist_long": 0
+  },
+  "repeated_property_evaluation": {
+    "diagnostic_start": "2015-03-04",
+    "cross_partition_repeated_ids": 98,
+    "development_rows_for_cross_ids": 99,
+    "diagnostic_rows_for_cross_ids": 98,
+    "diagnostic_share_pct": 2.1121,
+    "all_repeated_id_feature_profiles_identical": true
+  },
+  "demographic_proxy": {
+    "hous_val_amt_row_level_price_correlation": 0.579733,
+    "hous_val_amt_zip_median_price_correlation": 0.927364,
+    "hous_val_amt_zip_mean_price_correlation": 0.939404,
+    "median_income_per_person_zip_median_price_correlation": 0.908131,
+    "demographic_source_metadata_present": false,
+    "demographic_vintage_present": false
+  },
+  "future_examples": {
+    "rows": 100,
+    "all_zipcodes_seen_in_historical": true,
+    "all_zipcodes_have_demographics": true,
+    "all_numeric_features_within_historical_min_max": true,
+    "living_identity_violations": 0,
+    "renovation_before_construction": 0
+  }
+}
