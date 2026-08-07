@@ -10,9 +10,11 @@ from .artifact import ArtifactIntegrityError
 from .schemas import (
     ApiIdentity,
     ArtifactIdentity,
-    ModelInfoResponse as LegacyModelInfoResponse,
     ModelServingIdentity,
     ProjectIdentity,
+)
+from .schemas import (
+    ModelInfoResponse as LegacyModelInfoResponse,
 )
 
 DIAGNOSTIC_STATUS = "diagnostic_only_previously_inspected"

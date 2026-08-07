@@ -4,7 +4,8 @@ from __future__ import annotations
 
 import re
 from contextlib import asynccontextmanager
-from importlib.metadata import PackageNotFoundError, metadata as package_metadata
+from importlib.metadata import PackageNotFoundError
+from importlib.metadata import metadata as package_metadata
 from time import perf_counter
 from typing import Any, AsyncIterator, Mapping
 from uuid import uuid4
