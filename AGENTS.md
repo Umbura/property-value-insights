@@ -502,7 +502,7 @@ If Git actions are explicitly authorized:
 - ensure only approved files are included;
 - inspect staged changes before committing;
 - use an objective Conventional Commit-style message consistent with
-  `PROCESSO_GIT_GITHUB.md`;
+  `docs/process/PROCESSO_GIT_GITHUB.md`;
 - do not use `Closes #<number>` unless the change fully completes the Issue;
 - wait for supervised approval and required checks before merge.
 

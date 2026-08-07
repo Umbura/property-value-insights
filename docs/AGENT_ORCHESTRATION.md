@@ -4,7 +4,7 @@ Guia operacional da orquestração de múltiplos agentes no repositório Propert
 Value Insights, cobrindo o fluxo Terra + OpenCode/DeepSeek V4 Flash.
 
 Este documento complementa o [`AGENTS.md`](../AGENTS.md) e o
-[`docs/REVIEW_AND_DELIVERY_PROCESS.md`](./REVIEW_AND_DELIVERY_PROCESS.md). Em
+[`docs/REVIEW_AND_DELIVERY_PROCESS.md`](REVIEW_AND_DELIVERY_PROCESS.md). Em
 caso de conflito, o `AGENTS.md` e a Issue ativa permanecem as fontes de
 verdade. Este guia não altera nenhuma política existente; ele apenas a torna
 operacional.

@@ -331,7 +331,7 @@ A Issue #62 não bloqueia a entrega atual.
 ## Evidências
 
 As evidências essenciais estão em
-[`docs/reviews/evidence/c1-3/`](evidence/c1-3/):
+[`docs/reviews/evidence/c1-3/`](evidence/c1-3):
 
 - matriz de sensibilidade M01;
 - resumo estruturado M02;

@@ -2,7 +2,7 @@
 
 Este documento define o processo adotado após a publicação da primeira release
 estável integrada do projeto. Ele complementa o histórico registrado em
-[`PROCESSO_GIT_GITHUB.md`](../PROCESSO_GIT_GITHUB.md) e orienta a revisão
+[`PROCESSO_GIT_GITHUB.md`](process/PROCESSO_GIT_GITHUB.md) e orienta a revisão
 pré-entrega do desafio técnico.
 
 ## 1. Estado do projeto

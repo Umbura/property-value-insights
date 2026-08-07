@@ -1,105 +1,47 @@
-# Preparação da versão integrada
+# Preparação da entrega final
 
-## Escopo
+## Identidade
 
-Este documento descreve como reproduzir e verificar a primeira versão estável
-integrada do projeto. A publicação não altera o modelo aprovado nem o contrato
-da API.
+| Componente | Versão da entrega |
+| --- | --- |
+| projeto/pacote | `1.0.1` |
+| API | `0.5.0-rc1` |
+| modelo | `0.4.0-rc1` |
+| imagem | `ghcr.io/umbura/property-value-insights:1.0.1` |
 
-## Identidade das versões
+A promoção de patch consolida documentação, governança, organização e
+publicação. Ela não modifica o modelo, o Joblib, o manifesto, os hashes, os dados
+brutos nem as previsões.
 
-O projeto mantém versões independentes para componentes com ciclos de vida
-distintos:
+## Validação antes do merge
 
-| Componente | Versão publicada | Finalidade |
-| --- | --- | --- |
-| entrega integrada | `1.0.0` | código, documentação e artefatos reunidos |
-| API | `0.5.0-rc1` | contrato HTTP de inferência |
-| modelo | `0.4.0-rc1` | pipeline treinado e previsões associadas |
-
-A versão integrada foi promovida para `1.0.0` após a revisão final. Essa
-promoção não renomeia retroativamente a API nem o artefato de modelo, que
-mantêm identidades e ciclos de vida independentes.
-
-## Dependências
-
-- Python é restrito à série `3.13` e indicado em `.python-version`;
-- `pyproject.toml` declara dependências diretas e extras por finalidade;
-- `uv.lock` fixa a resolução transitiva para desenvolvimento e serving;
-- `uv 0.12.1` é exigido pelo projeto, pelo CI e pelo build do contêiner;
-- `numba` e `llvmlite` são fixados nos extras que usam SHAP porque a versão
-  atual do SHAP não declara limites suficientes para uma resolução compatível
-  com Python 3.13;
-- o lock cobre Windows e Linux, as plataformas efetivamente verificadas no
-  desenvolvimento e no contêiner; macOS não integra o contrato validado;
-- as imagens de Python e `uv` são identificadas por tag e digest no Dockerfile;
-- `pip-audit` verifica vulnerabilidades conhecidas no ambiente bloqueado;
-- Dependabot monitora `uv`, GitHub Actions e a imagem-base do Docker.
-
-Atualizações devem ocorrer em pull requests próprios. Para atualizar uma
-dependência específica:
-
-```powershell
-uv lock --upgrade-package nome-do-pacote
-uv sync --locked --extra dev
-uv run --locked pytest -q
-uv run --locked pip-audit
-```
-
-## Instalação limpa
-
-Com `uv 0.12.1` disponível:
-
-```powershell
+```bash
 uv sync --locked --extra dev
 uv run --locked ruff check .
 uv run --locked pytest -q
 uv run --locked verify-property-release --project-root .
 uv run --locked pip-audit
-docker build --tag property-value-insights:release-candidate .
+docker build --tag property-value-insights:1.0.1 .
 ```
 
-`verify-property-release` confere a identidade do pacote, os caminhos
-obrigatórios, o contrato de ambiente, os hashes do artefato e dos dados, as 100
-previsões, os notebooks executados, os links relativos da documentação e a
-ausência de arquivos sensíveis em toda a árvore publicada.
-
-Após executar notebooks, `sanitize-property-notebooks --project-root .` remove
-somente os horários transitórios registrados pelo Jupyter. Células, contagens
-de execução e saídas permanecem intactas, evitando diffs sem significado.
+O gate verifica versão, caminhos obrigatórios, ambiente, artefato, hashes, 100
+previsões, notebooks, links relativos e ausência de padrões de credenciais.
 
 ## Publicação
 
-As ações de publicação são intencionalmente manuais:
+1. incorporar a PR final na `main` após revisão independente e CI verde;
+2. criar e publicar a GitHub Release `v1.0.1` no commit aprovado;
+3. o evento de publicação aciona `.github/workflows/release.yml`;
+4. o workflow verifica a tag, publica tags semânticas no GHCR e testa a imagem
+   pelo digest retornado pelo registry;
+5. confirmar que o pacote GHCR está público e que o pull anônimo funciona;
+6. registrar o digest final na Release ou na Issue #68.
 
-1. revisar e incorporar o pull request de publicação no `main`;
-2. criar a tag anotada `v1.0.0` no commit aprovado;
-3. publicar a GitHub Release com as notas correspondentes;
-4. enviar o link do repositório conforme as instruções do desafio.
+O `GITHUB_TOKEN` recebe apenas `contents: read` e `packages: write` no job de
+publicação. A imagem é vinculada automaticamente a este repositório. O primeiro
+pacote do GHCR pode nascer privado e exige confirmação manual de visibilidade.
 
-Não existe workflow de publicação automática nem credencial de publicação no
-repositório. O código original usa a licença MIT; `DATA_NOTICE.md` exclui
-explicitamente os dados fornecidos desse licenciamento.
+## Critério final
 
-## Evidências locais
-
-Validação executada em 4 de agosto de 2026:
-
-- instalação criada do zero com Python 3.13 e `uv sync --locked --extra dev`;
-- Ruff aprovado e 86 testes automatizados aprovados;
-- `pip-audit` sem vulnerabilidades conhecidas nas dependências publicadas;
-- sete controles de integridade da entrega aprovados;
-- distribuições `sdist` e wheel construídas com versão `1.0.0` e expressão
-  de licença MIT nos metadados;
-- notebooks exploratório e de modelagem reproduzidos byte a byte após a
-  sanitização dos horários de execução;
-- relatório de modelagem reproduzido byte a byte;
-- imagem construída com as bases fixadas por digest;
-- contêiner saudável em sistema de arquivos somente leitura;
-- `/predict` retornou previsão válida e `/metrics` publicou as métricas
-  operacionais;
-- SHAP, Matplotlib e `pip-audit` permaneceram fora da imagem de serving;
-- busca no conteúdo atual e no histórico Git sem padrões de credenciais.
-
-Os três `PendingDeprecationWarning` observados vêm do módulo de cores do SHAP
-0.52.0 e não alteram as explicações, os testes ou o runtime de serving.
+A entrega somente está concluída quando a CI da `main`, o workflow de publicação,
+o pull por digest e os endpoints da imagem publicada estiverem aprovados.

@@ -161,7 +161,7 @@ EXAMPLE = {
     "artifact_sha256": "90ffbab62970c805b7fd65a5488fa727026bdc59b81d56726318374cdce8c439",
     "evaluation": {"latest_period_diagnostic": {"mape": 0.120651}},
     "limitations": [HIGH_VALUE_RISK],
-    "project": {"name": "property-value-insights", "release": "1.0.0"},
+    "project": {"name": "property-value-insights", "release": "1.0.1"},
     "api": {"version": "0.5.0-rc1"},
     "model": {
         "display_name": "HistGradientBoostingRegressor (physical feature set)",

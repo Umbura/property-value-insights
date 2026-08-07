@@ -4,8 +4,8 @@ Sistema reprodutível de estimativa de preços residenciais com Machine Learning
 práticas de MLOps. O projeto foi desenvolvido para o desafio técnico de previsão
 de preços de imóveis e trata os dados como uma solução de cliente real.
 
-Status atual: versão estável integrada `v1.0.0`, com modelo, API, análises e
-artefatos reproduzíveis disponíveis para avaliação técnica.
+Status atual: entrega final `v1.0.1`, com modelo, API, evidências de revisão e
+imagem Docker reproduzível preparadas para avaliação técnica.
 
 ## Resultados principais
 
@@ -33,7 +33,7 @@ como diagnóstico e já havia sido consultado; não é um teste final intocado.
 
 | Componente | Identidade vigente |
 | --- | --- |
-| Projeto/pacote | `property-value-insights 1.0.0` |
+| Projeto/pacote | `property-value-insights 1.0.1` |
 | Contrato da API | `0.5.0-rc1` |
 | Modelo servido | `property_value_hist_gradient_boosting_physical 0.4.0-rc1` |
 | Schema do manifesto | `1.0` |
@@ -81,22 +81,15 @@ As evidências completas estão nas reviews
 
 ## Ciclo de vida do projeto
 
-As Fases 0–7 registram o desenvolvimento da primeira versão estável integrada,
-publicada como `v1.0.0`. A publicação dessa release não representa a submissão
-do desafio técnico: o projeto encontra-se em revisão pré-entrega.
+As Fases 0–7 registram a construção da primeira versão estável. O Ciclo 1 de
+revisão pré-entrega foi concluído com evidências independentes de API, modelo,
+dados, documentação e operação. A versão `v1.0.1` consolida essa revisão e a
+lapidação final sem alterar o modelo `0.4.0-rc1`, seu artefato, manifesto, hashes
+ou previsões.
 
-O trabalho atual está organizado em três ciclos:
-
-1. **Revisão e diagnóstico:** testar a release e registrar evidências e achados;
-2. **Correções e estabilização:** corrigir bugs confirmados e implementar
-   melhorias aprovadas;
-3. **Validação final e entrega:** validar o projeto completo e consolidar o
-   build final da imagem Docker de runtime.
-
-Integrações com IA, templates, automações e configurações do repositório são
-tratadas como manutenção de engenharia, separadas do desenvolvimento funcional
-do sistema. O fluxo completo está em
-[`docs/REVIEW_AND_DELIVERY_PROCESS.md`](docs/REVIEW_AND_DELIVERY_PROCESS.md).
+As Issues #62, #64, #65 e #70 permanecem como melhorias ou pesquisas futuras e
+não representam funcionalidades incluídas nesta entrega. A consolidação completa
+está em [`docs/reviews/cycle-1-consolidation.md`](docs/reviews/cycle-1-consolidation.md).
 
 ## Objetivo
 
@@ -143,6 +136,21 @@ relatórios. Para instalar somente o projeto e a explicabilidade, use
 `uv sync --locked --extra explainability`. O extra `reporting` mantém apenas a
 geração dos relatórios de negócio. A imagem de serving não inclui Matplotlib,
 SHAP nem os dados brutos e executa somente a API de inferência.
+
+## Imagem Docker da entrega
+
+A release `v1.0.1` publica a imagem no GitHub Container Registry:
+
+```bash
+docker pull ghcr.io/umbura/property-value-insights:1.0.1
+docker run --rm -p 8000:8000 --read-only --tmpfs /tmp \
+  --security-opt no-new-privileges:true \
+  ghcr.io/umbura/property-value-insights:1.0.1
+```
+
+A tag `latest` acompanha a release estável. Para reprodução estrita, use o digest
+registrado pelo workflow de publicação e pela página do pacote. O serviço expõe
+`/health`, `/model-info`, `/predict`, `/predict/batch`, `/metrics` e `/docs`.
 
 ## Modelo e artefato
 
@@ -208,7 +216,7 @@ garantia conformal, e as contribuições SHAP não são efeitos causais.
 data/raw/       arquivos de entrada fornecidos
 src/            código reutilizável do projeto
 tests/          testes automatizados
-docs/           contrato, especificacao e revisoes
+docs/           contratos, releases, processo, arquivo e revisoes
 artifacts/      artefato e manifesto versionados do modelo
 reports/        relatorios e resultados gerados
 notebooks/      analises exploratorias reproduziveis
@@ -219,7 +227,7 @@ diagrams/       diagramas de arquitetura e deploy
 
 As Fases 0–7 foram desenvolvidas por branches, commits atômicos, revisão
 supervisionada e pull requests. O histórico completo dessa construção está em
-[`PROCESSO_GIT_GITHUB.md`](PROCESSO_GIT_GITHUB.md).
+[`PROCESSO_GIT_GITHUB.md`](docs/process/PROCESSO_GIT_GITHUB.md).
 
 A revisão pré-entrega, a classificação das demandas e os ciclos atuais estão em
 [`docs/REVIEW_AND_DELIVERY_PROCESS.md`](docs/REVIEW_AND_DELIVERY_PROCESS.md).
