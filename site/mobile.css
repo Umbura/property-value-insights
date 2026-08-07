@@ -1,0 +1,196 @@
+/* Mobile refinements layered on top of the desktop-first visual system. */
+
+@media (max-width: 580px) {
+  body {
+    line-height: 1.52;
+  }
+
+  .section-shell {
+    width: min(100% - 20px, 1160px);
+  }
+
+  .topbar {
+    padding: 11px 10px;
+  }
+
+  .brand {
+    min-width: 0;
+    gap: 9px;
+    font-size: 0.86rem;
+  }
+
+  .brand > span:last-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .hero {
+    gap: 28px;
+    padding-block: 48px 44px;
+  }
+
+  .hero-copy {
+    min-width: 0;
+  }
+
+  h1 {
+    margin-bottom: 20px;
+    font-size: clamp(2.15rem, 11vw, 3.2rem);
+    line-height: 1.01;
+    letter-spacing: -0.048em;
+  }
+
+  h2 {
+    font-size: clamp(1.8rem, 9vw, 2.55rem);
+    line-height: 1.08;
+  }
+
+  .lead {
+    font-size: 1rem;
+  }
+
+  .hero-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-top: 26px;
+  }
+
+  .hero-actions .button {
+    width: 100%;
+  }
+
+  .api-state {
+    display: flex;
+    width: 100%;
+    max-width: 100%;
+    align-items: flex-start;
+    border-radius: 14px;
+    line-height: 1.35;
+  }
+
+  .api-state .status-dot {
+    flex: 0 0 auto;
+    margin-top: 0.3em;
+  }
+
+  .hero-card,
+  .prediction-form,
+  .result-panel {
+    border-radius: 18px;
+    padding: 18px;
+  }
+
+  .hero-card-head {
+    align-items: flex-start;
+  }
+
+  .live-pill {
+    white-space: nowrap;
+    font-size: 0.72rem;
+  }
+
+  .section {
+    padding-block: 48px;
+  }
+
+  .metrics-grid,
+  .field-grid {
+    gap: 12px;
+  }
+
+  .metric,
+  .limits-grid article {
+    min-height: 0;
+  }
+
+  .form-toolbar {
+    gap: 10px;
+  }
+
+  .text-button {
+    align-self: flex-start;
+  }
+
+  .advanced-fields {
+    margin-block: 20px;
+  }
+
+  .result-panel {
+    min-height: 300px;
+  }
+
+  .estimated-price {
+    margin-bottom: 24px;
+    font-size: clamp(2rem, 10vw, 3rem);
+    overflow-wrap: anywhere;
+  }
+
+  .result-meta dd {
+    max-width: 58%;
+    font-size: 0.8rem;
+  }
+
+  .diagnostic-card {
+    gap: 20px;
+  }
+
+  .flow {
+    gap: 10px;
+  }
+
+  .flow div {
+    padding: 17px 12px;
+  }
+
+  .footer {
+    min-height: 96px;
+    padding-block: 20px;
+  }
+
+  .footer div {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 380px) {
+  .section-shell {
+    width: min(100% - 16px, 1160px);
+  }
+
+  .brand {
+    font-size: 0.8rem;
+  }
+
+  .brand-mark {
+    flex: 0 0 auto;
+  }
+
+  h1 {
+    font-size: clamp(2rem, 10.5vw, 2.7rem);
+  }
+
+  .hero-card-head {
+    flex-direction: column;
+  }
+
+  .button {
+    min-height: 46px;
+    padding-inline: 14px;
+  }
+
+  .hero-card,
+  .prediction-form,
+  .result-panel {
+    padding: 16px;
+  }
+
+  .result-meta div {
+    align-items: flex-start;
+  }
+
+  .result-meta dd {
+    max-width: 54%;
+  }
+}
