@@ -29,18 +29,21 @@ verificados no projeto:
 - A identidade `sqft_living = sqft_above + sqft_basement` é satisfeita em todas
   as 21.613 linhas históricas e nos 100 exemplos futuros. É a regra cruzada mais
   forte encontrada.
-- Existem 176 identificadores de imóvel repetidos, totalizando 353 vendas. As
-  features físicas permanecem idênticas entre as vendas repetidas.
-- Noventa e oito imóveis repetidos aparecem tanto no desenvolvimento quanto no
-  período diagnóstico, representando 2,11% das linhas diagnósticas. Como `id`
-  não é feature, não há leakage direto de identificador, mas as observações não
-  são totalmente independentes.
+- Existem 176 chaves `id` repetidas, totalizando 353 vendas. As 18 features
+  físicas permanecem idênticas entre registros com o mesmo `id`. Esse padrão é
+  compatível com revendas da mesma entidade imobiliária, mas a semântica de
+  `id` não está formalmente documentada nos arquivos fornecidos.
+- Noventa e oito chaves `id` aparecem tanto no desenvolvimento quanto no período
+  diagnóstico, representando 2,11% das linhas diagnósticas. Como `id` não é
+  feature, não há leakage direto de identificador, mas as observações não são
+  totalmente independentes.
 - `hous_val_amt` é um proxy muito forte do nível de preço por ZIP e não possui
   fonte ou data de referência documentada. A decisão de não usá-lo no modelo
   servido é mantida.
 - Os 100 exemplos futuros usam somente ZIPs conhecidos, respeitam as identidades
   cruzadas verificadas e permanecem dentro dos mínimos e máximos univariados do
-  histórico.
+  histórico. Isso demonstra cobertura estrutural e univariada, não cobertura
+  multivariada nem garantia de acurácia.
 
 ## 1. Qualidade estrutural
 
@@ -58,13 +61,15 @@ correspondência.
 
 - chaves de `id` repetidas: **176**;
 - linhas envolvidas: **353**;
-- 175 imóveis aparecem duas vezes;
-- 1 imóvel aparece três vezes;
+- 175 chaves aparecem duas vezes;
+- 1 chave aparece três vezes;
 - as 18 features físicas são idênticas em todas as vendas do mesmo `id`;
-- datas e preços mudam, comportamento compatível com revenda do mesmo imóvel.
+- datas e preços mudam, comportamento compatível com eventos de venda repetidos da mesma entidade.
 
 **Classificação:** não são duplicatas exatas e não devem ser eliminadas
-automaticamente. São eventos de venda distintos.
+automaticamente. O padrão é compatível com eventos de venda distintos da mesma
+entidade, mas essa interpretação permanece inferencial enquanto a definição
+formal de `id` não estiver documentada.
 
 ## 2. Registro com 33 quartos
 
@@ -232,15 +237,16 @@ serving atual sem documentação de origem e validação temporal.
 
 ### Pontos que exigem ressalva
 
-#### Revendas do mesmo imóvel
+#### Chaves repetidas entre partições
 
-Existem **98 IDs** presentes no desenvolvimento e no diagnóstico. Eles
+Existem **98 chaves `id`** presentes no desenvolvimento e no diagnóstico. Elas
 representam **98 das 4.640 linhas diagnósticas, ou 2,11%**. As features são
-idênticas às da venda anterior.
+idênticas às do registro anterior com a mesma chave. A lista reproduzível dessas
+chaves está em `evidence/c1-4/c1-4-repeated-id-overlap.csv`.
 
 Isso não é leakage direto, pois `id` não entra no modelo e o preço futuro não é
 usado no treino. Entretanto, reduz a independência entre as partições e pode
-produzir uma estimativa ligeiramente otimista para imóveis revendidos.
+produzir uma estimativa ligeiramente otimista para registros com a mesma chave.
 
 **Decisão:** manter o protocolo atual para a entrega, mas registrar uma análise
 futura com split temporal agrupado por imóvel como teste de sensibilidade.
@@ -275,14 +281,19 @@ Algumas features aparecem fora do intervalo entre os percentis 1% e 99%, mas
 não ultrapassam os extremos observados. Isso caracteriza cauda histórica, não
 OOD univariado.
 
-**Classificação:** cobertura adequada para o arquivo oficial de entrega.
+**Classificação:** cobertura estrutural e univariada adequada para o arquivo
+oficial de entrega. Esta verificação não avalia distância multivariada ao
+suporte de treinamento, raridade conjunta das features nem erro esperado. As
+limitações de alto valor e geografia registradas na Issue #36 continuam válidas.
 
 ## 10. Completude do dicionário de dados
 
 As 18 features físicas possuem descrições no schema público da API, incluindo
 unidades para áreas e coordenadas. Ainda existem lacunas:
 
-- não há um dicionário canônico único para os três CSVs;
+- não há um dicionário canônico único para os três CSVs; a matriz diagnóstica
+  `evidence/c1-4/c1-4-feature-governance.csv` consolida o estado atual, mas não
+  substitui o dicionário definitivo;
 - `id`, `date` e `price` não possuem definição formal de origem e unidade no
   mesmo documento;
 - as 26 variáveis demográficas não possuem definição individual;
@@ -335,7 +346,25 @@ revisão humana:
 
 Uma regra estatística ou OOD não deve ser confundida com erro sintático.
 
-## 12. Decisões finais
+## 12. Evidências e limites de reprodução
+
+As conclusões principais estão acompanhadas pelos seguintes arquivos:
+
+| Arquivo | Finalidade |
+|---|---|
+| `evidence/c1-4/c1-4-data-quality-summary.json` | hashes, contagens e resultados consolidados |
+| `evidence/c1-4/c1-4-temporal-inconsistencies.csv` | 18 registros excluídos pelo filtro temporal |
+| `evidence/c1-4/c1-4-anomaly-candidates.csv` | registros anômalos e regras exploratórias |
+| `evidence/c1-4/c1-4-future-coverage.csv` | comparação univariada do arquivo futuro |
+| `evidence/c1-4/c1-4-feature-governance.csv` | papel, documentação, disponibilidade, risco e decisão por campo |
+| `evidence/c1-4/c1-4-repeated-id-overlap.csv` | 98 chaves presentes em desenvolvimento e diagnóstico |
+
+A análise é reproduzível a partir dos três CSVs identificados pelos hashes no
+início deste relatório. A pasta de evidências registra os resultados derivados,
+mas não constitui um detector multivariado de OOD nem uma nova avaliação do
+modelo.
+
+## 13. Decisões finais
 
 | Tema | Decisão |
 |---|---|
@@ -346,13 +375,13 @@ Uma regra estatística ou OOD não deve ser confundida com erro sintático.
 | ZIP e coordenadas | cobertura/OOD, não validação por centroide simples |
 | `hous_val_amt` | manter fora do modelo servido |
 | demografia | experimento histórico, não serving |
-| IDs repetidos | vendas válidas; registrar dependência entre partições |
-| exemplos futuros | cobertura adequada |
+| IDs repetidos | eventos distintos compatíveis com revenda; registrar dependência entre partições |
+| exemplos futuros | cobertura estrutural/univariada adequada; cobertura multivariada não avaliada |
 | alteração de dados brutos | não autorizada nem necessária nesta review |
 | retreinamento | não executar |
 | modelo/artefato | manter `0.4.0-rc1` |
 
-## 13. Encaminhamentos
+## 14. Encaminhamentos
 
 1. **Issue #38**
    - criar dicionário canônico;
