@@ -1,5 +1,7 @@
 # Revisão da Fase 5
 
+> **Snapshot histórico:** este documento registra o estado observado durante uma fase anterior. Ele não substitui o manifesto, o model card, os contratos e as reviews C1 vigentes. Consulte [`docs/reviews/README.md`](README.md) para a hierarquia documental.
+
 Status: aprovada em revisão supervisionada.
 
 ## Objetivo

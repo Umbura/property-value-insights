@@ -101,3 +101,15 @@ compara o ano da venda com `yr_built` e `yr_renovated`:
 Essa regra impede que informações posteriores à transação sejam usadas como
 features. A exclusão é reproduzida em código e registrada no manifesto, sem
 reescrever ou apagar os dados fornecidos.
+
+## Auditoria posterior e fonte canônica
+
+A Review C1.4 confirmou as contagens acima, investigou anomalias, cobertura,
+dependência entre chaves repetidas e risco de proxies. A definição operacional
+consolidada está em [`DATA_DICTIONARY.md`](DATA_DICTIONARY.md), enquanto as
+evidências reproduzíveis estão em
+[`reviews/c1-4-data-quality-review.md`](reviews/c1-4-data-quality-review.md).
+
+O contrato inicial permanece como registro histórico das validações de entrada.
+Ele não prova a semântica oficial de `id`, dos valores zero, das variáveis
+demográficas ou das features `sqft_living15` e `sqft_lot15`.

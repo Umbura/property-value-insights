@@ -7,6 +7,78 @@ de preços de imóveis e trata os dados como uma solução de cliente real.
 Status atual: versão estável integrada `v1.0.0`, com modelo, API, análises e
 artefatos reproduzíveis disponíveis para avaliação técnica.
 
+## Resultados principais
+
+| Evidência | Resultado |
+| --- | ---: |
+| Vendas elegíveis após o filtro temporal | 21.595 |
+| Validação cruzada temporal | 5 janelas expansivas |
+| MAE média na validação temporal | US$ 63.880,80 |
+| MAE no período diagnóstico | US$ 67.105,71 |
+| R² / MAPE no período diagnóstico | 0,8998 / 12,07% |
+| MAE no quartil superior | US$ 134.877,87 |
+| Acima de US$ 1 milhão | MAE US$ 201.930,60; 69,55% de subestimação |
+| Acima de US$ 2 milhões | 46 casos; MAE US$ 544.527,87; 82,61% de subestimação |
+
+O modelo aprovado utiliza somente características físicas e espaciais. A
+variante demográfica obteve ganho médio marginal na validação, mas ficou fora
+do serving por risco de proxy socioeconômica, origem e vintage não documentados.
+
+![Diagnóstico do modelo físico aprovado](reports/figures/approved_model_diagnostic.png)
+
+O gráfico pertence ao modelo físico servido. O período mais recente foi usado
+como diagnóstico e já havia sido consultado; não é um teste final intocado.
+
+## Identidade versionada
+
+| Componente | Identidade vigente |
+| --- | --- |
+| Projeto/pacote | `property-value-insights 1.0.0` |
+| Contrato da API | `0.5.0-rc1` |
+| Modelo servido | `property_value_hist_gradient_boosting_physical 0.4.0-rc1` |
+| Schema do manifesto | `1.0` |
+| SHA-256 do artefato | `90ffbab62970c805b7fd65a5488fa727026bdc59b81d56726318374cdce8c439` |
+
+As versões evoluem de forma independente. O valor
+`property_value_insights=0.1.0.dev0` preservado no manifesto é
+metadata histórica do ambiente que gerou o artefato imutável; ele não substitui
+a release atual do projeto.
+
+## Arquitetura executável
+
+```mermaid
+flowchart LR
+    C[Cliente] --> A[FastAPI]
+    A --> V[Validação Pydantic]
+    V --> M[Pipeline físico verificado por SHA-256]
+    M --> P[Preço previsto + versão + request ID]
+    A --> H[/health e /model-info/]
+    A --> O[/logs JSON e /metrics/]
+    D[CSV versionado] --> T[Treinamento e avaliação offline]
+    T --> G[Manifesto + Joblib + relatórios]
+    G --> M
+```
+
+O runtime implementado é uma API local/containerizada. Registro de modelos,
+staging, canary e rollback aparecem nos diagramas como arquitetura recomendada,
+não como infraestrutura externa já implantada.
+
+## Limites de uso
+
+- segunda opinião quantitativa, não laudo ou decisão autônoma de crédito;
+- as faixas observadas acima de US$ 1 milhão exigem revisão humana e, acima
+  de US$ 2 milhões, avaliação especializada;
+- no runtime, o gatilho não pode depender do preço real desconhecido nem somente
+  da previsão pontual; a Issue #64 definirá sinais com previsão, intervalo,
+  raridade e cobertura;
+- ZIP desconhecido, coordenadas fora da região e anos futuros ainda não recebem
+  warning estruturado no contrato atual; essa melhoria está registrada na Issue #64;
+- a cobertura comprovada é regional, temporal e principalmente tabular.
+
+As evidências completas estão nas reviews
+[`C1.3`](docs/reviews/c1-3-model-review.md) e
+[`C1.4`](docs/reviews/c1-4-data-quality-review.md).
+
 ## Ciclo de vida do projeto
 
 As Fases 0–7 registram o desenvolvimento da primeira versão estável integrada,
@@ -42,7 +114,7 @@ Os arquivos fornecidos estão versionados em `data/raw/`:
 - `future_unseen_examples.csv`: exemplos sem preço para a inferência final.
 
 O contrato, a auditoria inicial e os hashes dos arquivos estão documentados em
-[`docs/DATA_CONTRACT.md`](docs/DATA_CONTRACT.md). A especificação original do
+[`docs/DATA_CONTRACT.md`](docs/DATA_CONTRACT.md) e no [`dicionário canônico`](docs/DATA_DICTIONARY.md). A especificação original do
 desafio está preservada em [`docs/CHALLENGE_README.md`](docs/CHALLENGE_README.md).
 
 ## Execução local

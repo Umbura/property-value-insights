@@ -1,6 +1,6 @@
 # Relatório de modelagem, calibração e avaliação
 
-> **Contexto do experimento:** este relatório registra a promoção estatística dos candidatos calibrados. A avaliação de governança posterior selecionou o modelo somente físico como artefato final. Portanto, as seções "modelo promovido" e "importância das variáveis" abaixo descrevem o experimento demográfico e não o modelo servido pela API. Os resultados vigentes estão em [`training_summary.md`](training_summary.md), [`MODEL_CARD.md`](../docs/MODEL_CARD.md) e [`stakeholder_summary.md`](stakeholder_summary.md).
+> **Relatório histórico de experimento, não fonte do serving atual:** a expressão "modelo promovido" abaixo descreve uma decisão estatística intermediária sobre a variante demográfica. A governança posterior aprovou o modelo físico `property_value_hist_gradient_boosting_physical 0.4.0-rc1` para a API. As 16.973 linhas de desenvolvimento deste snapshot antecedem o filtro temporal final; o protocolo vigente usa 16.955. Consulte [`training_summary.md`](training_summary.md), [`MODEL_CARD.md`](../docs/MODEL_CARD.md) e [`c1-3-model-review.md`](../docs/reviews/c1-3-model-review.md).
 
 ## Protocolo
 

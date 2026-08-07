@@ -2,6 +2,15 @@
 
 Todas as alterações relevantes deste projeto são registradas neste arquivo.
 
+## [Unreleased]
+
+### Documentação e governança
+
+- reviews pré-entrega com evidências de API, modelo e dados;
+- resultados principais, versões e arquitetura trazidos para a abertura do README;
+- política de revisão humana para alto valor e cobertura limitada;
+- dicionário canônico e classificação explícita de documentos históricos.
+
 ## [1.0.0] - 2026-08-04
 
 Primeira versão estável integrada da solução.

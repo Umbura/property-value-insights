@@ -1,0 +1,25 @@
+[
+  {
+    "name": "repository_html",
+    "url": "https://github.com/Umbura/property-value-insights",
+    "status": 200,
+    "content_type": "text/html; charset=utf-8",
+    "accessible_without_auth": true
+  },
+  {
+    "name": "raw_readme",
+    "url": "https://raw.githubusercontent.com/Umbura/property-value-insights/main/README.md",
+    "status": 200,
+    "content_type": "text/plain; charset=utf-8",
+    "accessible_without_auth": true
+  },
+  {
+    "name": "public_api_metadata",
+    "url": "https://api.github.com/repos/Umbura/property-value-insights",
+    "status": 200,
+    "content_type": "application/json; charset=utf-8",
+    "accessible_without_auth": true,
+    "private": false,
+    "default_branch": "main"
+  }
+]
