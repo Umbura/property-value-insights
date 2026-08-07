@@ -4,10 +4,16 @@
 
 | Documento | Status | Papel |
 | --- | --- | --- |
+| `cycle-1-consolidation.md` | atual | encerramento consolidado das Reviews #34–#39 |
 | `c1-2-api-manual-tests.md` | atual | comportamento manual da API |
 | `c1-3-model-review.md` | atual | comportamento, cauda, geografia, tempo e OOD |
 | `c1-4-data-quality-review.md` | atual | qualidade, anomalias, proxy e cobertura dos dados |
 | `c1-5-documentation-governance-review.md` | atual | auditoria documental e de governança |
+| `c1-6-docker-operations-review.md` | atual | operação, segurança, estabilidade e imagem Docker |
+
+A C1.1 foi registrada diretamente na Issue #34 e originou as Issues #43–#48. O
+resultado e a rastreabilidade dessa review também estão resumidos em
+`cycle-1-consolidation.md`.
 
 ## Snapshots históricos das Fases 0–7
 
